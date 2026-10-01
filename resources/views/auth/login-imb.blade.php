@@ -128,14 +128,6 @@
                     </button>
                 </div>
             </form>
-
-            <p class="text-center text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-8" data-purpose="registration-prompt">
-                Belum punya akun sekolah?
-                <a href="{{ route('auth.register') }}" class="text-primary hover:text-primary-dark font-semibold transition duration-150">Daftar sekolah Anda</a>
-            </p>
-            <p class="text-center text-xs text-slate-400 dark:text-slate-600 mt-3">
-                <a href="{{ route('auth.login') }}" class="font-mono hover:text-slate-600 dark:hover:text-slate-300 transition duration-150">← Login umum</a>
-            </p>
         </div>
     </section>
 
@@ -148,50 +140,15 @@
 
         <div class="w-full h-4"></div>
 
-        <div class="relative z-10 w-full max-w-[420px] flex flex-col items-center gap-8 py-6" data-purpose="dashboard-mockup">
+        <div class="relative z-10 flex flex-1 w-full flex-col items-center justify-center gap-8 py-6" data-purpose="school-logo-panel">
             @if ($schoolLogo)
-                <img src="{{ asset('storage/' . $schoolLogo) }}" alt="{{ $school->name }}" class="h-16 w-16 object-contain rounded-2xl bg-white p-2 shadow-lg">
+                <img src="{{ asset('storage/' . $schoolLogo) }}" alt="{{ $school->name }}" class="h-40 w-40 object-contain rounded-3xl bg-white p-4 shadow-2xl">
             @else
-                <div class="h-16 w-16 rounded-2xl bg-white/15 border border-white/20 flex items-center justify-center">
-                    <svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                <div class="h-40 w-40 rounded-3xl bg-white/15 border border-white/25 flex items-center justify-center shadow-2xl">
+                    <svg class="h-16 w-16 text-white" fill="none" stroke="currentColor" stroke-width="1.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
                 </div>
             @endif
-
-            <div class="w-full bg-white rounded-2xl shadow-2xl p-3 text-slate-800 border border-white/40">
-                <div class="flex items-center gap-1.5 pb-2.5 mb-2.5 border-b border-slate-100">
-                    <span class="w-2 h-2 rounded-full bg-red-400"></span>
-                    <span class="w-2 h-2 rounded-full bg-amber-400"></span>
-                    <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                    <div class="ml-auto flex items-center gap-1">
-                        <span class="h-1.5 w-10 bg-slate-200 rounded-full"></span>
-                    </div>
-                </div>
-                <div class="flex gap-2 mb-3">
-                    <div class="h-4 w-14 bg-slate-200 rounded-md"></div>
-                    <div class="h-4 w-12 bg-slate-100 rounded-md"></div>
-                </div>
-                <div class="flex items-center gap-2.5 p-1.5 rounded-lg bg-slate-50/70 mb-1.5 border border-slate-100">
-                    <div class="w-6 h-6 rounded-full bg-amber-100 flex items-center justify-center text-[10px] font-bold text-amber-700">SD</div>
-                    <div class="flex-1 space-y-1">
-                        <div class="h-2 w-16 bg-slate-300 rounded"></div>
-                        <div class="h-1.5 w-10 bg-slate-200 rounded"></div>
-                    </div>
-                </div>
-                <div class="flex items-center gap-2.5 p-1.5 rounded-lg bg-slate-50/70 mb-1.5 border border-slate-100">
-                    <div class="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center text-[10px] font-bold text-blue-700">MK</div>
-                    <div class="flex-1 space-y-1">
-                        <div class="h-2 w-14 bg-slate-300 rounded"></div>
-                        <div class="h-1.5 w-12 bg-slate-200 rounded"></div>
-                    </div>
-                </div>
-                <div class="flex items-center gap-2.5 p-1.5 rounded-lg bg-slate-50/70 border border-slate-100">
-                    <div class="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center text-[10px] font-bold text-emerald-700">AL</div>
-                    <div class="flex-1 space-y-1">
-                        <div class="h-2 w-12 bg-slate-300 rounded"></div>
-                        <div class="h-1.5 w-16 bg-slate-200 rounded"></div>
-                    </div>
-                </div>
-            </div>
+            <h2 class="text-2xl xl:text-3xl font-bold tracking-tight text-white text-center leading-snug max-w-sm">{{ $school->name }}</h2>
         </div>
 
         <div class="relative z-10 text-center max-w-sm mb-4" data-purpose="showcase-caption">
