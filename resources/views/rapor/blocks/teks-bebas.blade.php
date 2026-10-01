@@ -1,0 +1,1 @@
+<div class="sempurna">{{ $props['text'] ?? '' }}</div>

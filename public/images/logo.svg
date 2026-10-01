@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+  <defs>
+    <linearGradient id="g1" x1="0" y1="0" x2="48" y2="48">
+      <stop offset="0%" stop-color="#059669"/>
+      <stop offset="100%" stop-color="#0d9488"/>
+    </linearGradient>
+  </defs>
+  <rect width="48" height="48" rx="12" fill="url(#g1)"/>
+  <!-- Book shape -->
+  <path d="M10 14C10 12.8954 10.8954 12 12 12H22V36H12C10.8954 36 10 35.1046 10 34V14Z" fill="white" opacity="0.95"/>
+  <path d="M22 12H36C37.1046 12 38 12.8954 38 14V34C38 35.1046 37.1046 36 36 36H22V12Z" fill="white" opacity="0.8"/>
+  <!-- Crescent on right page -->
+  <path d="M30 20C32.2091 20 34 21.7909 34 24C34 26.2091 32.2091 28 30 28C28.5 28 27.15 27.15 26.5 25.85C27.65 25.15 28.4 23.65 28.4 22C28.4 21.2 28.1 20.45 27.6 19.85C28.35 19.5 29.15 19.3 30 20Z" fill="url(#g1)"/>
+  <!-- Star -->
+  <circle cx="31.5" cy="21.5" r="1.2" fill="url(#g1)"/>
+  <!-- Lines on left page -->
+  <line x1="14" y1="18" x2="20" y2="18" stroke="#059669" stroke-width="1.2" opacity="0.3"/>
+  <line x1="14" y1="21" x2="19" y2="21" stroke="#059669" stroke-width="1.2" opacity="0.25"/>
+  <line x1="14" y1="24" x2="20" y2="24" stroke="#059669" stroke-width="1.2" opacity="0.3"/>
+  <line x1="14" y1="27" x2="18" y2="27" stroke="#059669" stroke-width="1.2" opacity="0.2"/>
+  <line x1="14" y1="30" x2="20" y2="30" stroke="#059669" stroke-width="1.2" opacity="0.3"/>
+  <!-- Spine line -->
+  <line x1="22" y1="12" x2="22" y2="36" stroke="#059669" stroke-width="0.8" opacity="0.15"/>
+</svg>
