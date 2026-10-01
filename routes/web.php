@@ -98,6 +98,8 @@ Route::prefix('blog')->name('blog.')->group(function () {
 Route::prefix('auth')->name('auth.')->middleware('guest')->group(function () {
     Route::get('login', [LoginController::class, 'showForm'])->name('login');
     Route::post('login', [LoginController::class, 'login'])->name('login.post');
+    Route::get('imb', [LoginController::class, 'showImbForm'])->name('imb');
+    Route::post('imb', [LoginController::class, 'imbLogin'])->name('imb.post');
     Route::get('google', [GoogleAuthController::class, 'redirect'])->name('google.redirect');
     Route::get('google/callback', [GoogleAuthController::class, 'callback'])->name('google.callback');
     Route::get('google/link', [GoogleAuthController::class, 'linkForm'])->name('google.link');
