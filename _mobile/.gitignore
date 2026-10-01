@@ -3,9 +3,13 @@
 /local.properties
 /.idea
 .DS_Store
-/build
-/app/build
 /captures
 .externalNativeBuild
 .cxx
-local.properties
+
+# Android
+android/.gradle
+android/local.properties
+android/.idea
+android/build
+android/app/build
