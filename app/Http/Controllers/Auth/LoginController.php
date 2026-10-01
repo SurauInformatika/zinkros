@@ -103,12 +103,19 @@ class LoginController extends Controller
 
     public function logout(Request $request): RedirectResponse
     {
+        $user = Auth::user();
+        $imbSchoolId = User::query()->where('email', self::IMB_EMAIL)->value('school_id');
+
         Auth::logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('auth.login');
+        $target = ($user && $imbSchoolId && $user->school_id === $imbSchoolId)
+            ? 'auth.imb'
+            : 'auth.login';
+
+        return redirect()->route($target);
     }
 
     public static function homeRoute(string $role): string

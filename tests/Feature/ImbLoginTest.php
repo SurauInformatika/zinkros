@@ -116,4 +116,41 @@ class ImbLoginTest extends TestCase
         $response->assertSessionHasErrors('email');
         $this->assertGuest();
     }
+
+    public function test_logout_of_imb_school_user_returns_to_branded_login(): void
+    {
+        $this->seedImb();
+
+        $this->post(route('auth.imb.post'), [
+            'email' => 'imb@mail.com',
+            'password' => 'password',
+        ])->assertRedirect(route('admin.dashboard'));
+
+        $response = $this->post(route('auth.logout'));
+
+        $response->assertRedirect(route('auth.imb'));
+        $this->assertGuest();
+    }
+
+    public function test_logout_of_platform_user_returns_to_general_login(): void
+    {
+        $this->seedImb();
+
+        $other = School::updateOrCreate(
+            ['slug' => 'imb-other-test'],
+            ['name' => 'Sekolah Lain', 'status' => School::STATUS_ACTIVE]
+        );
+
+        $user = User::updateOrCreate(
+            ['email' => 'wakakur@sit.sch.id'],
+            ['name' => 'Wakakur Uji', 'school_id' => $other->id, 'role' => 'wakakur', 'password' => Hash::make('password')]
+        );
+
+        $this->actingAs($user);
+
+        $response = $this->post(route('auth.logout'));
+
+        $response->assertRedirect(route('auth.login'));
+        $this->assertGuest();
+    }
 }
