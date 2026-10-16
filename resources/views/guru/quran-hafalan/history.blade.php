@@ -16,6 +16,26 @@
         </div>
     </div>
 
+    {{-- Ringkasan --}}
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div class="rounded-xl bg-white dark:bg-[#141414] border border-slate-200 dark:border-white/10 p-4 text-center">
+            <p class="text-2xl font-bold text-purple-600 dark:text-purple-400">{{ $summary['ayat'] }}</p>
+            <p class="text-xs text-slate-500 dark:text-white/50 mt-1">Ayat Terhafal</p>
+        </div>
+        <div class="rounded-xl bg-white dark:bg-[#141414] border border-slate-200 dark:border-white/10 p-4 text-center">
+            <p class="text-2xl font-bold text-secondary dark:text-secondary">{{ $summary['surahs'] }}</p>
+            <p class="text-xs text-slate-500 dark:text-white/50 mt-1">Surah</p>
+        </div>
+        <div class="rounded-xl bg-white dark:bg-[#141414] border border-slate-200 dark:border-white/10 p-4 text-center">
+            <p class="text-2xl font-bold text-indigo-600 dark:text-indigo-400">{{ $summary['ziadah'] }}</p>
+            <p class="text-xs text-slate-500 dark:text-white/50 mt-1">Ziadah</p>
+        </div>
+        <div class="rounded-xl bg-white dark:bg-[#141414] border border-slate-200 dark:border-white/10 p-4 text-center">
+            <p class="text-2xl font-bold text-blue-600 dark:text-blue-400">{{ $summary['murajaah'] }}</p>
+            <p class="text-xs text-slate-500 dark:text-white/50 mt-1">Murajaah</p>
+        </div>
+    </div>
+
     {{-- Chart --}}
     <div class="rounded-xl bg-white dark:bg-[#141414] border border-slate-200 dark:border-white/10 p-5">
         <h2 class="font-semibold mb-4">Grafik Hafalan</h2>
@@ -75,7 +95,7 @@
                     <span class="text-sm font-medium text-slate-700 dark:text-white/80">{{ $target['title'] }}</span>
                     @php
                         $stBadge = match($target['status']) {
-                            'completed' => 'bg-primary/10 dark:bg-primary/100/10 text-primary dark:text-primary',
+                            'completed' => 'bg-primary/10 dark:bg-primary/10 text-primary dark:text-primary',
                             'overdue' => 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400',
                             default => 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400',
                         };
@@ -90,7 +110,7 @@
                 <span class="text-sm font-bold {{ $target['status'] === 'completed' ? 'text-primary dark:text-primary' : ($target['status'] === 'overdue' ? 'text-red-600 dark:text-red-400' : 'text-blue-600 dark:text-blue-400') }}">{{ $target['percent'] }}%</span>
             </div>
             <div class="h-2 w-full rounded-full bg-slate-100 dark:bg-white/10 overflow-hidden">
-                <div class="h-full rounded-full {{ $target['status'] === 'completed' ? 'bg-primary/100' : ($target['status'] === 'overdue' ? 'bg-red-500' : 'bg-primary/100/80') }}"
+                <div class="h-full rounded-full {{ $target['status'] === 'completed' ? 'bg-primary/100' : ($target['status'] === 'overdue' ? 'bg-red-500' : 'bg-primary/80') }}"
                     style="width: {{ min(100, $target['percent']) }}%"></div>
             </div>
             <div class="flex flex-wrap items-center justify-between gap-2 mt-2 text-xs text-slate-400 dark:text-white/30">
@@ -134,54 +154,117 @@
     @endif
 
     {{-- History table --}}
-    @if ($records->count() > 0)
-        @php $grouped = $records->groupBy(fn($r) => \Carbon\Carbon::parse($r->recorded_date)->format('d M Y')); @endphp
-        @foreach ($grouped as $date => $dayRecords)
-            <div class="rounded-xl border border-slate-200 bg-white dark:border-white/10 dark:bg-[#141414] overflow-hidden">
-                <div class="border-b border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.02] px-4 py-3 flex items-center justify-between">
-                    <h2 class="text-sm font-semibold text-slate-700 dark:text-white/80">{{ $date }}</h2>
-                    <span class="text-xs text-slate-400 dark:text-white/30">{{ $dayRecords->count() }}x hafalan</span>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm whitespace-nowrap">
-                        <thead>
-                            <tr class="border-b border-slate-100 dark:border-white/5">
-                                <th class="px-4 py-2 text-left text-xs font-medium text-slate-500 dark:text-white/40">#</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-slate-500 dark:text-white/40">Surah</th>
-                                <th class="px-4 py-2 text-center text-xs font-medium text-slate-500 dark:text-white/40">Ayat</th>
-                                <th class="px-4 py-2 text-center text-xs font-medium text-slate-500 dark:text-white/40">Jenis</th>
-                                <th class="px-4 py-2 text-center text-xs font-medium text-slate-500 dark:text-white/40">Grade</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-slate-500 dark:text-white/40">Catatan</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($dayRecords as $i => $rec)
-                                <tr class="border-b border-slate-50 last:border-0 dark:border-white/5">
-                                    <td class="px-4 py-2.5 text-slate-400 dark:text-white/30">{{ $i + 1 }}</td>
-                                    <td class="px-4 py-2.5 font-medium text-slate-700 dark:text-white/80">{{ $rec->quranMaster->surah_name ?? '-' }}</td>
-                                    <td class="px-4 py-2.5 text-center text-slate-600 dark:text-white/70">{{ $rec->ayat_start }}-{{ $rec->ayat_end }}</td>
-                                    <td class="px-4 py-2.5 text-center">
-                                        <span class="inline-flex items-center rounded-md {{ $rec->activity_type === 'ZIADAH' ? 'bg-primary/10 dark:bg-primary/100/10 text-primary dark:text-primary' : 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400' }} px-2 py-0.5 text-xs font-medium">
-                                            {{ $rec->activity_type === 'ZIADAH' ? 'Ziadah' : 'Murajaah' }}
-                                        </span>
-                                    </td>
-                                    <td class="px-4 py-2.5 text-center">
-                                        @php $p = \App\Models\TahfidzRecord::scoreToPredikat($rec->score); @endphp
-                                        <span class="inline-flex items-center rounded-md {{ \App\Models\TahfidzRecord::predikatColor($p) }} px-2 py-0.5 text-xs font-bold">{{ $rec->score }} ({{ $p }})</span>
-                                    </td>
-                                    <td class="px-4 py-2.5 text-xs text-slate-400 dark:text-white/30">{{ $rec->notes ?? '-' }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        @endforeach
-    @else
-        <div class="rounded-xl border border-slate-200 bg-white p-12 text-center dark:border-white/10 dark:bg-[#141414]">
+    <div class="rounded-xl border border-slate-200 bg-white dark:border-white/10 dark:bg-[#141414] overflow-hidden">
+        <div class="border-b border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.02] px-4 py-3 flex items-center justify-between">
+            <h2 class="text-sm font-semibold text-slate-700 dark:text-white/80">Riwayat Hafalan</h2>
+            <span class="text-xs text-slate-400 dark:text-white/30">{{ $records->count() }} riwayat</span>
+        </div>
+        @if ($records->count() > 0)
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm whitespace-nowrap">
+                <thead>
+                    <tr class="border-b border-slate-100 dark:border-white/5">
+                        <th class="px-4 py-3 text-left text-xs font-medium text-slate-500 dark:text-white/40">Tanggal</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-slate-500 dark:text-white/40">Surah</th>
+                        <th class="px-4 py-3 text-center text-xs font-medium text-slate-500 dark:text-white/40">Ayat</th>
+                        <th class="px-4 py-3 text-center text-xs font-medium text-slate-500 dark:text-white/40">Jenis</th>
+                        <th class="px-4 py-3 text-center text-xs font-medium text-slate-500 dark:text-white/40">Grade</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-slate-500 dark:text-white/40">Catatan</th>
+                        <th class="px-4 py-3 text-center text-xs font-medium text-slate-500 dark:text-white/40">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($records as $rec)
+                        @php
+                            $isAbsent = $rec->quran_master_id === null;
+                            $attStatus = \App\Models\TahfidzRecord::attendanceStatus($rec->status);
+                            $stLabel = match($attStatus) { 'SAKIT' => 'Sakit', 'IZIN' => 'Izin', default => 'Alpa' };
+                            $dateLabel = \Carbon\Carbon::parse($rec->recorded_date)->format('d M Y');
+                            $deleteInfo = $isAbsent
+                                ? $dateLabel . ' — ' . $stLabel
+                                : $dateLabel . ' — ' . ($rec->quranMaster->surah_name ?? '-') . ' ' . $rec->ayat_start . '-' . $rec->ayat_end;
+                        @endphp
+                        <tr class="border-b border-slate-50 last:border-0 dark:border-white/5">
+                            <td class="px-4 py-2.5 text-slate-600 dark:text-white/70">{{ $dateLabel }}</td>
+                            @if ($isAbsent)
+                                @php
+                                    $stBadge = match($attStatus) {
+                                        'SAKIT' => 'bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400',
+                                        'IZIN' => 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400',
+                                        default => 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400',
+                                    };
+                                @endphp
+                                <td colspan="4" class="px-4 py-2.5">
+                                    <span class="inline-flex items-center rounded-md {{ $stBadge }} px-2 py-0.5 text-xs font-medium">{{ $stLabel }}</span>
+                                </td>
+                                <td class="px-4 py-2.5 text-xs text-slate-400 dark:text-white/30">{{ $rec->notes ?: '-' }}</td>
+                            @else
+                                <td class="px-4 py-2.5 font-medium text-slate-700 dark:text-white/80">{{ $rec->quranMaster->surah_name ?? '-' }}</td>
+                                <td class="px-4 py-2.5 text-center text-slate-600 dark:text-white/70">{{ $rec->ayat_start }}-{{ $rec->ayat_end }}</td>
+                                <td class="px-4 py-2.5 text-center">
+                                    <span class="inline-flex items-center rounded-md {{ $rec->activity_type === 'ZIADAH' ? 'bg-primary/10 dark:bg-primary/10 text-primary dark:text-primary' : 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400' }} px-2 py-0.5 text-xs font-medium">
+                                        {{ $rec->activity_type === 'ZIADAH' ? 'Ziadah' : 'Murajaah' }}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-2.5 text-center">
+                                    @php $p = \App\Models\TahfidzRecord::scoreToPredikat($rec->score); @endphp
+                                    <span class="inline-flex items-center rounded-md {{ \App\Models\TahfidzRecord::predikatColor($p) }} px-2 py-0.5 text-xs font-bold">{{ $rec->score }} ({{ $p }})</span>
+                                </td>
+                                <td class="px-4 py-2.5 text-xs text-slate-400 dark:text-white/30">{{ $rec->notes ?: '-' }}</td>
+                            @endif
+                            <td class="px-4 py-2.5 text-center">
+                                <div class="inline-flex items-center gap-1">
+                                    <a href="{{ route('guru.quran-hafalan.edit', $rec->id) }}" title="Edit" class="inline-flex items-center justify-center w-7 h-7 rounded-md text-primary/80 hover:text-primary hover:bg-primary/10 dark:text-primary dark:hover:bg-primary/20 transition">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                    </a>
+                                    <button type="button" title="Hapus"
+                                        data-delete-action="{{ route('guru.quran-hafalan.destroy', $rec->id) }}"
+                                        data-delete-info="{{ $deleteInfo }}"
+                                        class="inline-flex items-center justify-center w-7 h-7 rounded-md text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+        @else
+        <div class="p-12 text-center">
             <p class="text-sm text-slate-400 dark:text-white/30">Belum ada riwayat hafalan untuk siswa ini.</p>
         </div>
-    @endif
+        @endif
+    </div>
+
+    {{-- Delete Confirmation Modal --}}
+    <div id="deleteModal" class="hidden fixed inset-0 z-50 flex items-center justify-center">
+        <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" onclick="closeDeleteModal()"></div>
+        <div class="relative bg-white dark:bg-[#1a1a1a] rounded-2xl border border-slate-200 dark:border-white/10 shadow-2xl w-full max-w-md mx-4 p-6">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-500/10">
+                    <svg class="w-5 h-5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                </div>
+                <div class="min-w-0">
+                    <h3 class="text-lg font-semibold">Hapus Riwayat Hafalan</h3>
+                    <p class="text-xs text-slate-500 dark:text-white/40 truncate" id="deleteInfo">—</p>
+                </div>
+            </div>
+            <p class="text-sm text-slate-600 dark:text-white/50 mb-4">Riwayat ini akan dihapus permanen dan tidak dapat dikembalikan.</p>
+            <form id="deleteForm" method="POST" action="" class="flex gap-3 justify-end">
+                @csrf
+                @method('DELETE')
+                <button type="button" onclick="closeDeleteModal()"
+                    class="px-4 py-2 text-sm font-medium text-slate-600 dark:text-white/50 hover:text-slate-800 dark:hover:text-white/70 transition-colors">
+                    Batal
+                </button>
+                <button type="submit"
+                    class="px-4 py-2 text-sm font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors">
+                    Hapus
+                </button>
+            </form>
+        </div>
+    </div>
 </div>
 @endsection
 
@@ -301,6 +384,29 @@ document.querySelectorAll('.target-toggle').forEach(function(btn) {
             chevron.style.transform = '';
         }
     });
+});
+
+window.openDeleteModal = function(action, info) {
+    document.getElementById('deleteForm').setAttribute('action', action);
+    document.getElementById('deleteInfo').textContent = info || '—';
+    document.getElementById('deleteModal').classList.remove('hidden');
+};
+
+window.closeDeleteModal = function() {
+    document.getElementById('deleteModal').classList.add('hidden');
+};
+
+document.querySelectorAll('[data-delete-action]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+        window.openDeleteModal(this.getAttribute('data-delete-action'), this.getAttribute('data-delete-info'));
+    });
+});
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        var modal = document.getElementById('deleteModal');
+        if (modal && !modal.classList.contains('hidden')) window.closeDeleteModal();
+    }
 });
 </script>
 @endpush

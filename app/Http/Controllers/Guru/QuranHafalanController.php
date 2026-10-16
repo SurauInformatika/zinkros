@@ -245,6 +245,13 @@ class QuranHafalanController extends Controller
             ->orderByDesc('created_at')
             ->get();
 
+        $summary = [
+            'ayat' => $records->where('activity_type', '!=', null)->sum(fn ($r) => $r->ayat_end - $r->ayat_start + 1),
+            'surahs' => $records->pluck('quran_master_id')->filter()->unique()->count(),
+            'ziadah' => $records->where('activity_type', TahfidzRecord::TYPE_ZIADAH)->count(),
+            'murajaah' => $records->where('activity_type', TahfidzRecord::TYPE_MURAJAAH)->count(),
+        ];
+
         $targets = StudentQuranTarget::where('student_id', $studentId)
             ->with('items.quranMaster')
             ->orderBy('target_date')
@@ -252,7 +259,138 @@ class QuranHafalanController extends Controller
             ->map(fn ($t) => $this->quranTargetService->decorateTarget($t))
             ->all();
 
-        return view('guru.quran-hafalan.history', compact('student', 'records', 'targets'));
+        return view('guru.quran-hafalan.history', compact('student', 'records', 'summary', 'targets'));
+    }
+
+    public function edit(TahfidzRecord $tahfidzRecord): View
+    {
+        $user = auth()->user();
+
+        if ($tahfidzRecord->teacher_id !== $user->id) {
+            abort(403);
+        }
+
+        $student = $tahfidzRecord->student()->with('classRoom')->firstOrFail();
+
+        $surahs = QuranMaster::orderBy('surah_number')->get();
+
+        $otherRecords = TahfidzRecord::where('teacher_id', $user->id)
+            ->where('student_id', $tahfidzRecord->student_id)
+            ->where('id', '!=', $tahfidzRecord->id)
+            ->whereNotNull('quran_master_id')
+            ->select('quran_master_id', 'ayat_start', 'ayat_end')
+            ->get();
+
+        return view('guru.quran-hafalan.edit', [
+            'record' => $tahfidzRecord,
+            'student' => $student,
+            'surahs' => $surahs,
+            'otherRecords' => $otherRecords,
+        ]);
+    }
+
+    public function update(Request $request, TahfidzRecord $tahfidzRecord)
+    {
+        $user = auth()->user();
+
+        if ($tahfidzRecord->teacher_id !== $user->id) {
+            abort(403);
+        }
+
+        $status = $request->input('status');
+        $isAbsent = in_array($status, [TahfidzRecord::STATUS_SAKIT, TahfidzRecord::STATUS_IZIN, TahfidzRecord::STATUS_ALPA], true);
+
+        if ($isAbsent) {
+            $validated = $request->validate([
+                'recorded_date' => 'required|date|before_or_equal:today',
+                'status' => 'required|in:SAKIT,IZIN,ALPA',
+                'notes' => 'nullable|string|max:500',
+            ]);
+
+            $tahfidzRecord->update([
+                'quran_master_id' => null,
+                'ayat_start' => 0,
+                'ayat_end' => 0,
+                'activity_type' => null,
+                'score' => 0,
+                'status' => $validated['status'],
+                'recorded_date' => $validated['recorded_date'],
+                'notes' => $validated['notes'] ?? null,
+            ]);
+
+            return redirect()->route('guru.quran-hafalan.history', $tahfidzRecord->student_id)
+                ->with('success', 'Riwayat hafalan berhasil diperbarui.');
+        }
+
+        $validated = $request->validate([
+            'recorded_date' => 'required|date|before_or_equal:today',
+            'quran_master_id' => 'required|uuid',
+            'ayat_start' => 'required|integer|min:1',
+            'ayat_end' => 'required|integer|min:1',
+            'activity_type' => 'required|in:ZIADAH,MURAJAAH',
+            'score' => 'required|integer|min:0|max:100',
+            'notes' => 'nullable|string|max:500',
+        ]);
+
+        $surah = QuranMaster::find($validated['quran_master_id']);
+        if (!$surah) {
+            return back()->with('error', 'Surah tidak ditemukan.');
+        }
+
+        $ayatStart = (int) $validated['ayat_start'];
+        $ayatEnd = (int) $validated['ayat_end'];
+
+        if ($ayatEnd < $ayatStart) {
+            $ayatEnd = $ayatStart;
+        }
+        if ($ayatEnd > $surah->total_ayats) {
+            $ayatEnd = $surah->total_ayats;
+        }
+        if ($ayatStart > $surah->total_ayats) {
+            return back()->with('error', 'Ayat melebihi total ayat surah.');
+        }
+
+        $alreadyExists = TahfidzRecord::where('student_id', $tahfidzRecord->student_id)
+            ->where('teacher_id', $user->id)
+            ->where('id', '!=', $tahfidzRecord->id)
+            ->where('quran_master_id', $validated['quran_master_id'])
+            ->where('ayat_start', '<=', $ayatEnd)
+            ->where('ayat_end', '>=', $ayatStart)
+            ->exists();
+
+        $activityType = $validated['activity_type'];
+        if ($alreadyExists && $activityType === TahfidzRecord::TYPE_ZIADAH) {
+            $activityType = TahfidzRecord::TYPE_MURAJAAH;
+        }
+
+        $tahfidzRecord->update([
+            'quran_master_id' => $validated['quran_master_id'],
+            'ayat_start' => $ayatStart,
+            'ayat_end' => $ayatEnd,
+            'activity_type' => $activityType,
+            'score' => $validated['score'],
+            'status' => null,
+            'recorded_date' => $validated['recorded_date'],
+            'notes' => $validated['notes'] ?? null,
+        ]);
+
+        return redirect()->route('guru.quran-hafalan.history', $tahfidzRecord->student_id)
+            ->with('success', 'Riwayat hafalan berhasil diperbarui.');
+    }
+
+    public function destroy(TahfidzRecord $tahfidzRecord)
+    {
+        $user = auth()->user();
+
+        if ($tahfidzRecord->teacher_id !== $user->id) {
+            abort(403);
+        }
+
+        $studentId = $tahfidzRecord->student_id;
+        $tahfidzRecord->delete();
+
+        return redirect()->route('guru.quran-hafalan.history', $studentId)
+            ->with('success', 'Riwayat hafalan berhasil dihapus.');
     }
 
     public function chart(Request $request, string $studentId): JsonResponse

@@ -362,7 +362,7 @@
                     <div class="flex items-center gap-2">
                         @php $ay = app(App\Services\AcademicYearContext::class)->get(); @endphp
                         @if ($ay)
-                            <span class="inline-flex items-center gap-1.5 rounded-lg bg-primary/10 dark:bg-primary/100/10 border border-primary/20 dark:border-primary/20 px-2.5 py-1 text-xs font-medium text-primary dark:text-primary">
+                            <span class="inline-flex items-center gap-1.5 rounded-lg bg-primary/10 dark:bg-primary/10 border border-primary/20 dark:border-primary/20 px-2.5 py-1 text-xs font-medium text-primary dark:text-primary">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                                 {{ $ay->name }}
                             </span>
@@ -412,7 +412,8 @@
     (function() {
         var spinner = '<svg class="animate-spin h-4 w-4 inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>';
         document.querySelectorAll('form').forEach(function(form) {
-            form.addEventListener('submit', function() {
+            form.addEventListener('submit', function(e) {
+                if (e.defaultPrevented) return;
                 var btn = form.querySelector('button[type="submit"]');
                 if (!btn || btn.disabled) return;
                 btn.disabled = true;

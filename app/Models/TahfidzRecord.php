@@ -33,6 +33,7 @@ class TahfidzRecord extends Model
     public const STATUS_HADIR = null;
     public const STATUS_SAKIT = 'SAKIT';
     public const STATUS_IZIN = 'IZIN';
+    public const STATUS_ALPA = 'ALPA';
 
     protected function predikat(): Attribute
     {
@@ -64,6 +65,7 @@ class TahfidzRecord extends Model
         return match ($status) {
             self::STATUS_SAKIT => 'SAKIT',
             self::STATUS_IZIN => 'IZIN',
+            self::STATUS_ALPA => 'ALPA',
             default => 'HADIR',
         };
     }

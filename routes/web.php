@@ -275,6 +275,9 @@ Route::middleware(['auth', 'role:guru'])->prefix('guru')->name('guru.')->group(f
     Route::post('quran-hafalan', [QuranHafalanController::class, 'store'])->name('quran-hafalan.store');
     Route::get('quran-hafalan/history/{studentId}', [QuranHafalanController::class, 'history'])->name('quran-hafalan.history');
     Route::get('quran-hafalan/history/{studentId}/chart', [QuranHafalanController::class, 'chart'])->name('quran-hafalan.chart');
+    Route::get('quran-hafalan/record/{tahfidzRecord}/edit', [QuranHafalanController::class, 'edit'])->name('quran-hafalan.edit');
+    Route::put('quran-hafalan/record/{tahfidzRecord}', [QuranHafalanController::class, 'update'])->name('quran-hafalan.update');
+    Route::delete('quran-hafalan/record/{tahfidzRecord}', [QuranHafalanController::class, 'destroy'])->name('quran-hafalan.destroy');
 
     Route::get('quran-tilawah', [TilawahController::class, 'students'])->name('quran-tilawah.students');
     Route::get('quran-tilawah/input/{studentId}', [TilawahController::class, 'input'])->name('quran-tilawah.input');
