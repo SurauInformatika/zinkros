@@ -78,14 +78,12 @@
                         <div class="flex items-center justify-between">
                             <h3 class="text-sm font-semibold text-slate-700 dark:text-white/80">Daftar Surah</h3>
                             <div class="flex items-center gap-2">
-                                @if ($templates->isNotEmpty())
-                                <select id="templateSelect" class="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs dark:border-white/10 dark:bg-[#0a0a0a] dark:text-white">
-                                    <option value="">Gunakan Template...</option>
-                                    @foreach ($templates as $tpl)
-                                        <option value="{{ $tpl->id }}">{{ $tpl->title }} ({{ $tpl->items->count() }} surah)</option>
-                                    @endforeach
+                                <select id="juzSelect" class="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs dark:border-white/10 dark:bg-[#0a0a0a] dark:text-white">
+                                    <option value="">Pilih Juz...</option>
+                                    @for ($juz = 1; $juz <= 30; $juz++)
+                                        <option value="{{ $juz }}">Juz {{ $juz }}</option>
+                                    @endfor
                                 </select>
-                                @endif
                                 <button type="button" onclick="addSurahRow()"
                                     class="rounded-lg border border-primary/20 dark:border-primary/20 px-3 py-1.5 text-xs font-medium text-primary dark:text-primary hover:bg-primary/10 dark:hover:bg-primary/10 transition-colors">
                                     + Tambah Surah
@@ -153,9 +151,48 @@
 (function() {
     window.surahOptions = [
         @foreach ($surahs as $surah)
-        { id: '{{ $surah->id }}', label: '{{ $surah->surah_number }}. {{ $surah->surah_name }} ({{ $surah->total_ayats }} ayat)', total: {{ $surah->total_ayats }} },
+        { id: '{{ $surah->id }}', number: {{ $surah->surah_number }}, label: '{{ $surah->surah_number }}. {{ $surah->surah_name }} ({{ $surah->total_ayats }} ayat)', total: {{ $surah->total_ayats }} },
         @endforeach
     ];
+
+    @php
+        $juzStarts = [
+            1 => [1, 1], 2 => [2, 142], 3 => [2, 253], 4 => [3, 93], 5 => [4, 24],
+            6 => [4, 148], 7 => [5, 82], 8 => [6, 111], 9 => [7, 88], 10 => [8, 41],
+            11 => [9, 93], 12 => [11, 6], 13 => [12, 53], 14 => [15, 1], 15 => [17, 1],
+            16 => [18, 75], 17 => [21, 1], 18 => [23, 1], 19 => [25, 21], 20 => [27, 56],
+            21 => [29, 46], 22 => [33, 31], 23 => [36, 28], 24 => [39, 32], 25 => [41, 47],
+            26 => [46, 1], 27 => [51, 31], 28 => [58, 1], 29 => [67, 1], 30 => [78, 1],
+        ];
+        $surahTotal = $surahs->pluck('total_ayats', 'surah_number');
+        $surahUuid = $surahs->pluck('id', 'surah_number');
+        $juzMap = [];
+        for ($j = 1; $j <= 30; $j++) {
+            [$startSurah, $startAyah] = $juzStarts[$j];
+            [$nextSurah, $nextAyah] = $juzStarts[$j + 1] ?? [115, 1];
+            $endSurah = $nextSurah;
+            $endAyah = $nextAyah - 1;
+            if ($endAyah === 0) {
+                $endSurah = $nextSurah - 1;
+                $endAyah = $surahTotal[$endSurah] ?? 0;
+            }
+            $items = [];
+            if ($startSurah === $endSurah) {
+                $items[] = [$startSurah, $startAyah, $endAyah];
+            } else {
+                $items[] = [$startSurah, $startAyah, $surahTotal[$startSurah]];
+                for ($s = $startSurah + 1; $s < $endSurah; $s++) {
+                    $items[] = [$s, 1, $surahTotal[$s]];
+                }
+                $items[] = [$endSurah, 1, $endAyah];
+            }
+            $juzMap[$j] = array_map(
+                fn ($it) => ['id' => $surahUuid[$it[0]], 'start' => $it[1], 'end' => $it[2]],
+                $items
+            );
+        }
+    @endphp
+    window.juzMap = {!! json_encode($juzMap) !!};
 
     function addSurahRow(selectedId, start, end) {
         var container = document.getElementById('surahRows');
@@ -211,17 +248,16 @@
 
     document.querySelectorAll('.surah-row').forEach(wireRow);
 
-    var templateSelect = document.getElementById('templateSelect');
-    if (templateSelect) {
-        templateSelect.addEventListener('change', function() {
-            var tplId = this.value;
-            if (!tplId) return;
-            var templates = {!! $templates->mapWithKeys(fn ($t) => [$t->id => $t->items->map(fn ($i) => ['quran_master_id' => $i->quran_master_id, 'ayat_start' => $i->ayat_start, 'ayat_end' => $i->ayat_end, 'total' => $i->quranMaster->total_ayats])->all()])->toJson() !!};
-            var items = templates[tplId] || [];
+    var juzSelect = document.getElementById('juzSelect');
+    if (juzSelect) {
+        juzSelect.addEventListener('change', function() {
+            var juz = this.value;
+            if (!juz) return;
+            var items = window.juzMap[juz] || [];
             var container = document.getElementById('surahRows');
             container.innerHTML = '';
             items.forEach(function(item) {
-                addSurahRow(item.quran_master_id, item.ayat_start, item.ayat_end);
+                addSurahRow(item.id, item.start, item.end);
             });
         });
     }
