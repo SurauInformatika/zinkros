@@ -70,6 +70,16 @@ class TahfidzRecord extends Model
         };
     }
 
+    public static function attendanceDisplayLabel(?string $status): string
+    {
+        return match ($status) {
+            self::STATUS_SAKIT => 'Sakit',
+            self::STATUS_IZIN => 'Izin',
+            self::STATUS_ALPA => 'Alpa',
+            default => 'Hadir (tidak menyetor)',
+        };
+    }
+
     public function getAttendanceLabelAttribute(): string
     {
         return self::attendanceStatus($this->status);

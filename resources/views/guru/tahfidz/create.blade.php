@@ -53,9 +53,13 @@
                             @if ($existing->isNotEmpty())
                                 @foreach ($existing as $rec)
                                 <div class="text-xs text-primary dark:text-primary mt-0.5 existing-info">
+                                    @if ($rec->quran_master_id)
                                     {{ $rec->quranMaster->surah_name }} {{ $rec->ayat_start }}-{{ $rec->ayat_end }}
                                     <span class="inline-flex items-center rounded-md {{ $rec->activity_type === 'ZIADAH' ? 'bg-primary/10 dark:bg-primary/10 text-primary dark:text-primary' : 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400' }} px-1.5 py-0.5 text-[10px] font-medium ml-1">{{ $rec->activity_type === 'ZIADAH' ? 'Ziadah' : 'Murajaah' }}</span>
                                     <span class="text-[10px] font-bold ml-1">{{ $rec->score }} ({{ \App\Models\TahfidzRecord::scoreToPredikat($rec->score) }})</span>
+                                    @else
+                                    <span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/10 text-primary dark:text-primary px-1.5 py-0.5 text-[10px] font-medium">{{ \App\Models\TahfidzRecord::attendanceDisplayLabel($rec->status) }}</span>
+                                    @endif
                                 </div>
                                 @endforeach
                             @endif

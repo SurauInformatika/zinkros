@@ -35,6 +35,7 @@
                                     $sid = $a->student_id;
                                     $lastRecord = \App\Models\TahfidzRecord::where('student_id', $sid)
                                         ->where('teacher_id', auth()->id())
+                                        ->whereNotNull('quran_master_id')
                                         ->with('quranMaster')
                                         ->orderByDesc('recorded_date')
                                         ->first();

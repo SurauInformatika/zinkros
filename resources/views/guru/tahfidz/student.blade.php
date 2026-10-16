@@ -149,6 +149,7 @@
                 @forelse ($records as $rec)
                 <tr class="border-b border-slate-50 dark:border-white/5 last:border-0">
                     <td class="px-4 py-2.5 text-sm">{{ \Carbon\Carbon::parse($rec->recorded_date)->format('d M Y') }}</td>
+                    @if ($rec->quran_master_id)
                     <td class="px-4 py-2.5 font-medium">{{ $rec->quranMaster->surah_number }}. {{ $rec->quranMaster->surah_name }}</td>
                     <td class="px-4 py-2.5 text-center">{{ $rec->ayat_start }} — {{ $rec->ayat_end }}</td>
                     <td class="px-4 py-2.5 text-center">
@@ -162,6 +163,11 @@
                         @php $p = \App\Models\TahfidzRecord::scoreToPredikat($rec->score); @endphp
                         <span class="inline-flex items-center rounded-md {{ \App\Models\TahfidzRecord::predikatColor($p) }} px-2 py-0.5 text-xs font-bold">{{ $rec->score }} ({{ $p }})</span>
                     </td>
+                    @else
+                    <td colspan="4" class="px-4 py-2.5 text-center">
+                        <span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary dark:text-primary">{{ \App\Models\TahfidzRecord::attendanceDisplayLabel($rec->status) }}</span>
+                    </td>
+                    @endif
                     <td class="px-4 py-2.5 text-sm text-slate-500 dark:text-white/40">{{ $rec->teacher->name ?? '-' }}</td>
 <td class="px-4 py-2.5 text-sm text-slate-400 dark:text-white/30">{{ $rec->notes ?: '-' }}</td>
                     <td class="px-4 py-2.5 text-center">

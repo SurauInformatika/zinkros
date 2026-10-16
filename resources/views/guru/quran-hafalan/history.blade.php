@@ -178,7 +178,7 @@
                         @php
                             $isAbsent = $rec->quran_master_id === null;
                             $attStatus = \App\Models\TahfidzRecord::attendanceStatus($rec->status);
-                            $stLabel = match($attStatus) { 'SAKIT' => 'Sakit', 'IZIN' => 'Izin', default => 'Alpa' };
+                            $stLabel = \App\Models\TahfidzRecord::attendanceDisplayLabel($rec->status);
                             $dateLabel = \Carbon\Carbon::parse($rec->recorded_date)->format('d M Y');
                             $deleteInfo = $isAbsent
                                 ? $dateLabel . ' — ' . $stLabel
@@ -191,7 +191,8 @@
                                     $stBadge = match($attStatus) {
                                         'SAKIT' => 'bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400',
                                         'IZIN' => 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400',
-                                        default => 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400',
+                                        'ALPA' => 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400',
+                                        default => 'bg-primary/10 dark:bg-primary/10 text-primary dark:text-primary',
                                     };
                                 @endphp
                                 <td colspan="4" class="px-4 py-2.5">

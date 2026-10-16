@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Guru;
 use App\Http\Controllers\Controller;
 use App\Models\AcademicYear;
 use App\Models\QuranMaster;
-use App\Models\QuranTargetTemplate;
 use App\Models\QuranTeachingAssignment;
 use App\Models\StudentQuranTarget;
 use App\Models\StudentQuranTargetItem;
@@ -19,6 +18,8 @@ use Illuminate\View\View;
 
 class QuranHafalanController extends Controller
 {
+    public const STATUS_HADIR_REQUEST = 'HADIR';
+
     public function __construct(
         protected AcademicYearContext $academicYearContext,
         protected QuranTargetService $quranTargetService,
@@ -73,6 +74,7 @@ class QuranHafalanController extends Controller
 
         $lastRecord = TahfidzRecord::where('teacher_id', $user->id)
             ->where('student_id', $studentId)
+            ->whereNotNull('quran_master_id')
             ->with('quranMaster')
             ->orderByDesc('recorded_date')
             ->orderByDesc('created_at')
@@ -88,6 +90,7 @@ class QuranHafalanController extends Controller
 
         $pastRecords = TahfidzRecord::where('student_id', $studentId)
             ->where('teacher_id', $user->id)
+            ->whereNotNull('quran_master_id')
             ->select('quran_master_id', 'ayat_start', 'ayat_end')
             ->get();
 
@@ -119,12 +122,20 @@ class QuranHafalanController extends Controller
 
         $status = $request->input('status');
         $isAbsent = in_array($status, [TahfidzRecord::STATUS_SAKIT, TahfidzRecord::STATUS_IZIN, TahfidzRecord::STATUS_ALPA], true);
+        $isPresentNoSetoran = $status === self::STATUS_HADIR_REQUEST;
 
         if ($isAbsent) {
             $validated = $request->validate([
                 'student_id' => 'required|uuid',
                 'recorded_date' => 'required|date|before_or_equal:today',
                 'status' => 'required|in:SAKIT,IZIN,ALPA',
+                'notes' => 'nullable|string|max:500',
+            ]);
+        } elseif ($isPresentNoSetoran) {
+            $validated = $request->validate([
+                'student_id' => 'required|uuid',
+                'recorded_date' => 'required|date|before_or_equal:today',
+                'status' => 'required|in:HADIR',
                 'notes' => 'nullable|string|max:500',
             ]);
         } else {
@@ -174,6 +185,25 @@ class QuranHafalanController extends Controller
                 default => 'Alpa',
             };
             return back()->with('success', "Siswa ditandai sebagai {$label}.");
+        }
+
+        if ($isPresentNoSetoran) {
+            TahfidzRecord::create([
+                'school_id' => $schoolId,
+                'academic_year_id' => $ayId,
+                'student_id' => $validated['student_id'],
+                'teacher_id' => $user->id,
+                'quran_master_id' => null,
+                'ayat_start' => 0,
+                'ayat_end' => 0,
+                'activity_type' => null,
+                'score' => 0,
+                'status' => null,
+                'recorded_date' => $validated['recorded_date'],
+                'notes' => $validated['notes'] ?? null,
+            ]);
+
+            return back()->with('success', 'Siswa ditandai hadir (tidak menyetor).');
         }
 
         $surah = QuranMaster::find($validated['quran_master_id']);
@@ -553,13 +583,7 @@ class QuranHafalanController extends Controller
 
         $surahs = QuranMaster::orderBy('surah_number')->get();
 
-        $templates = QuranTargetTemplate::where('school_id', $user->school_id)
-            ->active()
-            ->with('items.quranMaster')
-            ->orderBy('title')
-            ->get();
-
-        return view('guru.quran-hafalan.target-form', compact('student', 'surahs', 'templates'));
+        return view('guru.quran-hafalan.target-form', compact('student', 'surahs'));
     }
 
     public function targetStore(Request $request)
@@ -642,13 +666,7 @@ class QuranHafalanController extends Controller
 
         $surahs = QuranMaster::orderBy('surah_number')->get();
 
-        $templates = QuranTargetTemplate::where('school_id', $user->school_id)
-            ->active()
-            ->with('items.quranMaster')
-            ->orderBy('title')
-            ->get();
-
-        return view('guru.quran-hafalan.target-form', compact('student', 'target', 'surahs', 'templates'));
+        return view('guru.quran-hafalan.target-form', compact('student', 'target', 'surahs'));
     }
 
     public function targetUpdate(Request $request, string $studentId, string $targetId)

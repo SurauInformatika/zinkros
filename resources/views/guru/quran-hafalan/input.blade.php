@@ -40,6 +40,7 @@
 
                     <div class="flex flex-wrap items-center gap-2 p-3 rounded-lg bg-slate-50 dark:bg-white/[0.02] border border-slate-200 dark:border-white/10">
                         <button type="button" id="modeHafalan" onclick="setMode('hafalan')" class="px-4 py-2 text-xs font-medium rounded-lg bg-primary/100 text-white transition-colors">Input Hafalan</button>
+                        <button type="button" id="modeHadir" onclick="setMode('hadir')" class="px-4 py-2 text-xs font-medium rounded-lg border border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/60 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">Hadir (Tanpa Setoran)</button>
                         <button type="button" id="modeSakit" onclick="setMode('sakit')" class="px-4 py-2 text-xs font-medium rounded-lg border border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/60 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">Sakit</button>
                         <button type="button" id="modeIzin" onclick="setMode('izin')" class="px-4 py-2 text-xs font-medium rounded-lg border border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/60 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">Izin</button>
                         <button type="button" id="modeAlpa" onclick="setMode('alpa')" class="px-4 py-2 text-xs font-medium rounded-lg border border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/60 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">Alpa</button>
@@ -203,10 +204,14 @@
                 <h3 class="text-xs font-medium text-amber-700 dark:text-amber-400 mb-2">Sudah Diinput di Tanggal Ini</h3>
                 <div id="existingContent">
                     @foreach ($existingToday as $rec)
-                    @php $p = \App\Models\TahfidzRecord::scoreToPredikat($rec->score); @endphp
                     <div class="text-sm text-amber-700 dark:text-amber-400">
-                        {{ $rec->quranMaster->surah_name }} {{ $rec->ayat_start }}-{{ $rec->ayat_end }}
-                        <span class="font-bold ml-1">{{ $rec->score }} ({{ $p }})</span>
+                        @if ($rec->quran_master_id)
+                            @php $p = \App\Models\TahfidzRecord::scoreToPredikat($rec->score); @endphp
+                            {{ $rec->quranMaster->surah_name }} {{ $rec->ayat_start }}-{{ $rec->ayat_end }}
+                            <span class="font-bold ml-1">{{ $rec->score }} ({{ $p }})</span>
+                        @else
+                            <span class="font-bold">{{ \App\Models\TahfidzRecord::attendanceDisplayLabel($rec->status) }}</span>
+                        @endif
                     </div>
                     @endforeach
                 </div>
@@ -243,13 +248,16 @@
     window.setMode = function(mode) {
         currentMode = mode;
         var btnH = document.getElementById('modeHafalan');
+        var btnHd = document.getElementById('modeHadir');
         var btnS = document.getElementById('modeSakit');
         var btnI = document.getElementById('modeIzin');
         var btnA = document.getElementById('modeAlpa');
+        var submitBtn = document.getElementById('submitBtn');
         var activeCls = 'bg-primary/100 text-white';
         var inactiveCls = 'border border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/60 hover:bg-slate-100 dark:hover:bg-white/5';
 
         btnH.className = 'px-4 py-2 text-xs font-medium rounded-lg transition-colors ' + (mode === 'hafalan' ? activeCls : inactiveCls);
+        btnHd.className = 'px-4 py-2 text-xs font-medium rounded-lg transition-colors ' + (mode === 'hadir' ? activeCls : inactiveCls);
         btnS.className = 'px-4 py-2 text-xs font-medium rounded-lg transition-colors ' + (mode === 'sakit' ? 'bg-amber-500 text-white' : inactiveCls);
         btnI.className = 'px-4 py-2 text-xs font-medium rounded-lg transition-colors ' + (mode === 'izin' ? 'bg-blue-500 text-white' : inactiveCls);
         btnA.className = 'px-4 py-2 text-xs font-medium rounded-lg transition-colors ' + (mode === 'alpa' ? 'bg-red-500 text-white' : inactiveCls);
@@ -258,12 +266,20 @@
             statusInput.value = '';
             hafalanFields.style.display = '';
             absentFields.style.display = 'none';
+            submitBtn.textContent = 'Simpan Hafalan';
+        } else if (mode === 'hadir') {
+            statusInput.value = 'HADIR';
+            hafalanFields.style.display = 'none';
+            absentFields.style.display = '';
+            absentLabel.textContent = 'Siswa hadir, tetapi tidak menyetor hafalan. Catatan opsional.';
+            submitBtn.textContent = 'Simpan Kehadiran';
         } else {
             statusInput.value = mode.toUpperCase();
             hafalanFields.style.display = 'none';
             absentFields.style.display = '';
             var label = mode === 'sakit' ? 'Sakit' : (mode === 'izin' ? 'Izin' : 'Alpa');
             absentLabel.textContent = 'Siswa ditandai sebagai ' + label + '. Tidak perlu input hafalan.';
+            submitBtn.textContent = 'Simpan Kehadiran';
         }
     };
 
@@ -332,12 +348,17 @@
         if (dateRecords.length > 0) {
             existingBox.style.display = '';
             existingContent.innerHTML = dateRecords.map(function(r) {
-                var s = surahMap[r.quran_master_id] || { name: '-' };
                 var st = r.status || 'HADIR';
-                var stCls = st === 'SAKIT' ? 'text-amber-600' : st === 'IZIN' ? 'text-blue-600' : st === 'ALPA' ? 'text-red-600' : '';
-                if (st !== 'HADIR') {
-                    return '<div class="text-sm text-amber-700 dark:text-amber-400">' + s.name + ' — <span class="font-bold ' + stCls + '">' + st + '</span></div>';
+                var stCls = st === 'SAKIT' ? 'text-amber-600' : st === 'IZIN' ? 'text-blue-600' : st === 'ALPA' ? 'text-red-600' : 'text-primary';
+                if (!r.quran_master_id) {
+                    var stLabel = st === 'SAKIT' ? 'Sakit' : st === 'IZIN' ? 'Izin' : st === 'ALPA' ? 'Alpa' : 'Hadir (tidak menyetor)';
+                    return '<div class="text-sm text-amber-700 dark:text-amber-400"><span class="font-bold ' + stCls + '">' + stLabel + '</span></div>';
                 }
+                if (st !== 'HADIR') {
+                    var s0 = surahMap[r.quran_master_id] || { name: '-' };
+                    return '<div class="text-sm text-amber-700 dark:text-amber-400">' + s0.name + ' — <span class="font-bold ' + stCls + '">' + st + '</span></div>';
+                }
+                var s = surahMap[r.quran_master_id] || { name: '-' };
                 var p = getPredikatFromScore(r.score);
                 return '<div class="text-sm text-amber-700 dark:text-amber-400">' + s.name + ' ' + r.ayat_start + '-' + r.ayat_end +
                     ' <span class="font-bold ml-1">' + r.score + ' (' + p + ')</span></div>';
@@ -348,7 +369,7 @@
 
         var lastBox = document.getElementById('lastRecordBox');
         var lastContent = document.getElementById('lastRecordContent');
-        var last = allRecords.find(function(r) { return r.recorded_date < selectedDate; });
+        var last = allRecords.find(function(r) { return r.quran_master_id && r.recorded_date < selectedDate; });
         if (last) {
             lastBox.style.display = '';
             var s = surahMap[last.quran_master_id] || { name: '-' };
