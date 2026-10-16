@@ -1,20 +1,20 @@
 package com.zinkros.app
 
 import android.annotation.SuppressLint
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.os.Bundle
-import android.view.KeyEvent
 import android.view.View
 import android.webkit.*
 import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.net.toUri
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
 class MainActivity : AppCompatActivity() {
@@ -30,7 +30,6 @@ class MainActivity : AppCompatActivity() {
     private val baseUrl = "https://zinkros.my.id/"
     private val appHost = "zinkros.my.id"
 
-    @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -44,7 +43,6 @@ class MainActivity : AppCompatActivity() {
         setupSwipeRefresh()
         registerNetworkCallback()
 
-        // Mendaftarkan Callback Back Button modern
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 if (webView.canGoBack()) {
@@ -72,20 +70,19 @@ class MainActivity : AppCompatActivity() {
         webView.settings.apply {
             javaScriptEnabled = true
             domStorageEnabled = true
-            allowFileAccess = true
+            allowFileAccess = false
             allowContentAccess = true
             loadWithOverviewMode = true
             useWideViewPort = true
             builtInZoomControls = true
             displayZoomControls = false
-            mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+            mixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW
             cacheMode = WebSettings.LOAD_DEFAULT
             databaseEnabled = true
             setSupportMultipleWindows(false)
             defaultTextEncodingName = "UTF-8"
         }
 
-        // Bridge untuk offline.html
         webView.addJavascriptInterface(NativeBridge(), "NativeBridge")
 
         webView.webViewClient = object : WebViewClient() {
@@ -119,15 +116,18 @@ class MainActivity : AppCompatActivity() {
                 view: WebView?,
                 request: WebResourceRequest?
             ): Boolean {
-                val url = request?.url.toString()
-                // Memastikan semua halaman dari domain zinkros.my.id tetap terbuka di dalam WebView
-                return when {
-                    url.contains(appHost) -> false
-                    url.startsWith("http://") || url.startsWith("https://") -> {
-                        startActivity(Intent(Intent.ACTION_VIEW, url.toUri()))
-                        true
+                val uri = request?.url ?: return false
+                val host = uri.host
+
+                return if (host != null && (host == appHost || host.endsWith(".$appHost"))) {
+                    false
+                } else {
+                    try {
+                        startActivity(Intent(Intent.ACTION_VIEW, uri))
+                    } catch (e: ActivityNotFoundException) {
+                        Toast.makeText(this@MainActivity, "Tidak dapat membuka tautan", Toast.LENGTH_SHORT).show()
                     }
-                    else -> false
+                    true
                 }
             }
         }
@@ -136,18 +136,10 @@ class MainActivity : AppCompatActivity() {
             override fun onProgressChanged(view: WebView?, newProgress: Int) {
                 if (newProgress < 100) {
                     progressBar.visibility = View.VISIBLE
+                    progressBar.progress = newProgress
                 } else {
                     progressBar.visibility = View.GONE
                 }
-            }
-        }
-
-        webView.setOnKeyListener { _, keyCode, _ ->
-            if (keyCode == KeyEvent.KEYCODE_BACK && webView.canGoBack()) {
-                webView.goBack()
-                true
-            } else {
-                false
             }
         }
     }
@@ -162,7 +154,6 @@ class MainActivity : AppCompatActivity() {
                 showOffline()
             }
         }
-        // SwipeRefreshLayout hanya trigger dari atas
         webView.setOnScrollChangeListener { _, _, scrollY, _, _ ->
             swipeRefresh.isEnabled = scrollY == 0
         }
@@ -190,26 +181,13 @@ class MainActivity : AppCompatActivity() {
         networkCallback = object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
                 runOnUiThread {
-                    if (isOffline) {
-                        showMain()
-                    }
+                    if (isOffline) showMain()
                 }
             }
 
             override fun onLost(network: Network) {
                 runOnUiThread {
                     showOffline()
-                }
-            }
-
-            override fun onCapabilitiesChanged(
-                network: Network,
-                caps: NetworkCapabilities
-            ) {
-                if (caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)) {
-                    runOnUiThread {
-                        if (isOffline) showMain()
-                    }
                 }
             }
         }
@@ -221,8 +199,6 @@ class MainActivity : AppCompatActivity() {
         connectivityManager.registerNetworkCallback(request, networkCallback!!)
     }
 
-    // onBackPressed tradisional tidak dipakai karena sudah deprecated di SDK 34
-
     override fun onDestroy() {
         super.onDestroy()
         networkCallback?.let {
@@ -231,10 +207,8 @@ class MainActivity : AppCompatActivity() {
         webView.destroy()
     }
 
-    // Bridge untuk offline.html → Kotlin
     inner class NativeBridge {
         @JavascriptInterface
-        @Suppress("unused")
         fun reload() {
             runOnUiThread {
                 if (isOnline()) {
@@ -246,7 +220,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         @JavascriptInterface
-        @Suppress("unused")
         fun isOnline(): Boolean {
             return this@MainActivity.isOnline()
         }

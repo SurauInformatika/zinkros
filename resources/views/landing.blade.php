@@ -59,11 +59,11 @@
                         </a>
                     @else
                         <a href="{{ route('auth.login') }}"
-                            class="hidden rounded-lg border border-primary-dark px-4 py-2 text-sm font-semibold text-primary transition hover:bg-primary/10 sm:inline-block">
+                            class="rounded-lg border border-primary-dark px-4 py-2 text-sm font-semibold text-primary transition hover:bg-primary/10">
                             Masuk
                         </a>
                         <a href="{{ route('auth.register') }}"
-                            class="rounded-lg bg-primary-dark px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-dark">
+                            class="hidden rounded-lg bg-primary-dark px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-dark sm:inline-block">
                             Daftar
                         </a>
                     @endauth
