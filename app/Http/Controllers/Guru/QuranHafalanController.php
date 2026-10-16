@@ -118,13 +118,13 @@ class QuranHafalanController extends Controller
         $ayId = $this->academicYearContext->id();
 
         $status = $request->input('status');
-        $isAbsent = in_array($status, ['SAKIT', 'IZIN']);
+        $isAbsent = in_array($status, [TahfidzRecord::STATUS_SAKIT, TahfidzRecord::STATUS_IZIN, TahfidzRecord::STATUS_ALPA], true);
 
         if ($isAbsent) {
             $validated = $request->validate([
                 'student_id' => 'required|uuid',
                 'recorded_date' => 'required|date|before_or_equal:today',
-                'status' => 'required|in:SAKIT,IZIN',
+                'status' => 'required|in:SAKIT,IZIN,ALPA',
                 'notes' => 'nullable|string|max:500',
             ]);
         } else {
@@ -168,7 +168,11 @@ class QuranHafalanController extends Controller
                 'notes' => $validated['notes'] ?? null,
             ]);
 
-            $label = $validated['status'] === 'SAKIT' ? 'Sakit' : 'Izin';
+            $label = match ($validated['status']) {
+                TahfidzRecord::STATUS_SAKIT => 'Sakit',
+                TahfidzRecord::STATUS_IZIN => 'Izin',
+                default => 'Alpa',
+            };
             return back()->with('success', "Siswa ditandai sebagai {$label}.");
         }
 

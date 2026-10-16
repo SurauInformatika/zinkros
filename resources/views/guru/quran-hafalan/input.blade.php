@@ -38,10 +38,11 @@
                             class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm dark:border-white/10 dark:bg-[#0a0a0a] dark:text-white focus:border-primary focus:ring-primary/20 sm:w-64">
                     </div>
 
-                    <div class="flex items-center gap-2 p-3 rounded-lg bg-slate-50 dark:bg-white/[0.02] border border-slate-200 dark:border-white/10">
+                    <div class="flex flex-wrap items-center gap-2 p-3 rounded-lg bg-slate-50 dark:bg-white/[0.02] border border-slate-200 dark:border-white/10">
                         <button type="button" id="modeHafalan" onclick="setMode('hafalan')" class="px-4 py-2 text-xs font-medium rounded-lg bg-primary/100 text-white transition-colors">Input Hafalan</button>
                         <button type="button" id="modeSakit" onclick="setMode('sakit')" class="px-4 py-2 text-xs font-medium rounded-lg border border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/60 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">Sakit</button>
                         <button type="button" id="modeIzin" onclick="setMode('izin')" class="px-4 py-2 text-xs font-medium rounded-lg border border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/60 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">Izin</button>
+                        <button type="button" id="modeAlpa" onclick="setMode('alpa')" class="px-4 py-2 text-xs font-medium rounded-lg border border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/60 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">Alpa</button>
                     </div>
 
                     <div id="hafalanFields">
@@ -244,24 +245,25 @@
         var btnH = document.getElementById('modeHafalan');
         var btnS = document.getElementById('modeSakit');
         var btnI = document.getElementById('modeIzin');
+        var btnA = document.getElementById('modeAlpa');
         var activeCls = 'bg-primary/100 text-white';
         var inactiveCls = 'border border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/60 hover:bg-slate-100 dark:hover:bg-white/5';
 
         btnH.className = 'px-4 py-2 text-xs font-medium rounded-lg transition-colors ' + (mode === 'hafalan' ? activeCls : inactiveCls);
         btnS.className = 'px-4 py-2 text-xs font-medium rounded-lg transition-colors ' + (mode === 'sakit' ? 'bg-amber-500 text-white' : inactiveCls);
         btnI.className = 'px-4 py-2 text-xs font-medium rounded-lg transition-colors ' + (mode === 'izin' ? 'bg-blue-500 text-white' : inactiveCls);
+        btnA.className = 'px-4 py-2 text-xs font-medium rounded-lg transition-colors ' + (mode === 'alpa' ? 'bg-red-500 text-white' : inactiveCls);
 
         if (mode === 'hafalan') {
             statusInput.value = '';
             hafalanFields.style.display = '';
             absentFields.style.display = 'none';
         } else {
-            statusInput.value = mode === 'sakit' ? 'SAKIT' : 'IZIN';
+            statusInput.value = mode.toUpperCase();
             hafalanFields.style.display = 'none';
             absentFields.style.display = '';
-            absentLabel.textContent = mode === 'sakit'
-                ? 'Siswa ditandai sebagai Sakit. Tidak perlu input hafalan.'
-                : 'Siswa ditandai sebagai Izin. Tidak perlu input hafalan.';
+            var label = mode === 'sakit' ? 'Sakit' : (mode === 'izin' ? 'Izin' : 'Alpa');
+            absentLabel.textContent = 'Siswa ditandai sebagai ' + label + '. Tidak perlu input hafalan.';
         }
     };
 
@@ -332,7 +334,7 @@
             existingContent.innerHTML = dateRecords.map(function(r) {
                 var s = surahMap[r.quran_master_id] || { name: '-' };
                 var st = r.status || 'HADIR';
-                var stCls = st === 'SAKIT' ? 'text-amber-600' : st === 'IZIN' ? 'text-blue-600' : '';
+                var stCls = st === 'SAKIT' ? 'text-amber-600' : st === 'IZIN' ? 'text-blue-600' : st === 'ALPA' ? 'text-red-600' : '';
                 if (st !== 'HADIR') {
                     return '<div class="text-sm text-amber-700 dark:text-amber-400">' + s.name + ' — <span class="font-bold ' + stCls + '">' + st + '</span></div>';
                 }
