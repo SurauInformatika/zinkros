@@ -10,7 +10,7 @@
     </div>
 
     @if (session('success'))
-    <div class="rounded-lg bg-primary/10 dark:bg-primary/100/10 border border-primary/20 dark:border-primary/20 p-4 text-sm text-primary dark:text-primary">{{ session('success') }}</div>
+    <div class="rounded-lg bg-primary/10 dark:bg-primary/10 border border-primary/20 dark:border-primary/20 p-4 text-sm text-primary dark:text-primary">{{ session('success') }}</div>
     @endif
 
     @if ($assignments->count() > 0)
@@ -47,7 +47,7 @@
                                             <div class="text-sm text-slate-700 dark:text-white/70">{{ $lastRecord->quranMaster->surah_name }} <span class="font-medium">{{ $lastRecord->ayat_start }}-{{ $lastRecord->ayat_end }}</span></div>
                                             <div class="text-xs text-slate-400 dark:text-white/30 mt-0.5">
                                                 {{ \Carbon\Carbon::parse($lastRecord->recorded_date)->format('d M Y') }}
-                                                <span class="inline-flex items-center rounded-md {{ $lastRecord->activity_type === 'ZIADAH' ? 'bg-primary/10 dark:bg-primary/100/10 text-primary dark:text-primary' : 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400' }} px-1.5 py-0.5 text-[10px] font-medium ml-1">{{ $lastRecord->activity_type === 'ZIADAH' ? 'Ziadah' : 'Murajaah' }}</span>
+                                                <span class="inline-flex items-center rounded-md {{ $lastRecord->activity_type === 'ZIADAH' ? 'bg-primary/10 dark:bg-primary/10 text-primary dark:text-primary' : 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400' }} px-1.5 py-0.5 text-[10px] font-medium ml-1">{{ $lastRecord->activity_type === 'ZIADAH' ? 'Ziadah' : 'Murajaah' }}</span>
                                                 @php $p = \App\Models\TahfidzRecord::scoreToPredikat($lastRecord->score); @endphp
                                                 <span class="inline-flex items-center rounded-md {{ \App\Models\TahfidzRecord::predikatColor($p) }} px-1.5 py-0.5 text-[10px] font-bold ml-1">{{ $lastRecord->score }} ({{ $p }})</span>
                                             </div>
@@ -73,7 +73,7 @@
                                                     @if ($progress)
                                                         <a href="{{ route('guru.quran-hafalan.input', $sid) }}" class="group block">
                                                             <div class="h-1.5 w-full rounded-full bg-slate-100 dark:bg-white/10 overflow-hidden">
-                                                                <div class="h-full rounded-full {{ $progress['status'] === 'completed' ? 'bg-primary/100' : ($progress['status'] === 'overdue' ? 'bg-red-500' : 'bg-primary/100/80 group-hover:bg-primary/100') }} transition-colors" style="width: {{ min(100, $progress['percent']) }}%"></div>
+                                                                <div class="h-full rounded-full {{ $progress['status'] === 'completed' ? 'bg-primary/100' : ($progress['status'] === 'overdue' ? 'bg-red-500' : 'bg-primary/80 group-hover:bg-primary/100') }} transition-colors" style="width: {{ min(100, $progress['percent']) }}%"></div>
                                                             </div>
                                                         </a>
                                                         <div class="flex items-center justify-between mt-1">
@@ -86,7 +86,7 @@
                                         @else
                                             <div class="flex items-center justify-between gap-2">
                                                 <span class="text-xs text-slate-400 dark:text-white/30">Belum ada target</span>
-                                                <a href="{{ route('guru.quran-hafalan.target-create', $sid) }}" class="inline-flex items-center gap-1 rounded-lg border border-primary/20 dark:border-primary/20 px-2 py-1 text-[10px] font-medium text-primary dark:text-primary hover:bg-primary/10 dark:hover:bg-primary/100/10 transition-colors whitespace-nowrap">
+                                                <a href="{{ route('guru.quran-hafalan.target-create', $sid) }}" class="inline-flex items-center gap-1 rounded-lg border border-primary/20 dark:border-primary/20 px-2 py-1 text-[10px] font-medium text-primary dark:text-primary hover:bg-primary/10 dark:hover:bg-primary/10 transition-colors whitespace-nowrap">
                                                     Buat Target
                                                 </a>
                                             </div>

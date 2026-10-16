@@ -9,7 +9,7 @@
 </div>
 
 @if (session('success'))
-<div class="mb-4 rounded-lg bg-primary/10 dark:bg-primary/100/10 border border-primary/20 dark:border-primary/20 p-4 text-sm text-primary dark:text-primary">{{ session('success') }}</div>
+<div class="mb-4 rounded-lg bg-primary/10 dark:bg-primary/10 border border-primary/20 dark:border-primary/20 p-4 text-sm text-primary dark:text-primary">{{ session('success') }}</div>
 @endif
 @if (session('error'))
 <div class="mb-4 rounded-lg bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 p-4 text-sm text-red-700 dark:text-red-400">{{ session('error') }}</div>
@@ -32,14 +32,14 @@
             </thead>
             <tbody>
                 @forelse ($academicYears as $ay)
-                <tr class="border-b border-slate-50 dark:border-white/5 last:border-0 {{ $ay->is_active ? 'bg-primary/10/50 dark:bg-primary/100/5' : 'hover:bg-slate-50 dark:hover:bg-white/[0.02]' }} transition-colors">
+                <tr class="border-b border-slate-50 dark:border-white/5 last:border-0 {{ $ay->is_active ? 'bg-primary/10 dark:bg-primary/5' : 'hover:bg-slate-50 dark:hover:bg-white/[0.02]' }} transition-colors">
                     <td class="px-4 py-2.5">
                         <div class="font-medium">{{ $ay->name }}</div>
                         <div class="text-xs text-slate-400 dark:text-white/30">{{ \Carbon\Carbon::parse($ay->start_date)->format('d M Y') }} — {{ \Carbon\Carbon::parse($ay->end_date)->format('d M Y') }}</div>
                     </td>
                     <td class="px-4 py-2.5 text-center">
                         @if ($ay->is_active)
-                        <span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/100/10 px-2 py-0.5 text-xs font-medium text-primary dark:text-primary">Aktif</span>
+                        <span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary dark:text-primary">Aktif</span>
                         @else
                         <span class="inline-flex items-center rounded-md bg-slate-100 dark:bg-white/5 px-2 py-0.5 text-xs font-medium text-slate-500 dark:text-white/30">Nonaktif</span>
                         @endif

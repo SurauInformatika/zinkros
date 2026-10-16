@@ -76,7 +76,7 @@
                     <td class="px-5 py-3">
                         <div class="flex flex-wrap gap-1">
                             @forelse ($guru->subjects as $subject)
-                                <span class="rounded-full bg-primary/10 dark:bg-primary/100/10 px-2.5 py-0.5 text-xs font-medium text-primary dark:text-primary">{{ $subject->name }}</span>
+                                <span class="rounded-full bg-primary/10 dark:bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary dark:text-primary">{{ $subject->name }}</span>
                             @empty
                                 <span class="text-slate-400 dark:text-white/30">-</span>
                             @endforelse

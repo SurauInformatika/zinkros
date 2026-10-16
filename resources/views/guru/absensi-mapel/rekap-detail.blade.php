@@ -22,7 +22,7 @@
             <div class="text-2xl font-bold text-slate-800 dark:text-white">{{ $stats['total'] }}</div>
             <div class="mt-1 text-xs text-slate-500 dark:text-white/40">Total</div>
         </div>
-        <div class="rounded-xl border border-primary/20 bg-primary/10 p-4 text-center dark:border-primary/20 dark:bg-primary/100/5">
+        <div class="rounded-xl border border-primary/20 bg-primary/10 p-4 text-center dark:border-primary/20 dark:bg-primary/5">
             <div class="text-2xl font-bold text-primary dark:text-primary">{{ $stats['hadir'] }}</div>
             <div class="mt-1 text-xs text-primary dark:text-primary/60">Hadir</div>
         </div>
@@ -60,7 +60,7 @@
                             <td class="px-4 py-3 text-slate-500 dark:text-white/40">{{ $s['nisn'] }}</td>
                             <td class="px-4 py-3">
                                 @if ($s['status'] === 'HADIR')
-                                    <span class="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary dark:bg-primary/100/10 dark:text-primary">Hadir</span>
+                                    <span class="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary dark:bg-primary/10 dark:text-primary">Hadir</span>
                                 @elseif ($s['status'] === 'SAKIT')
                                     <span class="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-700 dark:bg-amber-500/10 dark:text-amber-400">Sakit</span>
                                 @elseif ($s['status'] === 'IZIN')

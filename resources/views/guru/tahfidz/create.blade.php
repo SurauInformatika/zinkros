@@ -9,7 +9,7 @@
 </div>
 
 @if (session('success'))
-<div class="mb-4 rounded-lg bg-primary/10 dark:bg-primary/100/10 border border-primary/20 dark:border-primary/20 p-4 text-sm text-primary dark:text-primary">{{ session('success') }}</div>
+<div class="mb-4 rounded-lg bg-primary/10 dark:bg-primary/10 border border-primary/20 dark:border-primary/20 p-4 text-sm text-primary dark:text-primary">{{ session('success') }}</div>
 @endif
 @if (session('error'))
 <div class="mb-4 rounded-lg bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 p-4 text-sm text-red-700 dark:text-red-400">{{ session('error') }}</div>
@@ -54,7 +54,7 @@
                                 @foreach ($existing as $rec)
                                 <div class="text-xs text-primary dark:text-primary mt-0.5 existing-info">
                                     {{ $rec->quranMaster->surah_name }} {{ $rec->ayat_start }}-{{ $rec->ayat_end }}
-                                    <span class="inline-flex items-center rounded-md {{ $rec->activity_type === 'ZIADAH' ? 'bg-primary/10 dark:bg-primary/100/10 text-primary dark:text-primary' : 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400' }} px-1.5 py-0.5 text-[10px] font-medium ml-1">{{ $rec->activity_type === 'ZIADAH' ? 'Ziadah' : 'Murajaah' }}</span>
+                                    <span class="inline-flex items-center rounded-md {{ $rec->activity_type === 'ZIADAH' ? 'bg-primary/10 dark:bg-primary/10 text-primary dark:text-primary' : 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400' }} px-1.5 py-0.5 text-[10px] font-medium ml-1">{{ $rec->activity_type === 'ZIADAH' ? 'Ziadah' : 'Murajaah' }}</span>
                                     <span class="text-[10px] font-bold ml-1">{{ $rec->score }} ({{ \App\Models\TahfidzRecord::scoreToPredikat($rec->score) }})</span>
                                 </div>
                                 @endforeach
@@ -204,7 +204,7 @@
                     var existingInfo = row.querySelector('.existing-info');
 
                     function toPredikat(s) {
-                        if (s >= 90) return {l:'A', c:'bg-primary/10 dark:bg-primary/100/10 text-primary dark:text-primary'};
+                        if (s >= 90) return {l:'A', c:'bg-primary/10 dark:bg-primary/10 text-primary dark:text-primary'};
                         if (s >= 75) return {l:'B', c:'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400'};
                         if (s >= 60) return {l:'C', c:'bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400'};
                         return {l:'D', c:'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400'};
@@ -234,7 +234,7 @@
                         if (existingInfo) {
                             var p = toPredikat(ex.score);
                             existingInfo.innerHTML = ex.surah_name + ' ' + ex.ayat_start + '-' + ex.ayat_end +
-                                ' <span class="inline-flex items-center rounded-md ' + (ex.activity_type === 'ZIADAH' ? 'bg-primary/10 dark:bg-primary/100/10 text-primary dark:text-primary' : 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400') + ' px-1.5 py-0.5 text-[10px] font-medium ml-1">' + (ex.activity_type === 'ZIADAH' ? 'Ziadah' : 'Murajaah') + '</span> <span class="text-[10px] font-bold ml-1">' + ex.score + ' (' + p.l + ')</span>';
+                                ' <span class="inline-flex items-center rounded-md ' + (ex.activity_type === 'ZIADAH' ? 'bg-primary/10 dark:bg-primary/10 text-primary dark:text-primary' : 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400') + ' px-1.5 py-0.5 text-[10px] font-medium ml-1">' + (ex.activity_type === 'ZIADAH' ? 'Ziadah' : 'Murajaah') + '</span> <span class="text-[10px] font-bold ml-1">' + ex.score + ' (' + p.l + ')</span>';
                         }
                     } else {
                         surahSelect.value = '';

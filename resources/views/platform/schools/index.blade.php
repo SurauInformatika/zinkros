@@ -8,7 +8,7 @@
 </div>
 
 @if (session('status'))
-    <div class="mb-4 rounded-xl bg-primary/10 dark:bg-primary/100/10 border border-primary/20 dark:border-primary/20 px-4 py-3 text-sm text-primary dark:text-primary">
+    <div class="mb-4 rounded-xl bg-primary/10 dark:bg-primary/10 border border-primary/20 dark:border-primary/20 px-4 py-3 text-sm text-primary dark:text-primary">
         {{ session('status') }}
     </div>
 @endif
@@ -50,7 +50,7 @@
                     <td class="px-5 py-3">{{ $school->planLabel() }} <span class="text-xs text-slate-400 dark:text-white/40">({{ $school->plan }})</span></td>
                     <td class="px-5 py-3">
                         <span class="rounded-full px-2 py-0.5 text-xs
-                            {{ $school->status === 'active' ? 'bg-primary/15 dark:bg-primary/100/10 text-primary dark:text-primary' : '' }}
+                            {{ $school->status === 'active' ? 'bg-primary/15 dark:bg-primary/10 text-primary dark:text-primary' : '' }}
                             {{ $school->status === 'trial' ? 'bg-amber-100 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400' : '' }}
                             {{ $school->status === 'suspended' ? 'bg-rose-100 dark:bg-red-500/10 text-rose-700 dark:text-red-400' : '' }}
                             {{ $school->status === 'expired' ? 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-white/50' : '' }}">

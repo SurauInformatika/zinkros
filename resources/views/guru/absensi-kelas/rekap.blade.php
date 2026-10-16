@@ -113,7 +113,7 @@
                         <td class="px-3 py-2.5 text-center">
                             @if ($record)
                                 @if ($record->status === 'HADIR')
-                                <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10 dark:bg-primary/100/10 text-primary dark:text-primary text-xs font-bold">H</span>
+                                <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10 dark:bg-primary/10 text-primary dark:text-primary text-xs font-bold">H</span>
                                 @elseif ($record->status === 'SAKIT')
                                 <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-bold" title="{{ $record->notes }}">S</span>
                                 @elseif ($record->status === 'IZIN')
@@ -133,7 +133,7 @@
                     <td class="px-3 py-2.5 text-center text-xs font-bold text-red-600 dark:text-red-400">{{ $sStats['alpa'] ?? 0 }}</td>
                     <td class="px-3 py-2.5 text-center">
                         @if ($sStats)
-                        <span class="inline-flex items-center rounded-md {{ $sStats['persentase_hadir'] >= 80 ? 'bg-primary/10 dark:bg-primary/100/10 text-primary dark:text-primary' : ($sStats['persentase_hadir'] >= 50 ? 'bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400' : 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400') }} px-2 py-0.5 text-xs font-medium">{{ $sStats['persentase_hadir'] }}%</span>
+                        <span class="inline-flex items-center rounded-md {{ $sStats['persentase_hadir'] >= 80 ? 'bg-primary/10 dark:bg-primary/10 text-primary dark:text-primary' : ($sStats['persentase_hadir'] >= 50 ? 'bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400' : 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400') }} px-2 py-0.5 text-xs font-medium">{{ $sStats['persentase_hadir'] }}%</span>
                         @else
                         <span class="text-xs text-slate-300 dark:text-white/15">-</span>
                         @endif
@@ -145,7 +145,7 @@
     </div>
 
     <div class="p-4 border-t border-slate-100 dark:border-white/5 flex items-center gap-4 text-xs text-slate-500 dark:text-white/40">
-        <span><span class="inline-flex items-center justify-center w-5 h-5 rounded bg-primary/10 dark:bg-primary/100/10 text-primary dark:text-primary font-bold">H</span> Hadir</span>
+        <span><span class="inline-flex items-center justify-center w-5 h-5 rounded bg-primary/10 dark:bg-primary/10 text-primary dark:text-primary font-bold">H</span> Hadir</span>
         <span><span class="inline-flex items-center justify-center w-5 h-5 rounded bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold">S</span> Sakit</span>
         <span><span class="inline-flex items-center justify-center w-5 h-5 rounded bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 font-bold">I</span> Izin</span>
         <span><span class="inline-flex items-center justify-center w-5 h-5 rounded bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 font-bold">A</span> Alpa</span>

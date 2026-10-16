@@ -9,7 +9,7 @@
 </div>
 
 @if (session('success'))
-<div class="mb-6 rounded-xl border border-primary/20 bg-primary/10 p-4 text-sm text-primary dark:border-primary/30 dark:bg-primary/100/10 dark:text-primary">
+<div class="mb-6 rounded-xl border border-primary/20 bg-primary/10 p-4 text-sm text-primary dark:border-primary/30 dark:bg-primary/10 dark:text-primary">
     {{ session('success') }}
 </div>
 @endif
@@ -42,7 +42,7 @@
 
         @if ($item['has_today'])
         <div class="mb-3 grid grid-cols-4 gap-2 text-center text-xs">
-            <div class="rounded-lg bg-primary/10 dark:bg-primary/100/10 py-1.5">
+            <div class="rounded-lg bg-primary/10 dark:bg-primary/10 py-1.5">
                 <p class="font-bold text-primary dark:text-primary">{{ $item['hadir'] }}</p>
                 <p class="text-primary/60 dark:text-primary/60">Hadir</p>
             </div>

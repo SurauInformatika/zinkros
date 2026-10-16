@@ -16,7 +16,7 @@
             <div class="flex items-center justify-between mb-2">
                 <span class="inline-flex items-center rounded-md bg-purple-50 dark:bg-purple-500/10 px-2 py-0.5 text-xs font-medium text-purple-700 dark:text-purple-400">{{ $pc['class']->class_name }}</span>
                 @if (($classId ?? null) === $pc['class']->id)
-                <span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/100/10 px-2 py-0.5 text-xs font-medium text-primary dark:text-primary">Aktif</span>
+                <span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary dark:text-primary">Aktif</span>
                 @endif
             </div>
             <p class="text-sm font-medium">{{ $subject->name }}</p>
@@ -75,7 +75,7 @@
                         <a href="{{ route('guru.tahfidz.student', $sid) }}" class="text-primary dark:text-primary hover:underline">{{ $ss['name'] }}</a>
                     </td>
                     <td class="px-4 py-2.5 text-center font-bold">{{ $ss['total'] }}</td>
-                    <td class="px-4 py-2.5 text-center"><span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/100/10 px-2 py-0.5 text-xs font-medium text-primary dark:text-primary">{{ $ss['ziadah'] }}</span></td>
+                    <td class="px-4 py-2.5 text-center"><span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary dark:text-primary">{{ $ss['ziadah'] }}</span></td>
                     <td class="px-4 py-2.5 text-center"><span class="inline-flex items-center rounded-md bg-blue-50 dark:bg-blue-500/10 px-2 py-0.5 text-xs font-medium text-blue-700 dark:text-blue-400">{{ $ss['murajaah'] }}</span></td>
                     <td class="px-4 py-2.5 text-center">{{ $ss['total_ayat'] }}</td>
                     <td class="px-4 py-2.5 text-center">{{ $ss['surahs'] }}</td>

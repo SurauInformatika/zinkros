@@ -28,7 +28,7 @@
                     <dt class="text-slate-500 dark:text-white/40">Status</dt>
                     <dd>
                         <span class="rounded-full px-2 py-0.5 text-xs
-                            {{ $school->status === 'active' ? 'bg-primary/15 dark:bg-primary/100/10 text-primary dark:text-primary' : '' }}
+                            {{ $school->status === 'active' ? 'bg-primary/15 dark:bg-primary/10 text-primary dark:text-primary' : '' }}
                             {{ $school->status === 'trial' ? 'bg-amber-100 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400' : '' }}
                             {{ $school->status === 'suspended' ? 'bg-rose-100 dark:bg-red-500/10 text-rose-700 dark:text-red-400' : '' }}
                             {{ $school->status === 'expired' ? 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-white/50' : '' }}">

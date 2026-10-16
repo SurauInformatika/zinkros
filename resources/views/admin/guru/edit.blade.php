@@ -98,7 +98,7 @@
             @enderror
         </div>
 
-        <div class="space-y-3 rounded-xl bg-primary/10 dark:bg-primary/100/5 border border-primary/20 dark:border-primary/20 p-4">
+        <div class="space-y-3 rounded-xl bg-primary/10 dark:bg-primary/5 border border-primary/20 dark:border-primary/20 p-4">
             <p class="text-sm font-semibold text-slate-700 dark:text-white/70">Wali Kelas</p>
             <label class="inline-flex items-center">
                 <input type="checkbox" name="is_wali" id="is_wali" value="1" {{ $isWali ? 'checked' : '' }}

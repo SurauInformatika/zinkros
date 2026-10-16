@@ -21,7 +21,7 @@
                             {{ $missing }} belum ada guru
                         </span>
                     @elseif ($rows->count() > 0)
-                        <span class="inline-flex items-center rounded-full bg-primary/10 dark:bg-primary/100/10 border border-primary/20 dark:border-primary/20 px-2.5 py-1 text-xs font-medium text-primary dark:text-primary">
+                        <span class="inline-flex items-center rounded-full bg-primary/10 dark:bg-primary/10 border border-primary/20 dark:border-primary/20 px-2.5 py-1 text-xs font-medium text-primary dark:text-primary">
                             Lengkap
                         </span>
                     @endif
@@ -44,7 +44,7 @@
                                 <span class="text-sm font-medium text-slate-700 dark:text-white/70">{{ $row->subject?->name ?? 'Tanpa nama' }}</span>
                             </div>
                             @if ($row->teacher_id && $row->teacher)
-                                <span class="inline-flex items-center gap-1.5 rounded-md bg-primary/10 dark:bg-primary/100/10 border border-primary/20 dark:border-primary/20 px-2.5 py-1 text-xs font-medium text-primary dark:text-primary">
+                                <span class="inline-flex items-center gap-1.5 rounded-md bg-primary/10 dark:bg-primary/10 border border-primary/20 dark:border-primary/20 px-2.5 py-1 text-xs font-medium text-primary dark:text-primary">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                                     {{ $row->teacher->name }}
                                 </span>
@@ -85,7 +85,7 @@
                     {{ $totalMissing }} belum ada guru
                 </span>
             @elseif ($totalRows->count() > 0)
-                <span class="ml-2 inline-flex items-center rounded-full bg-primary/10 dark:bg-primary/100/10 border border-primary/20 dark:border-primary/20 px-2.5 py-1 text-xs font-medium text-primary dark:text-primary">
+                <span class="ml-2 inline-flex items-center rounded-full bg-primary/10 dark:bg-primary/10 border border-primary/20 dark:border-primary/20 px-2.5 py-1 text-xs font-medium text-primary dark:text-primary">
                     Semua lengkap
                 </span>
             @endif

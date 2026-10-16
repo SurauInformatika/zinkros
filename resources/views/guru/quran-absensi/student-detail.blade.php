@@ -19,7 +19,7 @@
             <p class="text-xs text-slate-500 dark:text-white/40 mb-1">Status Hari Ini</p>
             @php
                 $statusCls = match($status) {
-                    'HADIR' => 'bg-primary/10 dark:bg-primary/100/10 text-primary dark:text-primary',
+                    'HADIR' => 'bg-primary/10 dark:bg-primary/10 text-primary dark:text-primary',
                     'SAKIT' => 'bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400',
                     'IZIN' => 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400',
                     default => 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400',
@@ -55,7 +55,7 @@
         <div class="flex items-center gap-3">
             <div class="text-sm text-slate-500 dark:text-white/40">Jenis Kegiatan:</div>
             @if ($activityType === 'ZIADAH')
-                <span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/100/10 px-2.5 py-1 text-xs font-medium text-primary dark:text-primary">Ziadah (Ayat Baru)</span>
+                <span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary dark:text-primary">Ziadah (Ayat Baru)</span>
             @else
                 <span class="inline-flex items-center rounded-md bg-blue-50 dark:bg-blue-500/10 px-2.5 py-1 text-xs font-medium text-blue-700 dark:text-blue-400">Murajaah (Ulangan)</span>
             @endif
@@ -103,7 +103,7 @@
             <p class="text-xs text-primary dark:text-primary font-medium mb-2">Sudah Dihafal ({{ $statsArr['surahs_hafal'] }})</p>
             <div class="flex flex-wrap gap-2">
                 @foreach ($statsArr['hafal_names'] as $surah)
-                <span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/100/10 px-2.5 py-1 text-xs font-medium text-primary dark:text-primary">{{ $surah }}</span>
+                <span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary dark:text-primary">{{ $surah }}</span>
                 @endforeach
             </div>
         </div>
@@ -188,13 +188,13 @@
                 </thead>
                 <tbody>
                     @forelse ($allRecords as $rec)
-                    <tr class="border-b border-slate-50 dark:border-white/5 last:border-0 {{ $rec->recorded_date === $date ? 'bg-primary/10/50 dark:bg-primary/100/5' : '' }}">
+                    <tr class="border-b border-slate-50 dark:border-white/5 last:border-0 {{ $rec->recorded_date === $date ? 'bg-primary/10 dark:bg-primary/5' : '' }}">
                         <td class="px-4 py-2.5 text-sm">{{ \Carbon\Carbon::parse($rec->recorded_date)->format('d M Y') }}</td>
                         <td class="px-4 py-2.5 font-medium">{{ $rec->quranMaster->surah_number }}. {{ $rec->quranMaster->surah_name }}</td>
                         <td class="px-4 py-2.5 text-center">{{ $rec->ayat_start }} — {{ $rec->ayat_end }}</td>
                         <td class="px-4 py-2.5 text-center">
                             @if ($rec->activity_type === 'ZIADAH')
-                            <span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/100/10 px-2 py-0.5 text-xs font-medium text-primary dark:text-primary">Ziadah</span>
+                            <span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary dark:text-primary">Ziadah</span>
                             @else
                             <span class="inline-flex items-center rounded-md bg-blue-50 dark:bg-blue-500/10 px-2 py-0.5 text-xs font-medium text-blue-700 dark:text-blue-400">Murajaah</span>
                             @endif

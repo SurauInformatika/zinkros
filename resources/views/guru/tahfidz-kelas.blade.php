@@ -54,7 +54,7 @@
                     <td class="px-4 py-2.5 text-center font-bold">{{ $ss['has_progress'] ? $ss['total'] : '-' }}</td>
                     <td class="px-4 py-2.5 text-center">
                         @if ($ss['has_progress'])
-                            <span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/100/10 px-2 py-0.5 text-xs font-medium text-primary dark:text-primary">{{ $ss['ziadah'] }}</span>
+                            <span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary dark:text-primary">{{ $ss['ziadah'] }}</span>
                         @else
                             <span class="text-slate-400">-</span>
                         @endif
@@ -85,7 +85,7 @@
                                     <span class="text-[10px] font-semibold {{ $target['status'] === 'completed' ? 'text-primary dark:text-primary' : 'text-slate-600 dark:text-white/60' }}">{{ $target['percent'] }}%</span>
                                 </div>
                                 <div class="h-1.5 w-full rounded-full bg-slate-100 dark:bg-white/10 overflow-hidden">
-                                    <div class="h-full rounded-full {{ $target['status'] === 'completed' ? 'bg-primary/100' : ($target['status'] === 'overdue' ? 'bg-red-500' : 'bg-primary/100/80') }}" style="width: {{ min(100, $target['percent']) }}%"></div>
+                                    <div class="h-full rounded-full {{ $target['status'] === 'completed' ? 'bg-primary/100' : ($target['status'] === 'overdue' ? 'bg-red-500' : 'bg-primary/80') }}" style="width: {{ min(100, $target['percent']) }}%"></div>
                                 </div>
                                 <span class="text-[10px] text-slate-400 dark:text-white/30">{{ $target['completed_ayat'] }}/{{ $target['total_ayat'] }} ayat</span>
                             </div>

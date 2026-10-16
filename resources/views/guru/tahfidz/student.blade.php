@@ -6,7 +6,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 
 @if (session('success'))
-<div class="mb-4 rounded-lg bg-primary/10 dark:bg-primary/100/10 border border-primary/20 dark:border-primary/20 p-4 text-sm text-primary dark:text-primary">{{ session('success') }}</div>
+<div class="mb-4 rounded-lg bg-primary/10 dark:bg-primary/10 border border-primary/20 dark:border-primary/20 p-4 text-sm text-primary dark:text-primary">{{ session('success') }}</div>
 @endif
 
 <div class="mb-8">
@@ -61,7 +61,7 @@
         <p class="text-xs text-primary dark:text-primary font-medium mb-2">Sudah Dihafal ({{ $stats['surahs_hafal'] }})</p>
         <div class="flex flex-wrap gap-2">
             @foreach ($stats['hafal_names'] as $surah)
-            <span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/100/10 px-2.5 py-1 text-xs font-medium text-primary dark:text-primary">{{ $surah }}</span>
+            <span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary dark:text-primary">{{ $surah }}</span>
             @endforeach
         </div>
     </div>
@@ -153,7 +153,7 @@
                     <td class="px-4 py-2.5 text-center">{{ $rec->ayat_start }} — {{ $rec->ayat_end }}</td>
                     <td class="px-4 py-2.5 text-center">
                         @if ($rec->activity_type === 'ZIADAH')
-                        <span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/100/10 px-2 py-0.5 text-xs font-medium text-primary dark:text-primary">Ziadah</span>
+                        <span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary dark:text-primary">Ziadah</span>
                         @else
                         <span class="inline-flex items-center rounded-md bg-blue-50 dark:bg-blue-500/10 px-2 py-0.5 text-xs font-medium text-blue-700 dark:text-blue-400">Murajaah</span>
                         @endif

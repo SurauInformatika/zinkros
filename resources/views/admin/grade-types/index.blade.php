@@ -91,7 +91,7 @@
                     </td>
                     <td class="px-4 py-2.5 text-center">
                         @if ($gt->is_active)
-                        <span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/100/10 px-2 py-0.5 text-xs font-medium text-primary dark:text-primary">Aktif</span>
+                        <span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary dark:text-primary">Aktif</span>
                         @else
                         <span class="inline-flex items-center rounded-md bg-slate-100 dark:bg-white/5 px-2 py-0.5 text-xs font-medium text-slate-500 dark:text-white/30">Nonaktif</span>
                         @endif

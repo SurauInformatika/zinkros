@@ -85,7 +85,7 @@
                         <td class="px-4 py-2.5 text-center">
                             @if ($sg)
                                 @if ($sg['final'] >= 80)
-                                <span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/100/10 px-2 py-0.5 text-xs font-bold text-primary dark:text-primary">A</span>
+                                <span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/10 px-2 py-0.5 text-xs font-bold text-primary dark:text-primary">A</span>
                                 @elseif ($sg['final'] >= 60)
                                 <span class="inline-flex items-center rounded-md bg-amber-50 dark:bg-amber-500/10 px-2 py-0.5 text-xs font-bold text-amber-700 dark:text-amber-400">B</span>
                                 @else

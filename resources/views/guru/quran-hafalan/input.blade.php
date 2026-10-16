@@ -15,7 +15,7 @@
     </div>
 
     @if (session('success'))
-    <div class="rounded-lg bg-primary/10 dark:bg-primary/100/10 border border-primary/20 dark:border-primary/20 p-4 text-sm text-primary dark:text-primary">{{ session('success') }}</div>
+    <div class="rounded-lg bg-primary/10 dark:bg-primary/10 border border-primary/20 dark:border-primary/20 p-4 text-sm text-primary dark:text-primary">{{ session('success') }}</div>
     @endif
     @if (session('error'))
     <div class="rounded-lg bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 p-4 text-sm text-red-700 dark:text-red-400">{{ session('error') }}</div>
@@ -83,7 +83,7 @@
                                         <option value="ZIADAH">Ziadah (Hafal Baru)</option>
                                         <option value="MURAJAAH">Murajaah (Mengulang)</option>
                                     </select>
-                                    <span id="jenisBadge" class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/100/10 text-primary dark:text-primary px-2 py-0.5 text-xs font-bold ml-2 whitespace-nowrap">Ziadah</span>
+                                    <span id="jenisBadge" class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/10 text-primary dark:text-primary px-2 py-0.5 text-xs font-bold ml-2 whitespace-nowrap">Ziadah</span>
                                 </div>
                             </div>
                             <div>
@@ -151,7 +151,7 @@
                         </span>
                     </div>
                     <div class="h-1.5 w-full rounded-full bg-slate-100 dark:bg-white/10 overflow-hidden">
-                        <div class="h-full rounded-full {{ $target['status'] === 'completed' ? 'bg-primary/100' : ($target['status'] === 'overdue' ? 'bg-red-500' : 'bg-primary/100/80') }}"
+                        <div class="h-full rounded-full {{ $target['status'] === 'completed' ? 'bg-primary/100' : ($target['status'] === 'overdue' ? 'bg-red-500' : 'bg-primary/80') }}"
                             style="width: {{ min(100, $target['percent']) }}%"></div>
                     </div>
                     <div class="flex items-center justify-between mt-1">
@@ -187,7 +187,7 @@
                     <div class="text-sm font-medium text-slate-700 dark:text-white/80">{{ $lastRecord->quranMaster->surah_name }} {{ $lastRecord->ayat_start }}-{{ $lastRecord->ayat_end }}</div>
                     <div class="text-xs text-slate-400 dark:text-white/30">{{ \Carbon\Carbon::parse($lastRecord->recorded_date)->format('d M Y') }}</div>
                     <div class="flex items-center gap-2 mt-1">
-                        <span class="inline-flex items-center rounded-md {{ $lastRecord->activity_type === 'ZIADAH' ? 'bg-primary/10 dark:bg-primary/100/10 text-primary dark:text-primary' : 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400' }} px-2 py-0.5 text-xs font-medium">{{ $lastRecord->activity_type === 'ZIADAH' ? 'Ziadah' : 'Murajaah' }}</span>
+                        <span class="inline-flex items-center rounded-md {{ $lastRecord->activity_type === 'ZIADAH' ? 'bg-primary/10 dark:bg-primary/10 text-primary dark:text-primary' : 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400' }} px-2 py-0.5 text-xs font-medium">{{ $lastRecord->activity_type === 'ZIADAH' ? 'Ziadah' : 'Murajaah' }}</span>
                         @php $p = \App\Models\TahfidzRecord::scoreToPredikat($lastRecord->score); @endphp
                         <span class="inline-flex items-center rounded-md {{ \App\Models\TahfidzRecord::predikatColor($p) }} px-2 py-0.5 text-xs font-bold">{{ $lastRecord->score }} ({{ $p }})</span>
                     </div>
@@ -292,13 +292,13 @@
             jenisBadge.textContent = murajaah ? 'Murajaah' : 'Ziadah';
             jenisBadge.className = 'inline-flex items-center rounded-md ' +
                 (murajaah ? 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400'
-                         : 'bg-primary/10 dark:bg-primary/100/10 text-primary dark:text-primary') +
+                         : 'bg-primary/10 dark:bg-primary/10 text-primary dark:text-primary') +
                 ' px-2 py-0.5 text-xs font-bold ml-2';
         }
     }
 
     function getPredikat(score) {
-        if (score >= 90) return { label: 'A', cls: 'bg-primary/10 dark:bg-primary/100/10 text-primary dark:text-primary' };
+        if (score >= 90) return { label: 'A', cls: 'bg-primary/10 dark:bg-primary/10 text-primary dark:text-primary' };
         if (score >= 75) return { label: 'B', cls: 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400' };
         if (score >= 60) return { label: 'C', cls: 'bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400' };
         return { label: 'D', cls: 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400' };
@@ -351,7 +351,7 @@
             lastBox.style.display = '';
             var s = surahMap[last.quran_master_id] || { name: '-' };
             var jt = last.activity_type === 'ZIADAH' ? 'Ziadah' : 'Murajaah';
-            var jtCls = last.activity_type === 'ZIADAH' ? 'bg-primary/10 dark:bg-primary/100/10 text-primary dark:text-primary' : 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400';
+            var jtCls = last.activity_type === 'ZIADAH' ? 'bg-primary/10 dark:bg-primary/10 text-primary dark:text-primary' : 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400';
             var p = getPredikatFromScore(last.score);
             var pCls = getPredikatCls(last.score);
             lastContent.innerHTML =
@@ -392,7 +392,7 @@
 
     function getPredikatCls(score) {
         var p = getPredikatFromScore(score);
-        if (p === 'A') return 'bg-primary/10 dark:bg-primary/100/10 text-primary dark:text-primary';
+        if (p === 'A') return 'bg-primary/10 dark:bg-primary/10 text-primary dark:text-primary';
         if (p === 'B') return 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400';
         if (p === 'C') return 'bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400';
         return 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400';

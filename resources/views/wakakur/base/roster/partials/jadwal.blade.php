@@ -2,12 +2,12 @@
     $paletteJadwal = [
         'bg-rose-100/80 dark:bg-rose-500/15 text-rose-900 dark:text-rose-300',
         'bg-amber-100/80 dark:bg-amber-500/15 text-amber-900 dark:text-amber-300',
-        'bg-primary/15/80 dark:bg-primary/100/15 text-primary-dark dark:text-primary',
+        'bg-primary/15 dark:bg-primary/15 text-primary-dark dark:text-primary',
         'bg-sky-100/80 dark:bg-sky-500/15 text-sky-900 dark:text-sky-300',
         'bg-violet-100/80 dark:bg-violet-500/15 text-violet-900 dark:text-violet-300',
         'bg-orange-100/80 dark:bg-orange-500/15 text-orange-900 dark:text-orange-300',
         'bg-lime-100/80 dark:bg-lime-500/15 text-lime-900 dark:text-lime-300',
-        'bg-secondary/15/80 dark:bg-secondary/15 text-secondary-dark dark:text-secondary',
+        'bg-secondary/15 dark:bg-secondary/15 text-secondary-dark dark:text-secondary',
         'bg-indigo-100/80 dark:bg-indigo-500/15 text-indigo-900 dark:text-indigo-300',
         'bg-fuchsia-100/80 dark:bg-fuchsia-500/15 text-fuchsia-900 dark:text-fuchsia-300',
         'bg-cyan-100/80 dark:bg-cyan-500/15 text-cyan-900 dark:text-cyan-300',
@@ -44,7 +44,7 @@
                 </div>
                 <div class="flex items-center gap-2">
                     @if ($classSched->count() > 0)
-                        <span class="inline-flex items-center rounded-full bg-primary/10 dark:bg-primary/100/10 border border-primary/20 dark:border-primary/20 px-2.5 py-1 text-xs font-medium text-primary dark:text-primary">
+                        <span class="inline-flex items-center rounded-full bg-primary/10 dark:bg-primary/10 border border-primary/20 dark:border-primary/20 px-2.5 py-1 text-xs font-medium text-primary dark:text-primary">
                             Sudah diatur
                         </span>
                     @else

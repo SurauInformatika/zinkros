@@ -45,7 +45,7 @@
                 <span class="text-sm font-medium text-slate-700 dark:text-white/80">{{ $target['title'] }}</span>
                 @php
                     $stBadge = match($target['status']) {
-                        'completed' => 'bg-primary/10 dark:bg-primary/100/10 text-primary dark:text-primary',
+                        'completed' => 'bg-primary/10 dark:bg-primary/10 text-primary dark:text-primary',
                         'overdue' => 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400',
                         default => 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400',
                     };
@@ -60,7 +60,7 @@
             <span class="text-sm font-bold {{ $target['status'] === 'completed' ? 'text-primary dark:text-primary' : ($target['status'] === 'overdue' ? 'text-red-600 dark:text-red-400' : 'text-blue-600 dark:text-blue-400') }}">{{ $target['percent'] }}%</span>
         </div>
         <div class="h-2 w-full rounded-full bg-slate-100 dark:bg-white/10 overflow-hidden">
-            <div class="h-full rounded-full {{ $target['status'] === 'completed' ? 'bg-primary/100' : ($target['status'] === 'overdue' ? 'bg-red-500' : 'bg-primary/100/80') }}"
+            <div class="h-full rounded-full {{ $target['status'] === 'completed' ? 'bg-primary/100' : ($target['status'] === 'overdue' ? 'bg-red-500' : 'bg-primary/80') }}"
                 style="width: {{ min(100, $target['percent']) }}%"></div>
         </div>
         <div class="flex flex-wrap items-center justify-between gap-2 mt-2 text-xs text-slate-400 dark:text-white/30">

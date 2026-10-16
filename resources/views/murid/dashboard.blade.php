@@ -6,7 +6,7 @@
 <div class="flex items-center justify-between mb-6">
     <h1 class="text-2xl font-bold">{{ $school?->roleLabel('murid') ?? 'Murid' }} Dashboard</h1>
     <div class="flex items-center gap-3">
-        <a href="{{ route('murid.hafalan') }}" class="rounded-lg border border-primary/30 bg-primary/10 px-4 py-2 text-sm font-medium text-primary hover:bg-primary/15 dark:border-primary/30 dark:bg-primary/100/10 dark:text-primary">
+        <a href="{{ route('murid.hafalan') }}" class="rounded-lg border border-primary/30 bg-primary/10 px-4 py-2 text-sm font-medium text-primary hover:bg-primary/15 dark:border-primary/30 dark:bg-primary/10 dark:text-primary">
             Hafalan Al-Quran
         </a>
         <form method="POST" action="{{ route('auth.logout') }}">

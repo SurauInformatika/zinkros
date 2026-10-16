@@ -29,7 +29,7 @@
                 <svg class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                 <input type="text" id="searchInput" placeholder="Ketik nama siswa..." class="w-full rounded-lg border border-slate-300 bg-white py-2 pl-9 pr-3 text-sm placeholder-slate-400 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary dark:border-white/10 dark:bg-[#0a0a0a] dark:text-white dark:placeholder-white/30">
             </div>
-            <div id="selectedBar" class="mb-3 hidden flex items-center justify-between rounded-lg bg-primary/10 px-3 py-2 dark:bg-primary/100/10">
+            <div id="selectedBar" class="mb-3 hidden flex items-center justify-between rounded-lg bg-primary/10 px-3 py-2 dark:bg-primary/10">
                 <span class="text-sm font-medium text-primary dark:text-primary"><span id="selectedCount">0</span> siswa dipilih</span>
                 <button type="button" onclick="clearSelection()" class="text-xs text-primary hover:text-primary-dark dark:text-primary">Bersihkan</button>
             </div>
@@ -82,7 +82,7 @@
         <div class="rounded-xl border border-slate-200 bg-white dark:border-white/10 dark:bg-[#141414] overflow-hidden">
             <div class="flex items-center justify-between border-b border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.02] px-4 py-3">
                 <h2 class="text-sm font-semibold text-slate-700 dark:text-white/80">{{ $teacher->name }}</h2>
-                <span class="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary dark:bg-primary/100/10 dark:text-primary">{{ $teacherAssignments->count() }} siswa</span>
+                <span class="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary dark:bg-primary/10 dark:text-primary">{{ $teacherAssignments->count() }} siswa</span>
             </div>
             @if ($teacherAssignments->count() > 0)
                 <div class="overflow-x-auto">

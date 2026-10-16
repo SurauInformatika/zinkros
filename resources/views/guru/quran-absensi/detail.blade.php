@@ -60,7 +60,7 @@
                         <td class="px-4 py-3 text-center">
                             @php
                                 $statusCls = match($s['status']) {
-                                    'HADIR' => 'bg-primary/10 dark:bg-primary/100/10 text-primary dark:text-primary',
+                                    'HADIR' => 'bg-primary/10 dark:bg-primary/10 text-primary dark:text-primary',
                                     'SAKIT' => 'bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400',
                                     'IZIN' => 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400',
                                     default => 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400',

@@ -14,7 +14,7 @@
     <a href="{{ route('admin.siswa.index') }}" class="group rounded-xl bg-white dark:bg-[#141414] border border-slate-200 dark:border-white/10 p-5 transition-all duration-200 hover:border-primary/30 dark:hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5">
         <div class="flex items-center justify-between mb-3">
             <span class="text-sm text-slate-500 dark:text-white/40">Total Siswa</span>
-            <span class="w-8 h-8 rounded-lg bg-primary/10 dark:bg-primary/100/10 flex items-center justify-center group-hover:bg-primary/15 dark:group-hover:bg-primary/100/20 transition">
+            <span class="w-8 h-8 rounded-lg bg-primary/10 dark:bg-primary/10 flex items-center justify-center group-hover:bg-primary/15 dark:group-hover:bg-primary/20 transition">
                 <svg class="w-4 h-4 text-primary dark:text-primary" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 7.292 4 4 0 010-7.292zM15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
             </span>
         </div>
@@ -60,7 +60,7 @@
     <div class="rounded-xl bg-white dark:bg-[#141414] border border-slate-200 dark:border-white/10 p-5">
         <div class="flex items-center justify-between mb-3">
             <span class="text-sm text-slate-500 dark:text-white/40">Kehadiran Pekan Ini</span>
-            <span class="w-8 h-8 rounded-lg bg-primary/10 dark:bg-primary/100/10 flex items-center justify-center">
+            <span class="w-8 h-8 rounded-lg bg-primary/10 dark:bg-primary/10 flex items-center justify-center">
                 <svg class="w-4 h-4 text-primary dark:text-primary" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             </span>
         </div>

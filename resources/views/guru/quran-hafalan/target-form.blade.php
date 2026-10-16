@@ -15,7 +15,7 @@
     </div>
 
     @if (session('success'))
-    <div class="rounded-lg bg-primary/10 dark:bg-primary/100/10 border border-primary/20 dark:border-primary/20 p-4 text-sm text-primary dark:text-primary">{{ session('success') }}</div>
+    <div class="rounded-lg bg-primary/10 dark:bg-primary/10 border border-primary/20 dark:border-primary/20 p-4 text-sm text-primary dark:text-primary">{{ session('success') }}</div>
     @endif
     @if (session('error'))
     <div class="rounded-lg bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 p-4 text-sm text-red-700 dark:text-red-400">{{ session('error') }}</div>
@@ -87,7 +87,7 @@
                                 </select>
                                 @endif
                                 <button type="button" onclick="addSurahRow()"
-                                    class="rounded-lg border border-primary/20 dark:border-primary/20 px-3 py-1.5 text-xs font-medium text-primary dark:text-primary hover:bg-primary/10 dark:hover:bg-primary/100/10 transition-colors">
+                                    class="rounded-lg border border-primary/20 dark:border-primary/20 px-3 py-1.5 text-xs font-medium text-primary dark:text-primary hover:bg-primary/10 dark:hover:bg-primary/10 transition-colors">
                                     + Tambah Surah
                                 </button>
                             </div>

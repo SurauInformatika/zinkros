@@ -53,7 +53,7 @@
                             <div class="flex items-center gap-3">
                                 <svg class="h-4 w-4 text-slate-400 transition-transform chevron" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
                                 <h3 class="text-sm font-bold text-slate-800 dark:text-white">{{ $subject->name }}</h3>
-                                <span class="count-badge rounded-full bg-primary/15 dark:bg-primary/100/20 px-2 py-0.5 text-xs font-semibold text-primary dark:text-primary">{{ $count }}</span>
+                                <span class="count-badge rounded-full bg-primary/15 dark:bg-primary/20 px-2 py-0.5 text-xs font-semibold text-primary dark:text-primary">{{ $count }}</span>
                             </div>
                         </button>
                         <div class="teacher-list hidden border-t border-slate-100 dark:border-white/5 p-3 space-y-1">

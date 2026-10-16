@@ -83,7 +83,7 @@
                     <td class="px-4 py-2.5">{{ $grade->subject->name ?? '-' }}</td>
                     <td class="px-4 py-2.5 text-center">
                         @if ($grade->finalScore() !== null)
-                        <span class="inline-flex items-center rounded-md {{ $grade->finalScore() >= 80 ? 'bg-primary/10 dark:bg-primary/100/10 text-primary dark:text-primary' : ($grade->finalScore() >= 60 ? 'bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400' : 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400') }} px-2.5 py-0.5 text-xs font-bold" title="{{ $grade->hasRemedial() ? $grade->score . ' → ' . $grade->remedial_capped . ' (remedial)' : '' }}">{{ $grade->finalScore() }}</span>
+                        <span class="inline-flex items-center rounded-md {{ $grade->finalScore() >= 80 ? 'bg-primary/10 dark:bg-primary/10 text-primary dark:text-primary' : ($grade->finalScore() >= 60 ? 'bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400' : 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400') }} px-2.5 py-0.5 text-xs font-bold" title="{{ $grade->hasRemedial() ? $grade->score . ' → ' . $grade->remedial_capped . ' (remedial)' : '' }}">{{ $grade->finalScore() }}</span>
                             @if ($grade->hasRemedial())
                             <span class="inline-flex items-center justify-center rounded-full bg-purple-50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 text-[9px] font-bold px-1 ml-1 align-middle" title="Remedial, di-cap di KKM">R</span>
                             @endif

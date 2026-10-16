@@ -18,9 +18,9 @@
             'file' => 'file:bg-violet-50 dark:file:bg-violet-500/10 file:text-violet-700 dark:file:text-violet-400 hover:file:bg-violet-100 dark:hover:file:bg-violet-500/20',
         ],
         'emerald' => [
-            'summary' => 'bg-primary/10 dark:bg-primary/100/10 text-primary dark:text-primary hover:bg-primary/15 dark:hover:bg-primary/100/20',
+            'summary' => 'bg-primary/10 dark:bg-primary/10 text-primary dark:text-primary hover:bg-primary/15 dark:hover:bg-primary/20',
             'button' => 'from-primary to-secondary',
-            'file' => 'file:bg-primary/10 dark:file:bg-primary/100/10 file:text-primary dark:file:text-primary hover:file:bg-primary/15 dark:hover:file:bg-primary/100/20',
+            'file' => 'file:bg-primary/10 dark:file:bg-primary/10 file:text-primary dark:file:text-primary hover:file:bg-primary/15 dark:hover:file:bg-primary/20',
         ],
         'amber' => [
             'summary' => 'bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-500/20',

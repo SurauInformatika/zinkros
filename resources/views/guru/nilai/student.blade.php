@@ -59,7 +59,7 @@
         <div class="border-b border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-white/[0.02] px-5 py-4 flex items-center justify-between">
             <h2 class="font-semibold text-slate-700 dark:text-white/80">{{ $subjectData['subject_name'] }}</h2>
             @if ($subjectData['avg'] !== null)
-                <span class="inline-flex items-center rounded-md {{ $subjectData['avg'] >= 80 ? 'bg-primary/10 dark:bg-primary/100/10 text-primary dark:text-primary' : ($subjectData['avg'] >= 60 ? 'bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400' : 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400') }} px-2.5 py-1 text-xs font-bold">Rata-rata: {{ $subjectData['avg'] }}</span>
+                <span class="inline-flex items-center rounded-md {{ $subjectData['avg'] >= 80 ? 'bg-primary/10 dark:bg-primary/10 text-primary dark:text-primary' : ($subjectData['avg'] >= 60 ? 'bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400' : 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400') }} px-2.5 py-1 text-xs font-bold">Rata-rata: {{ $subjectData['avg'] }}</span>
             @endif
         </div>
         <div class="p-5">
@@ -75,7 +75,7 @@
                             @php $typeScores = $typeData['records']->pluck('score')->filter(); @endphp
                             @if ($typeScores->isNotEmpty())
                                 @php $avg = round($typeScores->avg(), 1); @endphp
-                                <span class="inline-flex items-center rounded-md {{ $avg >= 80 ? 'bg-primary/10 dark:bg-primary/100/10 text-primary dark:text-primary' : ($avg >= 60 ? 'bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400' : 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400') }} px-2 py-0.5 text-xs font-bold">{{ $avg }}</span>
+                                <span class="inline-flex items-center rounded-md {{ $avg >= 80 ? 'bg-primary/10 dark:bg-primary/10 text-primary dark:text-primary' : ($avg >= 60 ? 'bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400' : 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400') }} px-2 py-0.5 text-xs font-bold">{{ $avg }}</span>
                             @endif
                         </div>
                     @endif

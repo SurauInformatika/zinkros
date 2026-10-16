@@ -53,14 +53,14 @@
     </div>
     <div class="space-y-2">
         @foreach ($recentNotifications as $notif)
-        <div class="flex items-start gap-3 p-3 rounded-lg {{ $notif->isRead() ? 'bg-white dark:bg-transparent' : 'bg-primary/10/50 dark:bg-primary/100/5 border border-primary/10 dark:border-primary/10' }}">
+        <div class="flex items-start gap-3 p-3 rounded-lg {{ $notif->isRead() ? 'bg-white dark:bg-transparent' : 'bg-primary/10 dark:bg-primary/5 border border-primary/10 dark:border-primary/10' }}">
             <div class="mt-0.5">
                 @if ($notif->type === 'kaldik_approval')
                     <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-amber-100 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     </span>
                 @elseif ($notif->type === 'kaldik_approved')
-                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-primary/15 dark:bg-primary/100/10 text-primary dark:text-primary">
+                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-primary/15 dark:bg-primary/10 text-primary dark:text-primary">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                     </span>
                 @else

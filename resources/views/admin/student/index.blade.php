@@ -109,7 +109,7 @@
                         @else
                             <span class="flex flex-wrap gap-1">
                                 @foreach ($student->parents as $parent)
-                                    <span class="inline-flex items-center rounded-full bg-primary/10 dark:bg-primary/100/10 px-2 py-0.5 text-xs font-medium text-primary dark:text-primary">
+                                    <span class="inline-flex items-center rounded-full bg-primary/10 dark:bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary dark:text-primary">
                                         {{ $parent->name }}
                                         @if ($parent->pivot->relation)
                                             <span class="ml-1 text-primary/70 dark:text-primary/60">{{ $parent->pivot->relation }}</span>

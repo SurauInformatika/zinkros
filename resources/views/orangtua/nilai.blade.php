@@ -36,7 +36,7 @@
                         <p class="text-xs text-slate-500 dark:text-white/50">{{ $group['records']->count() }} penilaian</p>
                     </div>
                     <div class="text-right">
-                        <span class="inline-flex items-center rounded-full bg-primary/10 dark:bg-primary/100/10 px-3 py-1 text-sm font-bold text-primary dark:text-primary">
+                        <span class="inline-flex items-center rounded-full bg-primary/10 dark:bg-primary/10 px-3 py-1 text-sm font-bold text-primary dark:text-primary">
                             {{ $group['average'] }}
                         </span>
                         <p class="text-xs text-slate-400 mt-1">Predikat {{ $group['predikat'] }}</p>

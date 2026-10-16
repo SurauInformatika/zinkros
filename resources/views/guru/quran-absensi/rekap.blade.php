@@ -81,7 +81,7 @@
                                 </div>
                             </div>
                             <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
-                                <span class="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 font-medium text-primary dark:bg-primary/100/10 dark:text-primary">Hadir {{ $s['hadir'] }}</span>
+                                <span class="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 font-medium text-primary dark:bg-primary/10 dark:text-primary">Hadir {{ $s['hadir'] }}</span>
                                 <span class="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-1 font-medium text-amber-700 dark:bg-amber-500/10 dark:text-amber-400">Sakit {{ $s['sakit'] }}</span>
                                 <span class="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2.5 py-1 font-medium text-blue-700 dark:bg-blue-500/10 dark:text-blue-400">Izin {{ $s['izin'] }}</span>
                                 <span class="inline-flex items-center gap-1 rounded-full bg-red-50 px-2.5 py-1 font-medium text-red-700 dark:bg-red-500/10 dark:text-red-400">Alpa {{ $s['alpa'] }}</span>

@@ -26,7 +26,7 @@
 </div>
 
 @if (session('status'))
-<div class="max-w-xl mb-4 rounded-xl bg-primary/10 dark:bg-primary/100/10 border border-primary/20 dark:border-primary/20 p-4 text-sm text-primary dark:text-primary">{{ session('status') }}</div>
+<div class="max-w-xl mb-4 rounded-xl bg-primary/10 dark:bg-primary/10 border border-primary/20 dark:border-primary/20 p-4 text-sm text-primary dark:text-primary">{{ session('status') }}</div>
 @endif
 
 <div class="max-w-xl rounded-xl bg-white dark:bg-[#141414] border border-slate-200 dark:border-white/10 p-6 sm:p-8">

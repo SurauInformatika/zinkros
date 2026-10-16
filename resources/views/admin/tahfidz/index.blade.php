@@ -74,7 +74,7 @@
                             <a href="{{ route($routeGroup . '.student', $sid) }}" class="font-medium text-primary dark:text-primary hover:underline">{{ $ss['name'] }}</a>
                         </td>
                         <td class="px-4 py-2.5 text-center font-bold">{{ $ss['total'] }}</td>
-                        <td class="px-4 py-2.5 text-center"><span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/100/10 px-2 py-0.5 text-xs font-medium text-primary dark:text-primary">{{ $ss['ziadah'] }}</span></td>
+                        <td class="px-4 py-2.5 text-center"><span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary dark:text-primary">{{ $ss['ziadah'] }}</span></td>
                         <td class="px-4 py-2.5 text-center"><span class="inline-flex items-center rounded-md bg-blue-50 dark:bg-blue-500/10 px-2 py-0.5 text-xs font-medium text-blue-700 dark:text-blue-400">{{ $ss['murajaah'] }}</span></td>
                         <td class="px-4 py-2.5 text-center">{{ $ss['total_ayat'] }}</td>
                         <td class="px-4 py-2.5 text-center">{{ $ss['surahs'] }}</td>
@@ -95,7 +95,7 @@
                                         <span class="text-[10px] font-semibold {{ $target['status'] === 'completed' ? 'text-primary dark:text-primary' : 'text-slate-600 dark:text-white/60' }}">{{ $target['percent'] }}%</span>
                                     </div>
                                     <div class="h-1.5 w-full rounded-full bg-slate-100 dark:bg-white/10 overflow-hidden">
-                                        <div class="h-full rounded-full {{ $target['status'] === 'completed' ? 'bg-primary/100' : ($target['status'] === 'overdue' ? 'bg-red-500' : 'bg-primary/100/80') }}" style="width: {{ min(100, $target['percent']) }}%"></div>
+                                        <div class="h-full rounded-full {{ $target['status'] === 'completed' ? 'bg-primary/100' : ($target['status'] === 'overdue' ? 'bg-red-500' : 'bg-primary/80') }}" style="width: {{ min(100, $target['percent']) }}%"></div>
                                     </div>
                                     <span class="text-[10px] text-slate-400 dark:text-white/30">{{ $target['completed_ayat'] }}/{{ $target['total_ayat'] }} ayat</span>
                                 </div>

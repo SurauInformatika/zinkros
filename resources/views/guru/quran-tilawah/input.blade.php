@@ -15,7 +15,7 @@
     </div>
 
     @if (session('success'))
-    <div class="rounded-lg bg-primary/10 dark:bg-primary/100/10 border border-primary/20 dark:border-primary/20 p-4 text-sm text-primary dark:text-primary">{{ session('success') }}</div>
+    <div class="rounded-lg bg-primary/10 dark:bg-primary/10 border border-primary/20 dark:border-primary/20 p-4 text-sm text-primary dark:text-primary">{{ session('success') }}</div>
     @endif
     @if (session('error'))
     <div class="rounded-lg bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 p-4 text-sm text-red-700 dark:text-red-400">{{ session('error') }}</div>
@@ -112,7 +112,7 @@
                         <div class="text-sm font-medium text-slate-700 dark:text-white/80">{{ $lastRecord->readingLevel->label }} hl. {{ $lastRecord->page_start }}-{{ $lastRecord->page_end }}</div>
                         <div class="text-xs text-slate-400 dark:text-white/30 mt-0.5">{{ \Carbon\Carbon::parse($lastRecord->recorded_date)->format('d M Y') }}</div>
                         @if ($lastRecord->score > 0)
-                            <div class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/100/10 text-primary dark:text-primary px-2 py-0.5 text-xs font-bold mt-1">{{ $lastRecord->score }}</div>
+                            <div class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/10 text-primary dark:text-primary px-2 py-0.5 text-xs font-bold mt-1">{{ $lastRecord->score }}</div>
                         @endif
                     @else
                         <div class="text-sm font-medium text-slate-700 dark:text-white/80">{{ $lastRecord->status ?? 'HADIR' }}</div>

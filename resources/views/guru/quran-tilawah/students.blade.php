@@ -10,7 +10,7 @@
     </div>
 
     @if (session('success'))
-    <div class="rounded-lg bg-primary/10 dark:bg-primary/100/10 border border-primary/20 dark:border-primary/20 p-4 text-sm text-primary dark:text-primary">{{ session('success') }}</div>
+    <div class="rounded-lg bg-primary/10 dark:bg-primary/10 border border-primary/20 dark:border-primary/20 p-4 text-sm text-primary dark:text-primary">{{ session('success') }}</div>
     @endif
 
     @if ($assignments->count() > 0)
@@ -44,7 +44,7 @@
                                             <div class="text-xs text-slate-400 dark:text-white/30 mt-0.5">
                                                 {{ \Carbon\Carbon::parse($last->recorded_date)->format('d M Y') }}
                                                 @if ($last->score > 0)
-                                                    <span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/100/10 text-primary dark:text-primary px-1.5 py-0.5 text-[10px] font-bold ml-1">{{ $last->score }}</span>
+                                                    <span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/10 text-primary dark:text-primary px-1.5 py-0.5 text-[10px] font-bold ml-1">{{ $last->score }}</span>
                                                 @endif
                                             </div>
                                         @else
@@ -58,7 +58,7 @@
                                                 <span class="text-xs font-semibold text-slate-600 dark:text-white/60">{{ $progress['percent'] }}%</span>
                                             </div>
                                             <div class="h-1.5 w-full rounded-full bg-slate-100 dark:bg-white/10 overflow-hidden">
-                                                <div class="h-full rounded-full bg-primary/100/80" style="width: {{ min(100, $progress['percent']) }}%"></div>
+                                                <div class="h-full rounded-full bg-primary/80" style="width: {{ min(100, $progress['percent']) }}%"></div>
                                             </div>
                                         </div>
                                     </td>

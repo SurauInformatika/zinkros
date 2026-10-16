@@ -11,7 +11,7 @@
     <h1 class="text-2xl font-bold tracking-tight">Dashboard {{ $user->school->roleLabel('wakasek') }}</h1>
     <p class="mt-1 text-sm text-slate-500 dark:text-white/40">Selamat datang, {{ $user->name }}.</p>
     @if ($user->wakasekPositionLabel())
-        <span class="mt-2 inline-flex items-center gap-1.5 rounded-lg bg-primary/10 dark:bg-primary/100/10 border border-primary/20 dark:border-primary/20 px-2.5 py-1 text-xs font-medium text-primary dark:text-primary">
+        <span class="mt-2 inline-flex items-center gap-1.5 rounded-lg bg-primary/10 dark:bg-primary/10 border border-primary/20 dark:border-primary/20 px-2.5 py-1 text-xs font-medium text-primary dark:text-primary">
             {{ $user->wakasekPositionLabel() }}
         </span>
     @endif

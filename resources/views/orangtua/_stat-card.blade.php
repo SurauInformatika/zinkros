@@ -1,5 +1,5 @@
 @php
-    $color = $color ?? 'bg-primary/10 dark:bg-primary/100/10 text-primary dark:text-primary';
+    $color = $color ?? 'bg-primary/10 dark:bg-primary/10 text-primary dark:text-primary';
     $icon = $icon ?? null;
     $value = $value ?? '—';
     $suffix = $suffix ?? '';

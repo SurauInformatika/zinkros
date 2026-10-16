@@ -21,7 +21,7 @@
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
     <div class="rounded-xl bg-white dark:bg-[#141414] border border-slate-200 dark:border-white/10 p-5">
         <div class="text-sm text-slate-500 dark:text-white/40 mb-1">Status</div>
-        <span class="inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-medium bg-primary/15 dark:bg-primary/100/10 text-primary dark:text-primary">{{ $statusLabels[$kaldik->status] ?? $kaldik->status }}</span>
+        <span class="inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-medium bg-primary/15 dark:bg-primary/10 text-primary dark:text-primary">{{ $statusLabels[$kaldik->status] ?? $kaldik->status }}</span>
     </div>
     <div class="rounded-xl bg-white dark:bg-[#141414] border border-slate-200 dark:border-white/10 p-5">
         <div class="text-sm text-slate-500 dark:text-white/40 mb-1">Tahun Ajaran / Cakupan</div>
@@ -34,7 +34,7 @@
 </div>
 
 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-    <div class="rounded-xl bg-primary/10 dark:bg-primary/100/5 border border-primary/20 dark:border-primary/10 p-4 text-center">
+    <div class="rounded-xl bg-primary/10 dark:bg-primary/5 border border-primary/20 dark:border-primary/10 p-4 text-center">
         <div class="text-2xl font-bold text-primary dark:text-primary">{{ $kaldik->totalWeeks() }}</div>
         <div class="text-xs text-slate-500 dark:text-white/40 mt-1">Total Minggu</div>
     </div>

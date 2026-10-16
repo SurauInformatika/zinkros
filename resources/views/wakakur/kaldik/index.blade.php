@@ -6,7 +6,7 @@
     $statusColors = [
         'draft'     => 'bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-white/50',
         'pending'   => 'bg-amber-100 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400',
-        'final'     => 'bg-primary/15 dark:bg-primary/100/10 text-primary dark:text-primary',
+        'final'     => 'bg-primary/15 dark:bg-primary/10 text-primary dark:text-primary',
         'archived'  => 'bg-slate-100 dark:bg-white/10 text-slate-400 dark:text-white/30',
     ];
     $statusLabels = [
@@ -31,7 +31,7 @@
 </div>
 
 @if (session('success'))
-<div class="mb-4 rounded-lg bg-primary/10 dark:bg-primary/100/10 border border-primary/20 dark:border-primary/20 p-4 text-sm text-primary dark:text-primary">{{ session('success') }}</div>
+<div class="mb-4 rounded-lg bg-primary/10 dark:bg-primary/10 border border-primary/20 dark:border-primary/20 p-4 text-sm text-primary dark:text-primary">{{ session('success') }}</div>
 @endif
 @if (session('error'))
 <div class="mb-4 rounded-lg bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 p-4 text-sm text-red-700 dark:text-red-400">{{ session('error') }}</div>

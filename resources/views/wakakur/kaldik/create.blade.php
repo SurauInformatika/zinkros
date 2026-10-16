@@ -102,7 +102,7 @@
             </div>
         </div>
 
-        <div id="rangePreview" class="mt-4 rounded-xl border border-primary/20 dark:border-primary/20 bg-primary/10/60 dark:bg-primary/100/5 px-4 py-3 text-sm text-slate-600 dark:text-white/60">
+        <div id="rangePreview" class="mt-4 rounded-xl border border-primary/20 dark:border-primary/20 bg-primary/10 dark:bg-primary/5 px-4 py-3 text-sm text-slate-600 dark:text-white/60">
             <span class="font-medium text-primary dark:text-primary">Semester 1:</span> <span id="previewS1">—</span>
             <span class="mx-2 text-slate-300 dark:text-white/20">|</span>
             <span class="font-medium text-primary dark:text-primary">Semester 2:</span> <span id="previewS2">—</span>

@@ -107,7 +107,7 @@
         <p class="text-sm text-slate-500 dark:text-white/40 mb-6">Logo akan ditampilkan di sidebar dan sebagai favicon.</p>
 
         <div id="logo-dropzone"
-            class="relative flex flex-col items-center justify-center w-full h-44 rounded-xl border-2 border-dashed border-slate-300 dark:border-white/15 bg-slate-50 dark:bg-white/5 cursor-pointer transition-all duration-200 hover:border-primary dark:hover:border-primary/40 hover:bg-primary/10/50 dark:hover:bg-primary/100/5 group overflow-hidden">
+            class="relative flex flex-col items-center justify-center w-full h-44 rounded-xl border-2 border-dashed border-slate-300 dark:border-white/15 bg-slate-50 dark:bg-white/5 cursor-pointer transition-all duration-200 hover:border-primary dark:hover:border-primary/40 hover:bg-primary/10 dark:hover:bg-primary/5 group overflow-hidden">
             <input type="file" id="logo-input" name="logo" accept="image/png,image/jpeg,image/svg+xml" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20">
 
             @if ($school->logo)
@@ -302,17 +302,17 @@
 
         dropzone.addEventListener('dragover', (e) => {
             e.preventDefault();
-            dropzone.classList.add('border-primary', 'dark:border-primary/40', 'bg-primary/10', 'dark:bg-primary/100/5');
+            dropzone.classList.add('border-primary', 'dark:border-primary/40', 'bg-primary/10', 'dark:bg-primary/5');
         });
 
         dropzone.addEventListener('dragleave', (e) => {
             e.preventDefault();
-            dropzone.classList.remove('border-primary', 'dark:border-primary/40', 'bg-primary/10', 'dark:bg-primary/100/5');
+            dropzone.classList.remove('border-primary', 'dark:border-primary/40', 'bg-primary/10', 'dark:bg-primary/5');
         });
 
         dropzone.addEventListener('drop', (e) => {
             e.preventDefault();
-            dropzone.classList.remove('border-primary', 'dark:border-primary/40', 'bg-primary/10', 'dark:bg-primary/100/5');
+            dropzone.classList.remove('border-primary', 'dark:border-primary/40', 'bg-primary/10', 'dark:bg-primary/5');
             if (e.dataTransfer.files.length) {
                 fileInput.files = e.dataTransfer.files;
                 showPreview(e.dataTransfer.files[0]);

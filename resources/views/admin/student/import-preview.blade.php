@@ -55,7 +55,7 @@
     <div>
         <h2 class="text-lg font-bold text-slate-800 dark:text-white mb-3">
             Kelas Sudah Ada
-            <span class="ml-2 rounded-full bg-primary/15 dark:bg-primary/100/20 px-2 py-0.5 text-xs font-semibold text-primary dark:text-primary">{{ $existingClassRows->count() }}</span>
+            <span class="ml-2 rounded-full bg-primary/15 dark:bg-primary/20 px-2 py-0.5 text-xs font-semibold text-primary dark:text-primary">{{ $existingClassRows->count() }}</span>
         </h2>
 
         @forelse ($existingClassRows as $class)

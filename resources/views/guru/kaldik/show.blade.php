@@ -6,7 +6,7 @@
     $statusColors = [
         'draft'     => 'bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-white/50',
         'pending'   => 'bg-amber-100 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400',
-        'final'     => 'bg-primary/15 dark:bg-primary/100/10 text-primary dark:text-primary',
+        'final'     => 'bg-primary/15 dark:bg-primary/10 text-primary dark:text-primary',
         'archived'  => 'bg-slate-100 dark:bg-white/10 text-slate-400 dark:text-white/30',
     ];
     $statusLabels = [
@@ -40,7 +40,7 @@
 </div>
 
 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-    <div class="rounded-xl bg-primary/10 dark:bg-primary/100/5 border border-primary/20 dark:border-primary/10 p-4 text-center">
+    <div class="rounded-xl bg-primary/10 dark:bg-primary/5 border border-primary/20 dark:border-primary/10 p-4 text-center">
         <div class="text-2xl font-bold text-primary dark:text-primary">{{ $kaldik->totalWeeks() }}</div>
         <div class="text-xs text-slate-500 dark:text-white/40 mt-1">Total Minggu</div>
     </div>

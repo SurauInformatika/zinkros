@@ -38,10 +38,10 @@
         </div>
         <div class="flex flex-wrap gap-2">
             @if ($guru->waliClasses->count() > 0)
-                <span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/100/10 px-2.5 py-1 text-xs font-medium text-primary dark:text-primary">Wali Kelas ({{ $guru->waliClasses->count() }})</span>
+                <span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary dark:text-primary">Wali Kelas ({{ $guru->waliClasses->count() }})</span>
             @endif
             @if ($plotting->count() > 0)
-                <span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/100/10 px-2.5 py-1 text-xs font-medium text-primary dark:text-primary">Guru Mapel ({{ $plotting->count() }})</span>
+                <span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary dark:text-primary">Guru Mapel ({{ $plotting->count() }})</span>
             @endif
             @if ($guru->isQuranTeacher())
                 <span class="inline-flex items-center rounded-md bg-purple-50 dark:bg-purple-500/10 px-2.5 py-1 text-xs font-medium text-purple-700 dark:text-purple-400">Guru Al-Quran</span>

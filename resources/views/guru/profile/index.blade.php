@@ -26,7 +26,7 @@
 </div>
 
 @if (session('status'))
-<div class="max-w-2xl mb-4 rounded-xl bg-primary/10 dark:bg-primary/100/10 border border-primary/20 dark:border-primary/20 p-4 text-sm text-primary dark:text-primary">{{ session('status') }}</div>
+<div class="max-w-2xl mb-4 rounded-xl bg-primary/10 dark:bg-primary/10 border border-primary/20 dark:border-primary/20 p-4 text-sm text-primary dark:text-primary">{{ session('status') }}</div>
 @endif
 
 <div class="max-w-2xl space-y-6">
@@ -44,7 +44,7 @@
                     <h3 class="text-lg font-semibold">{{ $user->name }}</h3>
                     <p class="text-sm text-slate-500 dark:text-white/40">{{ $user->email }}</p>
                     <div class="mt-2 flex flex-wrap gap-2">
-                        <span class="inline-flex items-center rounded-full bg-primary/10 dark:bg-primary/100/10 px-2.5 py-0.5 text-xs font-medium text-primary dark:text-primary">Aktif</span>
+                        <span class="inline-flex items-center rounded-full bg-primary/10 dark:bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary dark:text-primary">Aktif</span>
                         <span class="inline-flex items-center rounded-full bg-blue-50 dark:bg-blue-500/10 px-2.5 py-0.5 text-xs font-medium text-blue-700 dark:text-blue-400 capitalize">{{ $user->role }}</span>
                         @if ($user->isQuranTeacher())
                             <span class="inline-flex items-center rounded-full bg-purple-50 dark:bg-purple-500/10 px-2.5 py-0.5 text-xs font-medium text-purple-700 dark:text-purple-400">Guru Al-Quran</span>
@@ -107,7 +107,7 @@
                 @if ($waliClasses->count() > 0)
                     <div class="flex flex-wrap gap-2">
                         @foreach ($waliClasses as $class)
-                            <span class="inline-flex items-center gap-1.5 rounded-lg bg-primary/10 dark:bg-primary/100/10 px-3 py-1.5 text-sm font-medium text-primary dark:text-primary">
+                            <span class="inline-flex items-center gap-1.5 rounded-lg bg-primary/10 dark:bg-primary/10 px-3 py-1.5 text-sm font-medium text-primary dark:text-primary">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
                                 {{ $class->class_name }}
                             </span>

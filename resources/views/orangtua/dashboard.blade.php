@@ -49,7 +49,7 @@
             'label' => 'Kehadiran',
             'value' => $stats['attendance']['hadir'] ?? 0,
             'suffix' => '/ ' . ($stats['attendance']['total'] ?? 0),
-            'color' => 'bg-primary/10 dark:bg-primary/100/10 text-primary dark:text-primary',
+            'color' => 'bg-primary/10 dark:bg-primary/10 text-primary dark:text-primary',
             'icon' => 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
         ])
         @include('orangtua._stat-card', [
@@ -76,7 +76,7 @@
             </div>
             @php $att = $stats['attendance']; @endphp
             <div class="flex flex-wrap gap-2">
-                <span class="inline-flex items-center rounded-full bg-primary/10 dark:bg-primary/100/10 px-3 py-1 text-sm font-medium text-primary dark:text-primary">H {{ $att['hadir'] }}</span>
+                <span class="inline-flex items-center rounded-full bg-primary/10 dark:bg-primary/10 px-3 py-1 text-sm font-medium text-primary dark:text-primary">H {{ $att['hadir'] }}</span>
                 <span class="inline-flex items-center rounded-full bg-blue-50 dark:bg-blue-500/10 px-3 py-1 text-sm font-medium text-blue-700 dark:text-blue-400">I {{ $att['izin'] }}</span>
                 <span class="inline-flex items-center rounded-full bg-amber-50 dark:bg-amber-500/10 px-3 py-1 text-sm font-medium text-amber-700 dark:text-amber-400">S {{ $att['sakit'] }}</span>
                 <span class="inline-flex items-center rounded-full bg-red-50 dark:bg-red-500/10 px-3 py-1 text-sm font-medium text-red-700 dark:text-red-400">A {{ $att['alpa'] }}</span>

@@ -34,7 +34,7 @@
         <div class="rounded-xl bg-white dark:bg-[#141414] border border-slate-200 dark:border-white/10 p-5">
             <div class="flex items-center justify-between mb-3">
                 <span class="text-sm text-slate-500 dark:text-white/40">Total Setoran</span>
-                <span class="w-8 h-8 rounded-lg bg-primary/10 dark:bg-primary/100/10 flex items-center justify-center">
+                <span class="w-8 h-8 rounded-lg bg-primary/10 dark:bg-primary/10 flex items-center justify-center">
                     <svg class="w-4 h-4 text-primary dark:text-primary" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 </span>
             </div>
@@ -74,7 +74,7 @@
                             </td>
                             <td class="px-4 py-3 text-slate-500 dark:text-white/40">{{ $s['student']->classRoom?->class_name ?? '-' }}</td>
                             <td class="px-4 py-3 text-center">
-                                <span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/100/10 px-2 py-0.5 text-xs font-medium text-primary dark:text-primary">{{ $s['total_setoran'] }}x</span>
+                                <span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary dark:text-primary">{{ $s['total_setoran'] }}x</span>
                             </td>
                             <td class="px-4 py-3 text-slate-500 dark:text-white/40">
                                 @if ($s['last_date'])
@@ -129,7 +129,7 @@
                     <p class="text-xs text-slate-400 dark:text-white/30 mb-1">Mata Pelajaran:</p>
                     <div class="flex flex-wrap gap-1">
                         @foreach ($item['subjects'] as $subject)
-                        <span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/100/10 px-2 py-0.5 text-xs font-medium text-primary dark:text-primary">{{ $subject }}</span>
+                        <span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary dark:text-primary">{{ $subject }}</span>
                         @endforeach
                     </div>
                 </div>
@@ -146,7 +146,7 @@
         @if ($isWaliKelas)
         <a href="{{ route('guru.absensi-kelas.index') }}" class="rounded-xl bg-white dark:bg-[#141414] border border-slate-200 dark:border-white/10 p-5 hover:border-primary/30 dark:hover:border-primary/30 transition-all">
             <div class="flex items-center gap-3">
-                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 dark:bg-primary/100/10">
+                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 dark:bg-primary/10">
                     <svg class="w-5 h-5 text-primary dark:text-primary" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
                 </div>
                 <div>

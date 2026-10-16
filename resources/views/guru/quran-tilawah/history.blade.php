@@ -92,7 +92,7 @@
                                     <td class="px-4 py-2.5 text-center text-slate-600 dark:text-white/70">{{ $rec->reading_level_id ? $rec->page_start . '-' . $rec->page_end : '-' }}</td>
                                     <td class="px-4 py-2.5 text-center">
                                         @if ($rec->score > 0)
-                                            <span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/100/10 text-primary dark:text-primary px-2 py-0.5 text-xs font-bold">{{ $rec->score }}</span>
+                                            <span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/10 text-primary dark:text-primary px-2 py-0.5 text-xs font-bold">{{ $rec->score }}</span>
                                         @else
                                             <span class="text-xs text-slate-400 dark:text-white/30">-</span>
                                         @endif
@@ -101,7 +101,7 @@
                                         @if ($rec->status)
                                             <span class="inline-flex items-center rounded-md bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 px-2 py-0.5 text-xs font-medium">{{ $rec->status }}</span>
                                         @else
-                                            <span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/100/10 text-primary dark:text-primary px-2 py-0.5 text-xs font-medium">HADIR</span>
+                                            <span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/10 text-primary dark:text-primary px-2 py-0.5 text-xs font-medium">HADIR</span>
                                         @endif
                                     </td>
                                     <td class="px-4 py-2.5 text-xs text-slate-400 dark:text-white/30">{{ $rec->notes ?? '-' }}</td>

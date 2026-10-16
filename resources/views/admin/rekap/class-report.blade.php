@@ -85,7 +85,7 @@
                             <td class="px-2 py-2.5 text-center text-sm">{{ $sg['avg'] }}</td>
                             <td class="px-2 py-2.5 text-center">
                                 @if ($sg['final'] >= 80)
-                                <span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/100/10 px-1.5 py-0.5 text-xs font-bold text-primary dark:text-primary">{{ $sg['final'] }}</span>
+                                <span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/10 px-1.5 py-0.5 text-xs font-bold text-primary dark:text-primary">{{ $sg['final'] }}</span>
                                 @elseif ($sg['final'] >= 60)
                                 <span class="inline-flex items-center rounded-md bg-amber-50 dark:bg-amber-500/10 px-1.5 py-0.5 text-xs font-bold text-amber-700 dark:text-amber-400">{{ $sg['final'] }}</span>
                                 @else

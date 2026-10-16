@@ -40,7 +40,7 @@
                     <td class="px-4 py-3 font-medium">{{ $class->class_name }}</td>
                     <td class="px-4 py-3 text-slate-500 dark:text-white/40">{{ $class->waliNames() }}</td>
                     <td class="px-4 py-3 text-center">
-                        <span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/100/10 px-2 py-0.5 text-xs font-medium text-primary dark:text-primary">{{ $class->subjects_count }} mapel</span>
+                        <span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary dark:text-primary">{{ $class->subjects_count }} mapel</span>
                     </td>
                     <td class="px-4 py-3">
                         <a href="{{ route($routeGroup . '.plotting-detail', $class) }}" class="text-primary dark:text-primary hover:underline text-xs">Lihat Detail</a>
@@ -157,7 +157,7 @@
                     </td>
                     <td class="px-4 py-2">
                         @forelse ($teacher->tugas as $tugasLabel)
-                            <span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/100/10 px-2 py-0.5 text-xs font-medium text-primary dark:text-primary mr-1 mb-1">{{ $tugasLabel }}</span>
+                            <span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary dark:text-primary mr-1 mb-1">{{ $tugasLabel }}</span>
                         @empty
                             <span class="text-slate-400 dark:text-white/30">Tanpa tugas</span>
                         @endforelse

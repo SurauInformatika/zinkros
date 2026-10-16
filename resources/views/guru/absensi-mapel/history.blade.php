@@ -72,7 +72,7 @@
                     <td class="px-4 py-3">{{ $row->subject->name ?? '-' }}</td>
                     <td class="px-4 py-3 text-center">
                         @if ($row->status === 'HADIR')
-                        <span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/100/10 px-2 py-0.5 text-xs font-medium text-primary dark:text-primary">Hadir</span>
+                        <span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary dark:text-primary">Hadir</span>
                         @elseif ($row->status === 'SAKIT')
                         <span class="inline-flex items-center rounded-md bg-amber-50 dark:bg-amber-500/10 px-2 py-0.5 text-xs font-medium text-amber-700 dark:text-amber-400">Sakit</span>
                         @elseif ($row->status === 'IZIN')

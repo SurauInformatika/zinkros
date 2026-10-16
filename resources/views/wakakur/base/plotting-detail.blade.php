@@ -19,7 +19,7 @@
         <h3 class="font-semibold text-slate-800 dark:text-white/80 mb-2">{{ $subjectName }}</h3>
         <div class="flex flex-wrap gap-2">
             @foreach ($items as $item)
-                <span class="inline-flex items-center rounded-full bg-primary/10 dark:bg-primary/100/10 px-3 py-1 text-xs font-medium text-primary dark:text-primary">
+                <span class="inline-flex items-center rounded-full bg-primary/10 dark:bg-primary/10 px-3 py-1 text-xs font-medium text-primary dark:text-primary">
                     {{ $item->teacher->name ?? '???' }}
                 </span>
             @endforeach

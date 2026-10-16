@@ -157,7 +157,7 @@
                         @endphp
                         <td class="px-3 py-2.5 text-center">
                             @if ($grade && $grade->finalScore() !== null)
-                                <span class="inline-flex items-center justify-center w-10 h-8 rounded-lg {{ $grade->finalScore() >= 80 ? 'bg-primary/10 dark:bg-primary/100/10 text-primary dark:text-primary' : ($grade->finalScore() >= 60 ? 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400' : 'bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400') }} text-xs font-bold"
+                                <span class="inline-flex items-center justify-center w-10 h-8 rounded-lg {{ $grade->finalScore() >= 80 ? 'bg-primary/10 dark:bg-primary/10 text-primary dark:text-primary' : ($grade->finalScore() >= 60 ? 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400' : 'bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400') }} text-xs font-bold"
                                     title="{{ $grade->hasRemedial() ? $grade->score . ' → ' . $grade->remedial_capped . ' (remedial)' : $grade->gradeType?->name }}">{{ $grade->finalScore() }}</span>
                                 @if ($grade->hasRemedial())
                                 <span class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-purple-50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 text-[9px] font-bold -ml-1 align-top" title="Remedial, di-cap di KKM">R</span>
@@ -169,7 +169,7 @@
                     @endforeach
                     <td class="px-3 py-2.5 text-center">
                         @if ($sStats)
-                        <span class="inline-flex items-center rounded-md {{ $sStats['avg'] >= 80 ? 'bg-primary/10 dark:bg-primary/100/10 text-primary dark:text-primary' : ($sStats['avg'] >= 60 ? 'bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400' : 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400') }} px-2 py-0.5 text-xs font-bold">{{ $sStats['avg'] }}</span>
+                        <span class="inline-flex items-center rounded-md {{ $sStats['avg'] >= 80 ? 'bg-primary/10 dark:bg-primary/10 text-primary dark:text-primary' : ($sStats['avg'] >= 60 ? 'bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400' : 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400') }} px-2 py-0.5 text-xs font-bold">{{ $sStats['avg'] }}</span>
                         @else
                         <span class="text-xs text-slate-300 dark:text-white/15">-</span>
                         @endif
@@ -184,7 +184,7 @@
     </div>
 
     <div class="p-4 border-t border-slate-100 dark:border-white/5 flex items-center gap-4 text-xs text-slate-500 dark:text-white/40">
-        <span><span class="inline-flex items-center justify-center w-5 h-5 rounded bg-primary/10 dark:bg-primary/100/10 text-primary dark:text-primary font-bold text-[10px]">80+</span> Baik</span>
+        <span><span class="inline-flex items-center justify-center w-5 h-5 rounded bg-primary/10 dark:bg-primary/10 text-primary dark:text-primary font-bold text-[10px]">80+</span> Baik</span>
         <span><span class="inline-flex items-center justify-center w-5 h-5 rounded bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold text-[10px]">60+</span> Cukup</span>
         <span><span class="inline-flex items-center justify-center w-5 h-5 rounded bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 font-bold text-[10px]">&lt;60</span> Kurang</span>
         <span><span class="inline-flex items-center justify-center w-5 h-5 rounded bg-slate-50 dark:bg-white/5 text-slate-300 dark:text-white/15 font-bold text-[10px]">-</span> Belum ada</span>
