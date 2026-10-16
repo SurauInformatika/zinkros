@@ -33,11 +33,13 @@
 </div>
 
 {{-- Target Hafalan --}}
-@if (!empty($targets))
 <div class="rounded-xl bg-white dark:bg-[#141414] border border-slate-200 dark:border-white/10 p-5 mb-6">
     <div class="flex items-center justify-between mb-4">
         <h2 class="text-sm font-semibold text-slate-700 dark:text-white/80">Target Hafalan</h2>
     </div>
+    @if (empty($targets))
+    <p class="text-sm text-slate-500 dark:text-white/50">Belum ada target hafalan untuk anak ini.</p>
+    @else
     @foreach ($targets as $target)
     <div class="rounded-lg border border-slate-200 dark:border-white/10 p-4 mb-3 last:mb-0">
         <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
@@ -88,8 +90,8 @@
         </div>
     </div>
     @endforeach
+    @endif
 </div>
-@endif
 
 {{-- Chart --}}
 <div class="rounded-xl bg-white dark:bg-[#141414] border border-slate-200 dark:border-white/10 p-5 mb-6">
