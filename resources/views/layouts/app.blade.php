@@ -438,7 +438,6 @@
             if (/unduh|download|ekspor|export/i.test(label)) return 'Mendownload...';
             return 'Memproses...';
         }
-        }
         document.querySelectorAll('a[href]').forEach(function(a) {
             if (a.hasAttribute('target')) return;
             if (a.getAttribute('download') !== null) return;
