@@ -27,10 +27,31 @@ class TilawahRecord extends Model
 
     public const STATUS_SAKIT = 'SAKIT';
     public const STATUS_IZIN = 'IZIN';
+    public const STATUS_ALPA = 'ALPA';
 
-    public function student(): BelongsTo
+    public static function attendanceStatus(?string $status): string
     {
-        return $this->belongsTo(Student::class);
+        return match ($status) {
+            self::STATUS_SAKIT => 'SAKIT',
+            self::STATUS_IZIN => 'IZIN',
+            self::STATUS_ALPA => 'ALPA',
+            default => 'HADIR',
+        };
+    }
+
+    public static function attendanceDisplayLabel(?string $status): string
+    {
+        return match ($status) {
+            self::STATUS_SAKIT => 'Sakit',
+            self::STATUS_IZIN => 'Izin',
+            self::STATUS_ALPA => 'Alpa',
+            default => 'Hadir (tidak tilawah)',
+        };
+    }
+
+    public function getAttendanceLabelAttribute(): string
+    {
+        return self::attendanceStatus($this->status);
     }
 
     public function teacher(): BelongsTo

@@ -93,6 +93,8 @@ class TilawahController extends Controller
         ));
     }
 
+    public const STATUS_HADIR_REQUEST = 'HADIR';
+
     public function store(Request $request)
     {
         $user = auth()->user();
@@ -100,13 +102,20 @@ class TilawahController extends Controller
         $ayId = $this->academicYearContext->id();
 
         $status = $request->input('status');
-        $isAbsent = in_array($status, [TilawahRecord::STATUS_SAKIT, TilawahRecord::STATUS_IZIN]);
+        $isAbsent = in_array($status, [TilawahRecord::STATUS_SAKIT, TilawahRecord::STATUS_IZIN, TilawahRecord::STATUS_ALPA], true);
+        $isPresentNoTilawah = $status === self::STATUS_HADIR_REQUEST;
 
         if ($isAbsent) {
             $validated = $request->validate([
                 'student_id' => 'required|uuid',
                 'recorded_date' => 'required|date|before_or_equal:today',
-                'status' => 'required|in:SAKIT,IZIN',
+                'status' => 'required|in:SAKIT,IZIN,ALPA',
+                'notes' => 'nullable|string|max:500',
+            ]);
+        } elseif ($isPresentNoTilawah) {
+            $validated = $request->validate([
+                'student_id' => 'required|uuid',
+                'recorded_date' => 'required|date|before_or_equal:today',
                 'notes' => 'nullable|string|max:500',
             ]);
         } else {
@@ -148,8 +157,30 @@ class TilawahController extends Controller
                 'notes' => $validated['notes'] ?? null,
             ]);
 
-            $label = $validated['status'] === TilawahRecord::STATUS_SAKIT ? 'Sakit' : 'Izin';
+            $label = match ($validated['status']) {
+                TilawahRecord::STATUS_SAKIT => 'Sakit',
+                TilawahRecord::STATUS_IZIN => 'Izin',
+                default => 'Alpa',
+            };
             return back()->with('success', "Siswa ditandai sebagai {$label}.");
+        }
+
+        if ($isPresentNoTilawah) {
+            TilawahRecord::create([
+                'school_id' => $schoolId,
+                'academic_year_id' => $ayId,
+                'student_id' => $validated['student_id'],
+                'teacher_id' => $user->id,
+                'reading_level_id' => null,
+                'page_start' => 0,
+                'page_end' => 0,
+                'score' => 0,
+                'status' => null,
+                'recorded_date' => $validated['recorded_date'],
+                'notes' => $validated['notes'] ?? null,
+            ]);
+
+            return back()->with('success', 'Siswa ditandai hadir (tidak tilawah).');
         }
 
         $level = QuranReadingLevel::find($validated['reading_level_id']);

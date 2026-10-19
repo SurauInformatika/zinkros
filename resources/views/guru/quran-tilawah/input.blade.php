@@ -39,9 +39,11 @@
                     </div>
 
                     <div class="flex items-center gap-2 p-3 rounded-lg bg-slate-50 dark:bg-white/[0.02] border border-slate-200 dark:border-white/10">
-                        <button type="button" id="modeHadir" onclick="setMode('hadir')" class="px-4 py-2 text-xs font-medium rounded-lg bg-primary/100 text-white transition-colors">Input Tilawah</button>
+                        <button type="button" id="modeHadirTilawah" onclick="setMode('hadir')" class="px-4 py-2 text-xs font-medium rounded-lg bg-primary/100 text-white transition-colors">Input Tilawah</button>
+                        <button type="button" id="modeHadirTanpa" onclick="setMode('tanpa')" class="px-4 py-2 text-xs font-medium rounded-lg border border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/60 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">Hadir (Tanpa Tilawah)</button>
                         <button type="button" id="modeSakit" onclick="setMode('sakit')" class="px-4 py-2 text-xs font-medium rounded-lg border border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/60 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">Sakit</button>
                         <button type="button" id="modeIzin" onclick="setMode('izin')" class="px-4 py-2 text-xs font-medium rounded-lg border border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/60 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">Izin</button>
+                        <button type="button" id="modeAlpa" onclick="setMode('alpa')" class="px-4 py-2 text-xs font-medium rounded-lg border border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/60 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors">Alpa</button>
                     </div>
 
                     <div id="tilawahFields">
@@ -166,27 +168,39 @@
     }
 
     window.setMode = function(mode) {
-        var btnH = document.getElementById('modeHadir');
+        var btnHadir = document.getElementById('modeHadirTilawah');
+        var btnTanpa = document.getElementById('modeHadirTanpa');
         var btnS = document.getElementById('modeSakit');
         var btnI = document.getElementById('modeIzin');
+        var btnA = document.getElementById('modeAlpa');
+        var submitBtn = document.getElementById('submitBtn');
         var activeCls = 'bg-primary/100 text-white';
         var inactiveCls = 'border border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/60 hover:bg-slate-100 dark:hover:bg-white/5';
 
-        btnH.className = 'px-4 py-2 text-xs font-medium rounded-lg transition-colors ' + (mode === 'hadir' ? activeCls : inactiveCls);
+        btnHadir.className = 'px-4 py-2 text-xs font-medium rounded-lg transition-colors ' + (mode === 'hadir' ? activeCls : inactiveCls);
+        btnTanpa.className = 'px-4 py-2 text-xs font-medium rounded-lg transition-colors ' + (mode === 'tanpa' ? activeCls : inactiveCls);
         btnS.className = 'px-4 py-2 text-xs font-medium rounded-lg transition-colors ' + (mode === 'sakit' ? 'bg-amber-500 text-white' : inactiveCls);
         btnI.className = 'px-4 py-2 text-xs font-medium rounded-lg transition-colors ' + (mode === 'izin' ? 'bg-blue-500 text-white' : inactiveCls);
+        btnA.className = 'px-4 py-2 text-xs font-medium rounded-lg transition-colors ' + (mode === 'alpa' ? 'bg-red-500 text-white' : inactiveCls);
 
         if (mode === 'hadir') {
             statusInput.value = '';
             tilawahFields.style.display = '';
             absentFields.style.display = 'none';
-        } else {
-            statusInput.value = mode === 'sakit' ? 'SAKIT' : 'IZIN';
+            submitBtn.textContent = 'Simpan Tilawah';
+        } else if (mode === 'tanpa') {
+            statusInput.value = 'HADIR';
             tilawahFields.style.display = 'none';
             absentFields.style.display = '';
-            absentLabel.textContent = mode === 'sakit'
-                ? 'Siswa ditandai sebagai Sakit. Tidak perlu input tilawah.'
-                : 'Siswa ditandai sebagai Izin. Tidak perlu input tilawah.';
+            absentLabel.textContent = 'Siswa hadir, tetapi tidak tilawah. Catatan opsional.';
+            submitBtn.textContent = 'Simpan Kehadiran';
+        } else {
+            statusInput.value = mode.toUpperCase();
+            tilawahFields.style.display = 'none';
+            absentFields.style.display = '';
+            var label = mode === 'sakit' ? 'Sakit' : (mode === 'izin' ? 'Izin' : 'Alpa');
+            absentLabel.textContent = 'Siswa ditandai sebagai ' + label + '. Tidak perlu input tilawah.';
+            submitBtn.textContent = 'Simpan Kehadiran';
         }
     };
 
