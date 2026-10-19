@@ -445,7 +445,7 @@
             var href = a.getAttribute('href');
             if (!href || href.startsWith('#') || href.startsWith('javascript:')) return;
             if (href.startsWith('http') && !href.startsWith(window.location.origin)) return;
-            if (a.closest('nav') === null) return;
+            if (a.closest('nav') === null && !a.hasAttribute('data-spin')) return;
 
             a.addEventListener('click', function(e) {
                 if (e.button !== 0) return;
@@ -456,7 +456,8 @@
                     if (!svg.dataset.originalHtml) {
                         svg.dataset.originalHtml = svg.outerHTML;
                     }
-                    svg.outerHTML = '<svg class="animate-spin w-[18px] h-[18px] shrink-0 text-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>';
+                    var size = svg.getAttribute('class') || 'w-[18px] h-[18px] shrink-0';
+                    svg.outerHTML = '<svg class="animate-spin ' + size + '" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>';
                 }
                 link.classList.add('pointer-events-none', 'opacity-60');
             }, { capture: true });

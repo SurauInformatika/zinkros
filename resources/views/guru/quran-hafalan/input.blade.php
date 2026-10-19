@@ -114,7 +114,7 @@
                     </div>
 
                     <div class="flex items-center gap-3 pt-2">
-                        <button type="submit" id="submitBtn"
+                        <button type="submit" id="submitBtn" data-loading-text="Menyimpan..."
                             class="rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-dark transition-colors">
                             Simpan Hafalan
                         </button>
@@ -440,12 +440,6 @@
         clamp(ayatEnd);
         updateJenis();
     }
-
-    document.getElementById('hafalanForm').addEventListener('submit', function() {
-        var btn = document.getElementById('submitBtn');
-        btn.disabled = true;
-        btn.textContent = 'Menyimpan...';
-    });
 
     document.querySelectorAll('.target-toggle').forEach(function(btn) {
         btn.addEventListener('click', function() {
