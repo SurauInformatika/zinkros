@@ -393,6 +393,15 @@
             </main>
         </div>
     </div>
+    <div id="pageLoading" class="hidden fixed inset-0 z-[60] flex items-center justify-center bg-black/40 backdrop-blur-sm">
+        <div class="flex items-center gap-3 rounded-xl bg-white dark:bg-[#141414] px-4 py-2.5 shadow-lg border border-slate-200 dark:border-white/10">
+            <svg class="animate-spin h-5 w-5 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+            </svg>
+            <span class="text-sm font-medium text-slate-700 dark:text-white/80">Memuat...</span>
+        </div>
+    </div>
     @if ($role === 'ortu')
     <nav class="fixed bottom-0 inset-x-0 z-40 lg:hidden border-t border-slate-200 dark:border-white/10 bg-white/95 dark:bg-[#0a0a0a]/95 backdrop-blur-xl">
         <div class="grid grid-cols-5">
@@ -429,6 +438,23 @@
             if (/unduh|download|ekspor|export/i.test(label)) return 'Mendownload...';
             return 'Memproses...';
         }
+        }
+        document.querySelectorAll('a[href]').forEach(function(a) {
+            if (a.hasAttribute('target')) return;
+            if (a.getAttribute('download') !== null) return;
+            if (a.hasAttribute('data-no-loading')) return;
+            var href = a.getAttribute('href');
+            if (!href || href.startsWith('#') || href.startsWith('javascript:')) return;
+            if (href.startsWith('http') && !href.startsWith(window.location.origin)) return;
+
+            a.addEventListener('click', function(e) {
+                var link = e.currentTarget;
+                if (link.classList.contains('pointer-events-none')) return;
+                link.classList.add('pointer-events-none', 'opacity-60');
+                var loading = document.getElementById('pageLoading');
+                if (loading) loading.classList.remove('hidden');
+            }, { capture: true });
+        });
         window.addEventListener('pageshow', function() {
             document.querySelectorAll('button[disabled]').forEach(function(btn) {
                 if (btn.dataset.originalHtml) {
@@ -437,7 +463,13 @@
                     delete btn.dataset.originalHtml;
                 }
             });
+            var loading = document.getElementById('pageLoading');
+            if (loading) loading.classList.add('hidden');
+            document.querySelectorAll('a[href]').forEach(function(a) {
+                a.classList.remove('pointer-events-none', 'opacity-60');
+            });
         });
+        window.addEventListener('beforeunload', function() {});
     })();
     </script>
         @stack('scripts')
