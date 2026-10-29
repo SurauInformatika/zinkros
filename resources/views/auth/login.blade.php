@@ -169,10 +169,7 @@
                     </div>
 
                     <div>
-                        <div class="mb-1.5 flex items-center justify-between">
-                            <label for="password" class="{{ $label }}">Password</label>
-                            <a href="{{ route('auth.forgot') }}" class="text-sm hover:underline {{ $focus }}" style="color: var(--login-primary);">Lupa password?</a>
-                        </div>
+                        <label for="password" class="{{ $label }} mb-1.5 block">Password</label>
                         <div class="relative">
                             <input id="password" type="password" name="password" required autocomplete="current-password"
                                 @error('password') aria-invalid="true" aria-describedby="password-error" @enderror
@@ -187,6 +184,9 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M3 3l18 18M10.6 10.6a2 2 0 002.8 2.8M9.9 5.9A10.8 10.8 0 0112 5.75c6.25 0 9.75 6.25 9.75 6.25a16.3 16.3 0 01-3.05 3.75M6.2 6.2C3.7 7.75 2.25 12 2.25 12s3.5 6.25 9.75 6.25a10.8 10.8 0 004.15-.82"/>
                                 </svg>
                             </button>
+                        </div>
+                        <div class="mt-1 text-right">
+                            <a href="{{ route('auth.forgot') }}" class="text-sm hover:underline {{ $focus }}" style="color: var(--login-primary);">Lupa password?</a>
                         </div>
                         @error('password')
                             <p id="password-error" class="{{ $errorText }}">{{ $message }}</p>
