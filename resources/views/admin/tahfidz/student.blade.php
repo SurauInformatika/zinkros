@@ -123,6 +123,63 @@
     </div>
 </div>
 
+@if (!empty($targets ?? []))
+@foreach ($targets as $target)
+<div class="mb-6 rounded-xl bg-white dark:bg-[#141414] border border-slate-200 dark:border-white/10 overflow-hidden">
+    <details class="group" @if($target['is_active'] || $target['percent'] < 100) open @endif>
+        <summary class="flex cursor-pointer list-none flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4">
+            <div>
+                <div class="flex items-center gap-2">
+                    <svg class="h-4 w-4 text-slate-400 transition-transform group-open:rotate-90" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                    <h2 class="font-semibold">{{ $target['title'] ?: 'Target Hafalan' }}</h2>
+                    <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium {{ $target['status'] === 'Tercapai' ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400' : ($target['status'] === 'Terlambat' ? 'bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-400' : ($target['status'] === 'Hampir Berakhir' ? 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400' : 'bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400')) }}">{{ $target['status'] }}</span>
+                    @if($target['is_active'])<span class="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">Aktif</span>@endif
+                </div>
+                <p class="mt-1 ml-6 text-xs text-slate-500 dark:text-white/40">
+                    Target selesai: {{ $target['target_date_label'] ?? '-' }}
+                    @if($target['days_remaining'] !== null)
+                        @if($target['days_remaining'] >= 0)
+                            • {{ $target['days_remaining'] }} hari lagi
+                        @else
+                            • Terlambat {{ abs($target['days_remaining']) }} hari
+                        @endif
+                    @endif
+                    • {{ $target['completed_ayat'] }}/{{ $target['total_ayat'] }} ayat
+                </p>
+            </div>
+            <div class="flex items-center gap-3">
+                <span class="text-sm font-semibold">{{ $target['percent'] }}%</span>
+                <div class="w-40 h-2 rounded-full bg-slate-100 dark:bg-white/5 overflow-hidden">
+                    <div class="h-full bg-primary" style="width: {{ $target['percent'] }}%"></div>
+                </div>
+            </div>
+        </summary>
+        @if(!empty($target['items']))
+        <div class="divide-y divide-slate-100 dark:divide-white/5 border-t border-slate-100 dark:border-white/5">
+            @foreach($target['items'] as $item)
+            <div class="flex items-center justify-between gap-4 px-4 py-2.5">
+                <div class="min-w-0">
+                    <p class="text-sm font-medium truncate">{{ $item['surah_name'] }} {{ $item['from_ayat'] == $item['to_ayat'] ? 'Ayat '.$item['from_ayat'] : 'Ayat '.$item['from_ayat'].' - '.$item['to_ayat'] }}</p>
+                    <p class="text-xs text-slate-400 dark:text-white/30">{{ $item['completed'] }}/{{ $item['total'] }} ayat</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-xs text-slate-500 dark:text-white/40">{{ $item['percent'] }}%</span>
+                    <div class="w-24 h-1.5 rounded-full bg-slate-100 dark:bg-white/5 overflow-hidden">
+                        <div class="h-full bg-primary" style="width: {{ $item['percent'] }}%"></div>
+                    </div>
+                </div>
+            </div>
+            @endforeach
+        </div>
+        @endif
+        @if(!empty($target['notes']))
+        <div class="px-4 py-2.5 text-xs text-slate-500 dark:text-white/40 border-t border-slate-100 dark:border-white/5">Catatan: {{ $target['notes'] }}</div>
+        @endif
+    </details>
+</div>
+@endforeach
+@endif
+
 <div class="rounded-xl bg-white dark:bg-[#141414] border border-slate-200 dark:border-white/10 overflow-hidden">
     <div class="p-4 border-b border-slate-100 dark:border-white/5">
         <h2 class="font-semibold">Riwayat Hafalan</h2>

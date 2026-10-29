@@ -13,10 +13,14 @@ use Illuminate\View\View;
 class LoginController extends Controller
 {
     /**
-     * Email of the school admin whose institution has a dedicated login page
-     * at /auth/imb (branded with that school's logo, name and colors).
+     * Branded login pages keyed by URL segment. Each value is the admin account
+     * that anchors the school, so the page is branded with that school's logo,
+     * name and colors (e.g. /auth/imb, /auth/smpdafi).
      */
-    protected const IMB_EMAIL = 'imb@mail.com';
+    protected const BRANDED_LOGINS = [
+        'imb' => 'imb@mail.com',
+        'smpdafi' => 'adhir@mail.com',
+    ];
 
     public function showForm(): View
     {
@@ -25,15 +29,12 @@ class LoginController extends Controller
 
     public function showImbForm(): View|RedirectResponse
     {
-        $school = self::imbSchool();
+        return $this->showBrandedForm('imb');
+    }
 
-        if (! $school) {
-            return redirect()->route('auth.login');
-        }
-
-        return view('auth.login-imb', [
-            'school' => $school,
-        ]);
+    public function showSmpdafiForm(): View|RedirectResponse
+    {
+        return $this->showBrandedForm('smpdafi');
     }
 
     public function login(Request $request): RedirectResponse
@@ -62,7 +63,73 @@ class LoginController extends Controller
 
     public function imbLogin(Request $request): RedirectResponse
     {
-        $school = self::imbSchool();
+        return $this->brandedLogin($request, 'imb');
+    }
+
+    public function smpdafiLogin(Request $request): RedirectResponse
+    {
+        return $this->brandedLogin($request, 'smpdafi');
+    }
+
+    public function logout(Request $request): RedirectResponse
+    {
+        $user = Auth::user();
+        $brand = null;
+
+        if ($user && filled($user->school_id)) {
+            $brand = self::brandedKeyForSchool((string) $user->school_id);
+        }
+
+        Auth::logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route($brand ? 'auth.' . $brand : 'auth.login');
+    }
+
+    public static function homeRoute(string $role): string
+    {
+        return match ($role) {
+            'superadmin' => 'platform.dashboard',
+            'admin' => 'admin.dashboard',
+            'guru' => 'guru.dashboard',
+            'wakakur' => 'wakasek.dashboard',
+            'kepsek' => 'kepsek.dashboard',
+            'wakamur' => 'wakasek.dashboard',
+            'wakasek' => 'wakasek.dashboard',
+            'murid' => 'murid.dashboard',
+            'keuangan' => 'keuangan.dashboard',
+            'staff' => 'staff.dashboard',
+            default => 'ortu.dashboard',
+        };
+    }
+
+    /**
+     * Render the branded login page for the given brand, or fall back to the
+     * general login when the anchor school cannot be resolved.
+     */
+    protected function showBrandedForm(string $brand): View|RedirectResponse
+    {
+        $school = self::brandedSchool($brand);
+
+        if (! $school) {
+            return redirect()->route('auth.login');
+        }
+
+        return view('auth.login-branded', [
+            'school' => $school,
+            'brand' => $brand,
+        ]);
+    }
+
+    /**
+     * Authenticate against a branded login, restricted to users that belong to
+     * the anchored school.
+     */
+    protected function brandedLogin(Request $request, string $brand): RedirectResponse
+    {
+        $school = self::brandedSchool($brand);
 
         if (! $school) {
             return redirect()->route('auth.login');
@@ -101,49 +168,39 @@ class LoginController extends Controller
         return redirect()->route(self::homeRoute($user->role));
     }
 
-    public function logout(Request $request): RedirectResponse
+    /**
+     * The school belonging to a branded login's anchor account, if any.
+     */
+    protected static function brandedSchool(string $brand): ?School
     {
-        $user = Auth::user();
-        $imbSchoolId = User::query()->where('email', self::IMB_EMAIL)->value('school_id');
+        $email = self::BRANDED_LOGINS[$brand] ?? null;
 
-        Auth::logout();
+        if (! $email) {
+            return null;
+        }
 
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        $user = User::query()->where('email', $email)->first();
 
-        $target = ($user && $imbSchoolId && $user->school_id === $imbSchoolId)
-            ? 'auth.imb'
-            : 'auth.login';
-
-        return redirect()->route($target);
-    }
-
-    public static function homeRoute(string $role): string
-    {
-        return match ($role) {
-            'superadmin' => 'platform.dashboard',
-            'admin' => 'admin.dashboard',
-            'guru' => 'guru.dashboard',
-            'wakakur' => 'wakasek.dashboard',
-            'kepsek' => 'kepsek.dashboard',
-            'wakamur' => 'wakasek.dashboard',
-            'wakasek' => 'wakasek.dashboard',
-            'murid' => 'murid.dashboard',
-            'keuangan' => 'keuangan.dashboard',
-            'staff' => 'staff.dashboard',
-            default => 'ortu.dashboard',
-        };
+        return $user?->school;
     }
 
     /**
-     * The school belonging to the dedicated login account, if any.
+     * The branded login whose anchor account belongs to the given school.
      */
-    private static function imbSchool(): ?School
+    protected static function brandedKeyForSchool(?string $schoolId): ?string
     {
-        $user = User::query()
-            ->where('email', self::IMB_EMAIL)
-            ->first();
+        if (blank($schoolId)) {
+            return null;
+        }
 
-        return $user?->school;
+        foreach (self::BRANDED_LOGINS as $brand => $email) {
+            $anchorSchoolId = User::query()->where('email', $email)->value('school_id');
+
+            if ($anchorSchoolId && (string) $anchorSchoolId === (string) $schoolId) {
+                return $brand;
+            }
+        }
+
+        return null;
     }
 }

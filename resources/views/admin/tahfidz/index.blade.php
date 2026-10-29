@@ -3,22 +3,24 @@
 @section('title', 'Overview Tahfidz')
 
 @section('content')
-<div class="mb-8">
+<div class="mb-6">
     <h1 class="text-2xl font-bold tracking-tight">Overview Tahfidz</h1>
     <p class="mt-1 text-sm text-slate-500 dark:text-white/40">Pantau progress hafalan Al-Quran siswa per kelas.</p>
 </div>
 
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-    @foreach ($classes as $class)
-    <a href="{{ route($routeGroup . '.index', ['class_id' => $class->id]) }}"
-        class="rounded-xl bg-white dark:bg-[#141414] border {{ ($classId ?? null) === $class->id ? 'border-primary/30 dark:border-primary/30 ring-1 ring-primary/20 dark:ring-primary/20' : 'border-slate-200 dark:border-white/10' }} p-4 hover:border-primary/30 dark:hover:border-primary/30 transition-all">
-        <div class="flex items-center justify-between mb-2">
-            <span class="inline-flex items-center rounded-md bg-purple-50 dark:bg-purple-500/10 px-2 py-0.5 text-xs font-medium text-purple-700 dark:text-purple-400">{{ $class->class_name }}</span>
-            <span class="text-xs text-slate-400 dark:text-white/30">{{ $class->students_count }} siswa</span>
-        </div>
-        <p class="text-sm text-slate-500 dark:text-white/40">Tingkat {{ $class->grade_level }}</p>
-    </a>
-    @endforeach
+<div class="mb-6 flex flex-wrap items-center gap-3">
+    <div class="flex items-center gap-2">
+        <label for="class_filter" class="text-sm text-slate-600 dark:text-white/60">Pilih Kelas</label>
+        <select id="class_filter" onchange="if(this.value){ window.location.href='{{ route($routeGroup . '.index') }}?class_id='+this.value; } else { window.location.href='{{ route($routeGroup . '.index') }}'; }" class="rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-[#141414] px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20">
+            <option value="" {{ empty($classId) ? 'selected' : '' }}>Semua Kelas</option>
+            @foreach ($classes as $class)
+                <option value="{{ $class->id }}" {{ ($classId ?? null) === $class->id ? 'selected' : '' }}>{{ $class->class_name }} ({{ $class->students_count }} siswa)</option>
+            @endforeach
+        </select>
+    </div>
+    @if ($classId && $selectedClass)
+        <span class="text-sm text-slate-500 dark:text-white/40">Menampilkan: {{ $selectedClass->class_name }}</span>
+    @endif
 </div>
 
 @if ($classId && $selectedClass)
@@ -120,5 +122,43 @@
         <p class="text-sm text-slate-500 dark:text-white/40">Belum ada data hafalan untuk kelas ini.</p>
     </div>
     @endif
+@else
+    <div class="rounded-xl bg-white dark:bg-[#141414] border border-slate-200 dark:border-white/10 overflow-hidden">
+        <div class="p-4 border-b border-slate-100 dark:border-white/5">
+            <h2 class="font-semibold">Ringkasan per Kelas</h2>
+            <p class="mt-1 text-xs text-slate-500 dark:text-white/40">Pilih kelas untuk melihat detail hafalan siswa</p>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm whitespace-nowrap">
+                <thead>
+                    <tr class="border-b border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-white/[0.02]">
+                        <th class="px-4 py-3 text-left font-medium text-slate-500 dark:text-white/40">Kelas</th>
+                        <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40">Tingkat</th>
+                        <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40">Jumlah Siswa</th>
+                        <th class="px-4 py-3 text-right font-medium text-slate-500 dark:text-white/40">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($classes as $class)
+                    <tr class="border-b border-slate-50 dark:border-white/5 last:border-0 hover:bg-slate-50 dark:hover:bg-white/[0.02]">
+                        <td class="px-4 py-2.5 font-medium">{{ $class->class_name }}</td>
+                        <td class="px-4 py-2.5 text-center text-slate-600 dark:text-white/60">{{ $class->grade_level }}</td>
+                        <td class="px-4 py-2.5 text-center text-slate-600 dark:text-white/60">{{ $class->students_count }}</td>
+                        <td class="px-4 py-2.5 text-right">
+                            <a href="{{ route($routeGroup . '.index', ['class_id' => $class->id]) }}" class="inline-flex items-center gap-1 text-sm text-primary hover:underline">
+                                Lihat Detail
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                            </a>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="4" class="px-4 py-8 text-center text-slate-400 dark:text-white/30 text-sm">Belum ada kelas.</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
 @endif
 @endsection

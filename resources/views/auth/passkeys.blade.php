@@ -82,6 +82,7 @@
 
 @push('scripts')
 <script src="{{ asset('vendor/webauthn/webauthn.js') }}"></script>
+<script src="{{ asset('js/passkey-bridge.js') }}"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     var btn = document.getElementById('addPasskeyBtn');

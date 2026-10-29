@@ -50,10 +50,7 @@
                 <th class="px-5 py-3 font-semibold w-12">#</th>
                 <th class="px-5 py-3 font-semibold">Nama</th>
                 <th class="px-5 py-3 font-semibold">Jenis Kelamin</th>
-                <th class="px-5 py-3 font-semibold">Email</th>
-                <th class="px-5 py-3 font-semibold">Telepon</th>
-                <th class="px-5 py-3 font-semibold">Mata Pelajaran</th>
-                <th class="px-5 py-3 font-semibold">Status</th>
+                <th class="px-5 py-3 font-semibold">Status / Mata Pelajaran</th>
                 <th class="px-5 py-3 font-semibold text-right">Aksi</th>
             </tr>
         </thead>
@@ -71,47 +68,52 @@
                             <span class="text-slate-400 dark:text-white/30">-</span>
                         @endif
                     </td>
-                    <td class="px-5 py-3 text-slate-600 dark:text-white/50">{{ $guru->email }}</td>
-                    <td class="px-5 py-3 text-slate-600 dark:text-white/50">{{ $guru->phone ?? '-' }}</td>
                     <td class="px-5 py-3">
-                        <div class="flex flex-wrap gap-1">
-                            @forelse ($guru->subjects as $subject)
-                                <span class="rounded-full bg-primary/10 dark:bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary dark:text-primary">{{ $subject->name }}</span>
-                            @empty
-                                <span class="text-slate-400 dark:text-white/30">-</span>
-                            @endforelse
+                        <div class="flex flex-col">
+                            <span class="text-slate-600 dark:text-white/60">{{ $guru->email }}</span>
+                            <span class="text-xs text-slate-400 dark:text-white/30">{{ $guru->phone ?? '-' }}</span>
                         </div>
                     </td>
                     <td class="px-5 py-3">
-                        <div class="flex flex-wrap gap-1">
+                        <div class="flex flex-col gap-1">
                             @if ($guru->is_wali_kelas)
-                                <span class="rounded-full bg-blue-50 dark:bg-blue-500/10 px-2.5 py-0.5 text-xs font-semibold text-blue-700 dark:text-blue-400">Wali Kelas</span>
+                                @php
+                                    $waliClass = $guru->waliClasses->first();
+                                @endphp
+                                <span class="text-sm font-medium text-slate-700 dark:text-white/80">Wali Kelas {{ $waliClass?->class_name ?? ($waliClass?->name ?? '-') }}</span>
                             @endif
+                            @forelse ($guru->subjects as $subject)
+                                <span class="text-xs text-slate-500 dark:text-white/50">Guru {{ $subject->name }}</span>
+                            @empty
+                                @if (! $guru->is_wali_kelas && $guru->teacherRoles->isEmpty())
+                                    <span class="text-xs text-slate-400 dark:text-white/30">-</span>
+                                @endif
+                            @endforelse
                             @foreach ($guru->teacherRoles as $role)
-                                <span class="rounded-full bg-purple-50 dark:bg-purple-500/10 px-2.5 py-0.5 text-xs font-semibold text-purple-700 dark:text-purple-400">{{ $role->role_name }}</span>
+                                <span class="text-xs text-purple-600 dark:text-purple-400">{{ $role->role_name }}</span>
                             @endforeach
-                            @if (! $guru->is_wali_kelas && $guru->teacherRoles->isEmpty())
-                                <span class="rounded-full bg-slate-100 dark:bg-white/5 px-2.5 py-0.5 text-xs font-semibold text-slate-600 dark:text-white/50">Guru</span>
-                            @endif
                         </div>
                     </td>
                     <td class="px-5 py-3">
-                        <div class="flex justify-end gap-2">
-                            <a href="{{ route('admin.guru.edit', $guru) }}"
-                                class="rounded-lg border border-slate-200 dark:border-white/10 px-3 py-1.5 text-xs font-semibold hover:bg-slate-50 dark:hover:bg-white/5 transition">
-                                Edit
+                        <div class="flex justify-end gap-1">
+                            <a href="{{ route('admin.guru.edit', $guru) }}" data-spin
+                                class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/60 hover:bg-slate-50 dark:hover:bg-white/5 transition"
+                                title="Edit">
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                             </a>
                             <a href="{{ route('admin.reset-password.edit', $guru) }}"
-                                class="rounded-lg border border-amber-200 dark:border-amber-500/20 px-3 py-1.5 text-xs font-semibold text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-500/10 transition">
-                                Reset Password
+                                class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-amber-200 dark:border-amber-500/20 text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-500/10 transition"
+                                title="Reset Password">
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
                             </a>
                             <form method="POST" action="{{ route('admin.guru.destroy', $guru) }}"
                                 onsubmit="return confirm('Hapus akun guru {{ $guru->name }}?')">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit"
-                                    class="rounded-lg border border-red-200 dark:border-red-500/20 px-3 py-1.5 text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition">
-                                    Hapus
+                                    class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition"
+                                    title="Hapus">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                 </button>
                             </form>
                         </div>

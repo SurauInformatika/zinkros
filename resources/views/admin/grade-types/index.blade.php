@@ -60,14 +60,13 @@
     <div class="overflow-x-auto">
         <table class="w-full text-sm whitespace-nowrap">
             <thead>
-                <tr class="border-b border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-white/[0.02]">
-                    <th class="px-4 py-3 text-left font-medium text-slate-500 dark:text-white/40 w-8"></th>
-                    <th class="px-4 py-3 text-left font-medium text-slate-500 dark:text-white/40">Kode</th>
-                    <th class="px-4 py-3 text-left font-medium text-slate-500 dark:text-white/40">Nama</th>
-                    <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40 w-24">Bobot</th>
-                    <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40 w-24">Status</th>
-                    <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40 w-32">Aksi</th>
-                </tr>
+            <tr class="border-b border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-white/[0.02]">
+                <th class="px-4 py-3 text-left font-medium text-slate-500 dark:text-white/40 w-8"></th>
+                <th class="px-4 py-3 text-left font-medium text-slate-500 dark:text-white/40">Kode</th>
+                <th class="px-4 py-3 text-left font-medium text-slate-500 dark:text-white/40">Nama / Bobot</th>
+                <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40 w-24">Status</th>
+                <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40 w-28">Aksi</th>
+            </tr>
             </thead>
             <tbody id="grade-type-list">
                 @forelse ($gradeTypes as $gt)
@@ -82,11 +81,14 @@
                         <form method="POST" action="{{ route('admin.grade-types.update', $gt) }}" class="inline-flex items-center gap-2">
                             @csrf @method('PUT')
                             <input type="text" name="name" value="{{ $gt->name }}"
-                                class="rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-1.5 text-sm focus:border-primary focus:ring-primary/20 dark:text-white/80 w-48">
+                                class="rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-1.5 text-sm focus:border-primary focus:ring-primary/20 dark:text-white/80 w-40">
                             <input type="number" name="weight" value="{{ $gt->weight }}" min="0" max="100" step="0.5"
-                                class="rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-1.5 text-sm text-center focus:border-primary focus:ring-primary/20 dark:text-white/80 w-20">
+                                class="rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-1.5 text-sm text-center focus:border-primary focus:ring-primary/20 dark:text-white/80 w-16">
                             <span class="text-xs text-slate-400 dark:text-white/30">%</span>
-                            <button type="submit" class="rounded-lg bg-primary/100 hover:bg-primary text-white px-3 py-1.5 text-xs font-medium transition-colors">Simpan</button>
+                            <button type="submit" class="inline-flex items-center gap-1 rounded-lg bg-primary/100 hover:bg-primary text-white px-3 py-1.5 text-xs font-medium transition-colors" data-loading-text="Menyimpan...">
+                                <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                Simpan
+                            </button>
                         </form>
                     </td>
                     <td class="px-4 py-2.5 text-center">
@@ -97,17 +99,17 @@
                         @endif
                     </td>
                     <td class="px-4 py-2.5">
-                        <div class="flex items-center justify-center gap-2">
-                            <form method="POST" action="{{ route('admin.grade-types.toggle', $gt) }}">
+                        <div class="flex items-center justify-center gap-1">
+                            <form method="POST" action="{{ route('admin.grade-types.toggle', $gt) }}" class="toggle-form">
                                 @csrf @method('PATCH')
-                                <button type="submit" class="rounded-lg border border-slate-200 dark:border-white/10 px-3 py-1.5 text-xs font-medium hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
-                                    {{ $gt->is_active ? 'Nonaktifkan' : 'Aktifkan' }}
+                                <button type="submit" data-spin-only class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/60 hover:bg-slate-50 dark:hover:bg-white/5 transition" title="{{ $gt->is_active ? 'Nonaktifkan' : 'Aktifkan' }}">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                 </button>
                             </form>
-                            <form method="POST" action="{{ route('admin.grade-types.destroy', $gt) }}" onsubmit="return confirm('Hapus tipe ini?')">
+                            <form method="POST" action="{{ route('admin.grade-types.destroy', $gt) }}" class="delete-form">
                                 @csrf @method('DELETE')
-                                <button type="submit" class="rounded-lg border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400 px-3 py-1.5 text-xs font-medium hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors">
-                                    Hapus
+                                <button type="button" class="delete-btn inline-flex h-8 w-8 items-center justify-center rounded-lg border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition" data-name="{{ $gt->name }}" title="Hapus">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                 </button>
                             </form>
                         </div>
@@ -149,7 +151,7 @@
                     class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-2 text-sm focus:border-primary focus:ring-primary/20 dark:text-white/80">
             </div>
             <div>
-                <button type="submit" class="w-full rounded-lg bg-primary/100 hover:bg-primary text-white px-4 py-2 text-sm font-medium transition-colors">
+                <button type="submit" class="w-full rounded-lg bg-primary/100 hover:bg-primary text-white px-4 py-2 text-sm font-medium transition-colors" data-loading-text="Menambah...">
                     Tambah
                 </button>
             </div>
@@ -159,6 +161,20 @@
 @endsection
 
 @push('scripts')
+<div id="confirm-modal" class="fixed inset-0 z-50 hidden items-center justify-center">
+    <div class="absolute inset-0 bg-slate-900/40 dark:bg-black/60" id="confirm-backdrop"></div>
+    <div class="relative w-full max-w-sm mx-4 rounded-xl bg-white dark:bg-[#141414] border border-slate-200 dark:border-white/10 shadow-xl">
+        <div class="p-5">
+            <h3 class="text-base font-semibold">Konfirmasi</h3>
+            <p class="mt-1 text-sm text-slate-500 dark:text-white/40" id="confirm-message">Apakah Anda yakin?</p>
+        </div>
+        <div class="flex items-center justify-end gap-2 px-5 py-3 border-t border-slate-100 dark:border-white/5">
+            <button type="button" id="confirm-cancel" class="rounded-lg border border-slate-200 dark:border-white/10 px-3 py-1.5 text-sm hover:bg-slate-50 dark:hover:bg-white/5">Batal</button>
+            <button type="button" id="confirm-ok" class="rounded-lg bg-red-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-red-700">Hapus</button>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.4/Sortable.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     var flash = document.getElementById('flash-toast');
@@ -171,6 +187,45 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 4000);
     }
 
+    var modal = document.getElementById('confirm-modal');
+    var backdrop = document.getElementById('confirm-backdrop');
+    var btnCancel = document.getElementById('confirm-cancel');
+    var btnOk = document.getElementById('confirm-ok');
+    var msgEl = document.getElementById('confirm-message');
+    var confirmAction = null;
+
+    function openConfirm(message, action) {
+        if (!modal) return action();
+        msgEl.textContent = message;
+        confirmAction = action;
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    function closeConfirm() {
+        if (!modal) return;
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        confirmAction = null;
+    }
+
+    if (backdrop) backdrop.addEventListener('click', closeConfirm);
+    if (btnCancel) btnCancel.addEventListener('click', closeConfirm);
+    if (btnOk) btnOk.addEventListener('click', function () {
+        if (typeof confirmAction === 'function') confirmAction();
+        closeConfirm();
+    });
+
+    document.querySelectorAll('.delete-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var form = btn.closest('.delete-form');
+            var name = btn.getAttribute('data-name') || 'tipe ini';
+            openConfirm('Hapus tipe nilai ' + name + '?', function() {
+                form.submit();
+            });
+        });
+    });
+
     var nameInput = document.getElementById('gt-name');
     var codeInput = document.getElementById('gt-code');
     if (nameInput && codeInput) {
@@ -181,6 +236,28 @@ document.addEventListener('DOMContentLoaded', function() {
                 .replace(/\s+/g, '_')
                 .replace(/_+/g, '_')
                 .replace(/^_|_$/g, '');
+        });
+    }
+
+    var list = document.getElementById('grade-type-list');
+    if (list && window.Sortable) {
+        Sortable.create(list, {
+            handle: '.cursor-move',
+            animation: 150,
+            onEnd: function() {
+                var order = Array.prototype.map.call(list.querySelectorAll('tr[data-id]'), function(tr) {
+                    return tr.getAttribute('data-id');
+                });
+                fetch('{{ route('admin.grade-types.reorder') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ order: order })
+                });
+            }
         });
     }
 });

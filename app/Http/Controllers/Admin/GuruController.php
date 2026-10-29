@@ -196,15 +196,20 @@ class GuruController extends Controller
     private function syncWaliKelas(User $guru, Request $request): void
     {
         if (! $request->has('is_wali')) {
+            ClassHomeroom::where('user_id', $guru->id)->delete();
+            User::where('id', $guru->id)->update(['is_wali_kelas' => false]);
             return;
         }
 
         $classId = $request->input('wali_class_id');
         $sort = (int) $request->input('wali_sort');
 
-        ClassHomeroom::where('class_id', $classId)->where('user_id', $guru->id)->delete();
+        ClassHomeroom::where('user_id', $guru->id)->delete();
 
-        $taken = ClassHomeroom::where('class_id', $classId)->where('sort', $sort)->exists();
+        $taken = ClassHomeroom::where('class_id', $classId)
+            ->where('sort', $sort)
+            ->where('user_id', '!=', $guru->id)
+            ->exists();
 
         DB::transaction(function () use ($guru, $classId, $sort, $taken) {
             if ($taken) {

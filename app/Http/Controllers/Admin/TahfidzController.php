@@ -7,6 +7,8 @@ use App\Models\AcademicYear;
 use App\Models\ClassRoom;
 use App\Models\QuranMaster;
 use App\Models\Student;
+use App\Models\StudentQuranTarget;
+use App\Models\StudentQuranTargetItem;
 use App\Models\TahfidzRecord;
 use App\Models\User;
 use App\Services\AcademicYearContext;
@@ -176,8 +178,94 @@ class TahfidzController extends Controller
         }
 
         $student->load('classRoom');
+        $targets = $this->buildTargetsForStudent($student->id);
 
-        return view('admin.tahfidz.student', compact('student', 'records', 'stats'))->with('routeGroup', $this->routeGroup());
+        return view('admin.tahfidz.student', compact('student', 'records', 'stats', 'targets'))->with('routeGroup', $this->routeGroup());
+    }
+
+    private function buildTargetsForStudent(string $studentId): array
+    {
+        $targets = StudentQuranTarget::where('student_id', $studentId)
+            ->with(['items.quranMaster'])
+            ->orderByDesc('is_active')
+            ->orderBy('target_date')
+            ->get();
+
+        $result = [];
+
+        foreach ($targets as $target) {
+            $items = $target->items->sortBy(function ($item) {
+                return $item->quranMaster?->surah_number ?? 0;
+            })->values();
+
+            $totalAyat = 0;
+            $completedAyat = 0;
+
+            $decoratedItems = [];
+
+            foreach ($items as $item) {
+                $from = (int) $item->ayat_start;
+                $to = (int) $item->ayat_end;
+                $itemTotal = max(0, $to - $from + 1);
+                $totalAyat += $itemTotal;
+
+                $maxAyat = TahfidzRecord::where('student_id', $studentId)
+                    ->where('quran_master_id', $item->quran_master_id)
+                    ->where('activity_type', TahfidzRecord::TYPE_ZIADAH)
+                    ->max('ayat_end');
+
+                $itemCompleted = 0;
+                if ($maxAyat !== null) {
+                    if ((int) $maxAyat >= $to) {
+                        $itemCompleted = $itemTotal;
+                    } elseif ((int) $maxAyat >= $from) {
+                        $itemCompleted = max(0, (int) $maxAyat - $from + 1);
+                    }
+                }
+                $completedAyat += $itemCompleted;
+
+                $decoratedItems[] = [
+                    'surah_name' => $item->quranMaster?->surah_name ?? '-',
+                    'surah_number' => $item->quranMaster?->surah_number,
+                    'from_ayat' => $from,
+                    'to_ayat' => $to,
+                    'total' => $itemTotal,
+                    'completed' => $itemCompleted,
+                    'percent' => $itemTotal > 0 ? round(($itemCompleted / $itemTotal) * 100) : 0,
+                ];
+            }
+
+            $percent = $totalAyat > 0 ? round(($completedAyat / $totalAyat) * 100) : 0;
+            $targetDate = $target->target_date ? Carbon::parse($target->target_date) : null;
+            $daysRemaining = $targetDate ? Carbon::now()->startOfDay()->diffInDays($targetDate->startOfDay(), false) : null;
+
+            if ($percent >= 100) {
+                $status = 'Tercapai';
+            } elseif ($daysRemaining !== null && $daysRemaining < 0) {
+                $status = 'Terlambat';
+            } elseif ($daysRemaining !== null && $daysRemaining <= 7) {
+                $status = 'Hampir Berakhir';
+            } else {
+                $status = 'Berjalan';
+            }
+
+            $result[] = [
+                'id' => $target->id,
+                'title' => $target->title,
+                'target_date' => $targetDate?->format('Y-m-d'),
+                'target_date_label' => $targetDate?->format('d M Y'),
+                'days_remaining' => $daysRemaining,
+                'status' => $status,
+                'percent' => $percent,
+                'total_ayat' => $totalAyat,
+                'completed_ayat' => $completedAyat,
+                'items' => $decoratedItems,
+                'notes' => $target->notes,
+                'is_active' => $target->is_active,
+            ];
+        }
+
+        return $result;
     }
 
     public function chart(Request $request, Student $student): JsonResponse

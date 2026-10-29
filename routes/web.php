@@ -100,6 +100,8 @@ Route::prefix('auth')->name('auth.')->middleware('guest')->group(function () {
     Route::post('login', [LoginController::class, 'login'])->name('login.post');
     Route::get('imb', [LoginController::class, 'showImbForm'])->name('imb');
     Route::post('imb', [LoginController::class, 'imbLogin'])->name('imb.post');
+    Route::get('smpdafi', [LoginController::class, 'showSmpdafiForm'])->name('smpdafi');
+    Route::post('smpdafi', [LoginController::class, 'smpdafiLogin'])->name('smpdafi.post');
     Route::get('google', [GoogleAuthController::class, 'redirect'])->name('google.redirect');
     Route::get('google/callback', [GoogleAuthController::class, 'callback'])->name('google.callback');
     Route::get('google/link', [GoogleAuthController::class, 'linkForm'])->name('google.link');
@@ -179,6 +181,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('grade-types', [GradeTypeController::class, 'index'])->name('grade-types.index');
     Route::post('grade-types', [GradeTypeController::class, 'store'])->name('grade-types.store');
     Route::post('grade-types/template', [GradeTypeController::class, 'template'])->name('grade-types.template');
+    Route::post('grade-types/reorder', [GradeTypeController::class, 'reorder'])->name('grade-types.reorder');
     Route::put('grade-types/{gradeType}', [GradeTypeController::class, 'update'])->name('grade-types.update');
     Route::patch('grade-types/{gradeType}/toggle', [GradeTypeController::class, 'toggle'])->name('grade-types.toggle');
     Route::delete('grade-types/{gradeType}', [GradeTypeController::class, 'destroy'])->name('grade-types.destroy');
@@ -247,6 +250,10 @@ Route::middleware(['auth', 'role:guru'])->prefix('guru')->name('guru.')->group(f
     Route::get('tahfidz/create', [TahfidzController::class, 'create'])->name('tahfidz.create');
     Route::post('tahfidz', [TahfidzController::class, 'store'])->name('tahfidz.store');
     Route::get('tahfidz/rekap', [TahfidzController::class, 'rekap'])->name('tahfidz.rekap');
+        Route::get('tahfidz/rekap-harian', [TahfidzController::class, 'rekapHarian'])->name('tahfidz.rekap-harian');
+    Route::get('tahfidz/rekap-harian/{date}', [TahfidzController::class, 'detailRekapHarian'])
+        ->where('date', '\d{4}-\d{2}-\d{2}')
+        ->name('tahfidz.rekap-harian.detail');
     Route::post('tahfidz/fetch-by-date', [TahfidzController::class, 'fetchByDate'])->name('tahfidz.fetch-by-date');
     Route::get('tahfidz/student/{student}', [TahfidzController::class, 'student'])->name('tahfidz.student');
     Route::get('tahfidz/student/{student}/chart', [TahfidzController::class, 'chart'])->name('tahfidz.chart');

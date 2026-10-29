@@ -73,27 +73,27 @@
         @method('DELETE')
         <select name="ids[]" id="bulkIds" multiple class="hidden"></select>
         <span class="text-sm text-slate-600 dark:text-white/60"><span id="bulkCount">0</span> jenjang terpilih</span>
-        <button type="submit" id="bulkButton" disabled
-            class="rounded-lg bg-red-600 hover:bg-red-700 px-3 py-1.5 text-xs font-semibold text-white transition-colors">
-            Hapus Terpilih
-        </button>
+            <button type="button" id="bulkButton" disabled
+                class="inline-flex items-center gap-1 rounded-lg bg-red-600 hover:bg-red-700 px-3 py-1.5 text-xs font-semibold text-white transition-colors disabled:opacity-50">
+                <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                Hapus Terpilih
+            </button>
     </form>
 
     <div class="overflow-x-auto">
         <table class="w-full text-sm whitespace-nowrap">
             <thead>
-                <tr class="border-b border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-white/[0.02]">
-                    <th class="px-4 py-3 w-10">
-                        <input type="checkbox" id="checkAll" title="Pilih semua"
-                            class="rounded border-slate-300 dark:border-white/20 text-primary focus:ring-primary/20">
-                    </th>
-                    <th class="px-4 py-3 text-left font-medium text-slate-500 dark:text-white/40 w-8"></th>
-                    <th class="px-4 py-3 text-left font-medium text-slate-500 dark:text-white/40">Kategori</th>
-                    <th class="px-4 py-3 text-left font-medium text-slate-500 dark:text-white/40">No</th>
-                    <th class="px-4 py-3 text-left font-medium text-slate-500 dark:text-white/40">Label</th>
-                    <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40 w-24">Halaman</th>
-                    <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40 w-28">Aksi</th>
-                </tr>
+            <tr class="border-b border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-white/[0.02]">
+                <th class="px-4 py-3 w-10">
+                    <input type="checkbox" id="checkAll" title="Pilih semua"
+                        class="rounded border-slate-300 dark:border-white/20 text-primary focus:ring-primary/20">
+                </th>
+                <th class="px-4 py-3 text-left font-medium text-slate-500 dark:text-white/40">Kategori</th>
+                <th class="px-4 py-3 text-left font-medium text-slate-500 dark:text-white/40">No</th>
+                <th class="px-4 py-3 text-left font-medium text-slate-500 dark:text-white/40">Label</th>
+                <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40">Halaman</th>
+                <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40">Aksi</th>
+            </tr>
             </thead>
             <tbody>
                 @forelse ($levels as $level)
@@ -116,15 +116,19 @@
                             <span class="text-xs text-slate-400 dark:text-white/30">hal</span>
                             <input type="number" name="pages" value="{{ $level->pages }}" min="1" max="9999"
                                 class="rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-1.5 text-sm text-center focus:border-primary focus:ring-primary/20 dark:text-white/80 w-16">
-                            <button type="submit" class="rounded-lg bg-primary/100 hover:bg-primary text-white px-3 py-1.5 text-xs font-medium transition-colors">Simpan</button>
+                            <button type="submit" class="inline-flex items-center gap-1 rounded-lg bg-primary/100 hover:bg-primary text-white px-3 py-1.5 text-xs font-medium transition-colors" data-loading-text="Menyimpan...">
+                                <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                Simpan
+                            </button>
                         </form>
                     </td>
+                    <td class="px-4 py-2.5 text-center text-slate-600 dark:text-white/60">{{ $level->pages }}</td>
                     <td class="px-4 py-2.5">
-                        <div class="flex items-center justify-center gap-2">
-                            <form method="POST" action="{{ route('admin.reading-levels.destroy', $level) }}" onsubmit="return confirm('Hapus jenjang {{ $level->label }}?')">
+                        <div class="flex items-center justify-center gap-1">
+                            <form method="POST" action="{{ route('admin.reading-levels.destroy', $level) }}" class="single-delete-form">
                                 @csrf @method('DELETE')
-                                <button type="submit" class="rounded-lg border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400 px-3 py-1.5 text-xs font-medium hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors">
-                                    Hapus
+                                <button type="button" class="single-delete-btn inline-flex h-8 w-8 items-center justify-center rounded-lg border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition" data-label="{{ $level->label }}" title="Hapus">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                 </button>
                             </form>
                         </div>
@@ -173,7 +177,7 @@
                     class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-2 text-sm focus:border-primary focus:ring-primary/20 dark:text-white/80">
             </div>
             <div class="sm:col-span-2">
-                <button type="submit" class="w-full rounded-lg bg-primary/100 hover:bg-primary text-white px-4 py-2 text-sm font-medium transition-colors">
+                <button type="submit" class="w-full rounded-lg bg-primary/100 hover:bg-primary text-white px-4 py-2 text-sm font-medium transition-colors" data-loading-text="Menambah...">
                     Tambah
                 </button>
             </div>
@@ -183,6 +187,19 @@
 @endsection
 
 @push('scripts')
+<div id="confirm-modal" class="fixed inset-0 z-50 hidden items-center justify-center">
+    <div class="absolute inset-0 bg-slate-900/40 dark:bg-black/60" id="confirm-backdrop"></div>
+    <div class="relative w-full max-w-sm mx-4 rounded-xl bg-white dark:bg-[#141414] border border-slate-200 dark:border-white/10 shadow-xl">
+        <div class="p-5">
+            <h3 class="text-base font-semibold">Konfirmasi</h3>
+            <p class="mt-1 text-sm text-slate-500 dark:text-white/40" id="confirm-message">Apakah Anda yakin?</p>
+        </div>
+        <div class="flex items-center justify-end gap-2 px-5 py-3 border-t border-slate-100 dark:border-white/5">
+            <button type="button" id="confirm-cancel" class="rounded-lg border border-slate-200 dark:border-white/10 px-3 py-1.5 text-sm hover:bg-slate-50 dark:hover:bg-white/5">Batal</button>
+            <button type="button" id="confirm-ok" class="rounded-lg bg-red-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-red-700">Hapus</button>
+        </div>
+    </div>
+</div>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     var flash = document.getElementById('flash-toast');
@@ -198,6 +215,33 @@ document.addEventListener('DOMContentLoaded', function() {
     var checkAll = document.getElementById('checkAll');
     var rowChecks = Array.prototype.slice.call(document.querySelectorAll('.row-check'));
     var bulkForm = document.getElementById('bulkForm');
+    var bulkBtn = document.getElementById('bulkButton');
+    var modal = document.getElementById('confirm-modal');
+    var backdrop = document.getElementById('confirm-backdrop');
+    var btnCancel = document.getElementById('confirm-cancel');
+    var btnOk = document.getElementById('confirm-ok');
+    var msgEl = document.getElementById('confirm-message');
+    var confirmAction = null;
+
+    function openConfirm(message, action) {
+        msgEl.textContent = message;
+        confirmAction = action;
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    function closeConfirm() {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        confirmAction = null;
+    }
+
+    if (backdrop) backdrop.addEventListener('click', closeConfirm);
+    if (btnCancel) btnCancel.addEventListener('click', closeConfirm);
+    if (btnOk) btnOk.addEventListener('click', function () {
+        if (typeof confirmAction === 'function') confirmAction();
+        closeConfirm();
+    });
 
     function selected() {
         return rowChecks.filter(function(c) { return c.checked; });
@@ -205,11 +249,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function sync() {
         var n = selected().length;
-        document.getElementById('bulkCount').textContent = n;
-        var btn = document.getElementById('bulkButton');
-        btn.disabled = n === 0;
-        bulkForm.style.display = n > 0 ? 'flex' : 'none';
-        if (rowChecks.length > 0) {
+        var countEl = document.getElementById('bulkCount');
+        if (countEl) countEl.textContent = n;
+        if (bulkBtn) bulkBtn.disabled = n === 0;
+        if (bulkForm) bulkForm.style.display = n > 0 ? 'flex' : 'none';
+        if (rowChecks.length > 0 && checkAll) {
             checkAll.checked = rowChecks.every(function(c) { return c.checked; });
             checkAll.indeterminate = n > 0 && n < rowChecks.length;
         }
@@ -224,27 +268,35 @@ document.addEventListener('DOMContentLoaded', function() {
 
     rowChecks.forEach(function(c) { c.addEventListener('change', sync); });
 
-    if (bulkForm) {
-        bulkForm.addEventListener('submit', function(e) {
+    if (bulkBtn) {
+        bulkBtn.addEventListener('click', function() {
             var n = selected().length;
-            if (n === 0) {
-                e.preventDefault();
-                return;
-            }
-            if (!confirm('Hapus ' + n + ' jenjang terpilih?')) {
-                e.preventDefault();
-                return;
-            }
-            var bulkIds = document.getElementById('bulkIds');
-            bulkIds.innerHTML = '';
-            selected().forEach(function(c) {
-                var opt = document.createElement('option');
-                opt.value = c.value;
-                opt.selected = true;
-                bulkIds.appendChild(opt);
+            if (n === 0) return;
+            openConfirm('Hapus ' + n + ' jenjang terpilih?', function() {
+                var bulkIds = document.getElementById('bulkIds');
+                if (bulkIds) {
+                    bulkIds.innerHTML = '';
+                    selected().forEach(function(c) {
+                        var opt = document.createElement('option');
+                        opt.value = c.value;
+                        opt.selected = true;
+                        bulkIds.appendChild(opt);
+                    });
+                }
+                bulkForm.submit();
             });
         });
     }
+
+    document.querySelectorAll('.single-delete-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var form = btn.closest('.single-delete-form');
+            var label = btn.getAttribute('data-label') || 'jenjang ini';
+            openConfirm('Hapus jenjang ' + label + '?', function() {
+                form.submit();
+            });
+        });
+    });
 
     sync();
 });

@@ -40,7 +40,7 @@
                 </label>
                 <span class="text-xs text-slate-400 dark:text-white/30" id="selected-count">0 dipilih</span>
             </div>
-            <button type="submit" id="delete-selected"
+            <button type="button" id="delete-selected"
                 class="inline-flex items-center gap-2 rounded-lg border border-red-200 dark:border-red-500/20 px-4 py-2 text-xs font-semibold text-red-600 dark:text-red-400 transition hover:bg-red-50 dark:hover:bg-red-500/10 disabled:opacity-40 disabled:cursor-not-allowed"
                 disabled>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
@@ -77,14 +77,16 @@
                             <td class="px-5 py-3 text-slate-600 dark:text-white/50">{{ $subject->assigned_teachers_count ?? 0 }}</td>
                             <td class="px-5 py-3 text-slate-600 dark:text-white/50">{{ $subject->classes_count ?? 0 }}</td>
                             <td class="px-5 py-3">
-                                <div class="flex justify-end gap-2">
-                                    <a href="{{ route('admin.subject.edit', $subject) }}"
-                                        class="rounded-lg border border-slate-200 dark:border-white/10 px-3 py-1.5 text-xs font-semibold hover:bg-slate-50 dark:hover:bg-white/5 transition">
-                                        Edit
+                                <div class="flex justify-end gap-1">
+                                    <a href="{{ route('admin.subject.edit', $subject) }}" data-spin
+                                        class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/60 hover:bg-slate-50 dark:hover:bg-white/5 transition"
+                                        title="Edit">
+                                        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                     </a>
                                     <button type="button" data-delete-row="{{ $subject->id }}"
-                                        class="rounded-lg border border-red-200 dark:border-red-500/20 px-3 py-1.5 text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition">
-                                        Hapus
+                                        class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition"
+                                        title="Hapus">
+                                        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                     </button>
                                 </div>
                             </td>
@@ -109,6 +111,19 @@
 @endsection
 
 @push('scripts')
+<div id="confirm-modal" class="fixed inset-0 z-50 hidden items-center justify-center">
+    <div class="absolute inset-0 bg-slate-900/40 dark:bg-black/60" id="confirm-backdrop"></div>
+    <div class="relative w-full max-w-sm mx-4 rounded-xl bg-white dark:bg-[#141414] border border-slate-200 dark:border-white/10 shadow-xl">
+        <div class="p-5">
+            <h3 class="text-base font-semibold">Konfirmasi</h3>
+            <p class="mt-1 text-sm text-slate-500 dark:text-white/40" id="confirm-message">Apakah Anda yakin?</p>
+        </div>
+        <div class="flex items-center justify-end gap-2 px-5 py-3 border-t border-slate-100 dark:border-white/5">
+            <button type="button" id="confirm-cancel" class="rounded-lg border border-slate-200 dark:border-white/10 px-3 py-1.5 text-sm hover:bg-slate-50 dark:hover:bg-white/5">Batal</button>
+            <button type="button" id="confirm-ok" class="rounded-lg bg-red-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-red-700">Hapus</button>
+        </div>
+    </div>
+</div>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     var form = document.getElementById('bulk-delete-form');
@@ -116,38 +131,71 @@ document.addEventListener('DOMContentLoaded', function () {
     var deleteBtn = document.getElementById('delete-selected');
     var countLabel = document.getElementById('selected-count');
     var rowChecks = Array.prototype.slice.call(document.querySelectorAll('[data-row-check]'));
+    var modal = document.getElementById('confirm-modal');
+    var backdrop = document.getElementById('confirm-backdrop');
+    var btnCancel = document.getElementById('confirm-cancel');
+    var btnOk = document.getElementById('confirm-ok');
+    var msgEl = document.getElementById('confirm-message');
+    var confirmAction = null;
+
+    function openConfirm(message, action) {
+        msgEl.textContent = message;
+        confirmAction = action;
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    function closeConfirm() {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        confirmAction = null;
+    }
+
+    backdrop.addEventListener('click', closeConfirm);
+    btnCancel.addEventListener('click', closeConfirm);
+    btnOk.addEventListener('click', function () {
+        if (typeof confirmAction === 'function') confirmAction();
+        closeConfirm();
+    });
 
     function refresh() {
         var n = rowChecks.filter(function (c) { return c.checked; }).length;
-        countLabel.textContent = n + ' dipilih';
-        deleteBtn.disabled = n === 0;
-        selectAll.checked = rowChecks.length > 0 && n === rowChecks.length;
+        if (countLabel) countLabel.textContent = n + ' dipilih';
+        if (deleteBtn) deleteBtn.disabled = n === 0;
+        if (selectAll) {
+            selectAll.checked = rowChecks.length > 0 && n === rowChecks.length;
+            selectAll.indeterminate = n > 0 && n < rowChecks.length;
+        }
     }
 
-    selectAll.addEventListener('change', function () {
-        rowChecks.forEach(function (c) { c.checked = selectAll.checked; });
-        refresh();
-    });
+    if (selectAll) {
+        selectAll.addEventListener('change', function () {
+            rowChecks.forEach(function (c) { c.checked = selectAll.checked; });
+            refresh();
+        });
+    }
 
     rowChecks.forEach(function (c) { c.addEventListener('change', refresh); });
 
-    form.addEventListener('submit', function (e) {
-        var n = rowChecks.filter(function (c) { return c.checked; }).length;
-        if (n === 0) {
-            e.preventDefault();
-            return;
-        }
-        if (!confirm('Hapus ' + n + ' mata pelajaran terpilih?')) {
-            e.preventDefault();
-        }
-    });
+    if (deleteBtn) {
+        deleteBtn.addEventListener('click', function () {
+            var n = rowChecks.filter(function (c) { return c.checked; }).length;
+            if (n === 0) return;
+            openConfirm('Hapus ' + n + ' mata pelajaran terpilih?', function () {
+                form.submit();
+            });
+        });
+    }
 
     document.querySelectorAll('[data-delete-row]').forEach(function (btn) {
         btn.addEventListener('click', function () {
             var id = btn.getAttribute('data-delete-row');
-            if (!confirm('Hapus mata pelajaran ini?')) return;
-            rowChecks.forEach(function (c) { c.checked = (c.value === id); });
-            form.submit();
+            openConfirm('Hapus mata pelajaran ini?', function () {
+                rowChecks.forEach(function (c) { c.checked = false; });
+                rowChecks.forEach(function (c) { if (c.value === id) c.checked = true; });
+                refresh();
+                form.submit();
+            });
         });
     });
 

@@ -76,7 +76,7 @@
                 <span class="bg-white dark:bg-black px-3 text-xs text-slate-400 dark:text-slate-500 absolute uppercase tracking-wider font-medium">atau lanjutkan dengan email</span>
             </div>
 
-            <form action="{{ route('auth.imb.post') }}" method="POST" id="loginForm" class="space-y-4" data-purpose="credential-form">
+            <form action="{{ route('auth.' . $brand . '.post') }}" method="POST" id="loginForm" class="space-y-4" data-purpose="credential-form">
                 @csrf
 
                 <div data-purpose="input-email-wrapper">
@@ -196,6 +196,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <script src="{{ asset('vendor/webauthn/webauthn.js') }}"></script>
+<script src="{{ asset('js/passkey-bridge.js') }}"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     var btn = document.getElementById('passkeyButton');

@@ -80,6 +80,65 @@
 @endif
 @endif
 
+@if (!empty($targets))
+<div class="rounded-xl bg-white dark:bg-[#141414] border border-slate-200 dark:border-white/10 p-4 mb-6">
+    <div class="flex items-center justify-between mb-4">
+        <h2 class="text-sm font-semibold text-slate-700 dark:text-white/80">Target Hafalan</h2>
+    </div>
+    <div class="space-y-4">
+        @foreach ($targets as $target)
+        <div class="rounded-lg border border-slate-100 dark:border-white/5 p-3">
+            <div class="flex items-center justify-between gap-3 mb-2">
+                <div class="flex items-center gap-2 min-w-0">
+                    <span class="text-sm font-medium text-slate-700 dark:text-white/80 truncate">{{ $target['title'] }}</span>
+                    @php
+                        $stBadge = match($target['status']) {
+                            'completed' => 'bg-primary/10 text-primary dark:bg-primary/10 dark:text-primary',
+                            'overdue' => 'bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400',
+                            'active' => 'bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400',
+                            default => 'bg-slate-100 text-slate-600 dark:bg-white/5 dark:text-white/40',
+                        };
+                        $stLabel = match($target['status']) {
+                            'completed' => 'Tercapai',
+                            'overdue' => 'Terlambat',
+                            'active' => 'Aktif',
+                            default => 'Nonaktif',
+                        };
+                    @endphp
+                    <span class="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium {{ $stBadge }}">{{ $stLabel }}</span>
+                </div>
+                <span class="text-sm font-bold {{ $target['status'] === 'completed' ? 'text-primary dark:text-primary' : ($target['status'] === 'overdue' ? 'text-red-600 dark:text-red-400' : 'text-blue-600 dark:text-blue-400') }}">{{ $target['percent'] }}%</span>
+            </div>
+            <div class="h-2 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-white/5 mb-2">
+                <div class="h-full rounded-full {{ $target['status'] === 'completed' ? 'bg-primary/100' : ($target['status'] === 'overdue' ? 'bg-red-500' : 'bg-primary/80') }}"
+                    style="width: {{ min(100, $target['percent']) }}%"></div>
+            </div>
+            <div class="flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-500 dark:text-white/40">
+                <span>{{ $target['completed_ayat'] }}/{{ $target['total_ayat'] }} ayat · {{ $target['target_date_label'] }}</span>
+                <span class="mr-1">{{ $target['days_remaining'] >= 0 ? 'Sisa ' . $target['days_remaining'] . ' hari' : 'Lewat ' . abs($target['days_remaining']) . ' hari' }}</span>
+            </div>
+            @if (!empty($target['items']))
+            <details class="group mt-3">
+                <summary class="flex cursor-pointer items-center gap-1 text-xs text-slate-500 dark:text-white/40 hover:text-slate-700 dark:hover:text-white/60">
+                    <svg class="h-3 w-3 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    Rincian Target
+                </summary>
+                <div class="mt-2 space-y-1 border-t border-slate-100 dark:border-white/5 pt-2">
+                    @foreach ($target['items'] as $item)
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="text-slate-600 dark:text-white/60">{{ $item['surah_number'] ? $item['surah_number'].'. ' : '' }}{{ $item['surah_name'] }} {{ $item['ayat_start'] }}-{{ $item['ayat_end'] }}</span>
+                        <span class="text-slate-400 dark:text-white/30">{{ $item['done'] }}/{{ $item['total'] }} ayat</span>
+                    </div>
+                    @endforeach
+                </div>
+            </details>
+            @endif
+        </div>
+        @endforeach
+    </div>
+</div>
+@endif
+
 <div class="rounded-xl bg-white dark:bg-[#141414] border border-slate-200 dark:border-white/10 p-5 mb-6">
     <h2 class="font-semibold mb-4">Grafik Hafalan</h2>
 
@@ -140,9 +199,8 @@
                     <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40">Ayat</th>
                     <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40">Jenis</th>
                     <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40">Grade</th>
-<th class="px-4 py-3 text-left font-medium text-slate-500 dark:text-white/40">Guru</th>
+                    <th class="px-4 py-3 text-left font-medium text-slate-500 dark:text-white/40">Guru</th>
                     <th class="px-4 py-3 text-left font-medium text-slate-500 dark:text-white/40">Catatan</th>
-                    <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40">Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -169,16 +227,7 @@
                     </td>
                     @endif
                     <td class="px-4 py-2.5 text-sm text-slate-500 dark:text-white/40">{{ $rec->teacher->name ?? '-' }}</td>
-<td class="px-4 py-2.5 text-sm text-slate-400 dark:text-white/30">{{ $rec->notes ?: '-' }}</td>
-                    <td class="px-4 py-2.5 text-center">
-                        <form method="POST" action="{{ route('guru.tahfidz.destroy', $rec->id) }}" onsubmit="return confirm('Hapus riwayat hafalan ini?')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="inline-flex items-center justify-center w-7 h-7 rounded-md text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition" title="Hapus">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                            </button>
-                        </form>
-                    </td>
+                    <td class="px-4 py-2.5 text-sm text-slate-400 dark:text-white/30">{{ $rec->notes ?: '-' }}</td>
                 </tr>
                 @empty
                 <tr>

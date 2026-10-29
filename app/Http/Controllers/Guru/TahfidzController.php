@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\Guru;
 
 use App\Http\Controllers\Controller;
+use App\Models\AcademicCalendar;
 use App\Models\AcademicYear;
 use App\Models\ClassRoom;
 use App\Models\ClassSubjectTeacher;
 use App\Models\QuranMaster;
 use App\Models\Student;
+use App\Models\StudentQuranTarget;
+use App\Models\StudentQuranTargetItem;
 use App\Models\Subject;
 use App\Models\TahfidzRecord;
 use App\Services\AcademicYearContext;
@@ -38,8 +41,34 @@ class TahfidzController extends Controller
                     'class' => $class,
                     'subjects' => $items->pluck('subject')->keyBy('id'),
                 ];
-            })
-            ->values();
+            });
+
+        $assigned = \App\Models\QuranTeachingAssignment::where('teacher_id', $user->id)
+            ->with(['student.classRoom'])
+            ->get()
+            ->groupBy(fn ($a) => $a->student?->class_id)
+            ->filter(fn ($items, $cid) => $cid);
+
+        $subjectQuran = \App\Models\Subject::where('type', Subject::TYPE_QURAN)->first();
+        if ($subjectQuran) {
+            foreach ($assigned as $classId => $items) {
+                if ($plottedClasses->has($classId)) {
+                    $existing = $plottedClasses->get($classId);
+                    $existing['subjects']->put($subjectQuran->id, $subjectQuran);
+                    $plottedClasses->put($classId, $existing);
+                } else {
+                    $class = $items->first()->student?->classRoom;
+                    if ($class) {
+                        $plottedClasses->put($classId, [
+                            'class' => $class,
+                            'subjects' => collect([$subjectQuran->id => $subjectQuran]),
+                        ]);
+                    }
+                }
+            }
+        }
+
+        $plottedClasses = $plottedClasses->values()->sortBy(fn ($pc) => $pc['class']->class_name ?? '')->values();
 
         $today = Carbon::today()->toDateString();
 
@@ -62,7 +91,7 @@ class TahfidzController extends Controller
         return view('guru.tahfidz.index', compact('plottedClasses', 'recentRecords', 'today'));
     }
 
-    public function create(Request $request): View
+    public function create(Request $request): View|\Illuminate\Http\RedirectResponse
     {
         $user = auth()->user();
         $classId = $request->query('class_id');
@@ -79,8 +108,15 @@ class TahfidzController extends Controller
             ->first();
 
         if (!$plot) {
-            return redirect()->route('guru.tahfidz.index')
-                ->with('error', 'Anda tidak terploting untuk kelas dan mata pelajaran ini.');
+            $hasAssignment = \App\Models\QuranTeachingAssignment::where('teacher_id', $user->id)
+                ->whereHas('student', fn ($q) => $q->where('class_id', $classId))
+                ->exists();
+
+            $subject = \App\Models\Subject::find($subjectId);
+            if (!$hasAssignment || !$subject || $subject->type !== Subject::TYPE_QURAN) {
+                return redirect()->route('guru.tahfidz.index')
+                    ->with('error', 'Anda tidak terploting untuk kelas dan mata pelajaran ini.');
+            }
         }
 
         $classRoom = \App\Models\ClassRoom::findOrFail($classId);
@@ -205,8 +241,34 @@ class TahfidzController extends Controller
                     'class' => $class,
                     'subjects' => $items->pluck('subject'),
                 ];
-            })
-            ->values();
+            });
+
+        $assignedClassIds = \App\Models\QuranTeachingAssignment::where('teacher_id', $user->id)
+            ->join('students', 'students.id', '=', 'quran_teaching_assignments.student_id')
+            ->pluck('students.class_id')
+            ->unique()
+            ->filter();
+
+        if ($assignedClassIds->isNotEmpty()) {
+            $existingClassIds = $plottedClasses->keys();
+            $missingClassIds = $assignedClassIds->diff($existingClassIds);
+
+            if ($missingClassIds->isNotEmpty()) {
+                $missingClasses = \App\Models\ClassRoom::whereIn('id', $missingClassIds)->get()->keyBy('id');
+                $subjectQuran = \App\Models\Subject::where('type', Subject::TYPE_QURAN)->first();
+
+                foreach ($missingClassIds as $cid) {
+                    if (isset($missingClasses[$cid])) {
+                        $plottedClasses->put($cid, [
+                            'class' => $missingClasses[$cid],
+                            'subjects' => $subjectQuran ? collect([$subjectQuran]) : collect(),
+                        ]);
+                    }
+                }
+            }
+        }
+
+        $plottedClasses = $plottedClasses->values()->sortBy(fn ($item) => $item['class']->name ?? '')->values();
 
         $classId = $request->query('class_id');
         $students = collect();
@@ -254,6 +316,212 @@ class TahfidzController extends Controller
         return view('guru.tahfidz.rekap', compact(
             'plottedClasses', 'classId', 'students', 'studentStats', 'stats'
         ));
+    }
+
+    public function rekapHarian(Request $request): View
+    {
+        $validated = $request->validate([
+            'class_id' => 'required|uuid',
+            'filter' => 'nullable|in:hari_ini,pekan_ini,bulan_ini,semester_ini,tahun_ajaran_ini',
+        ]);
+
+        $user = auth()->user();
+        $classRoom = ClassRoom::where('school_id', $user->school_id)
+            ->findOrFail($validated['class_id']);
+
+        $hasPlot = ClassSubjectTeacher::where('teacher_id', $user->id)
+            ->where('class_id', $classRoom->id)
+            ->whereHas('subject', fn ($query) => $query->where('type', Subject::TYPE_QURAN))
+            ->exists();
+        $hasAssignment = \App\Models\QuranTeachingAssignment::where('teacher_id', $user->id)
+            ->whereHas('student', fn ($query) => $query->where('class_id', $classRoom->id))
+            ->exists();
+
+        if (!$hasPlot && !$hasAssignment) {
+            abort(403);
+        }
+
+        $today = Carbon::today();
+        $filter = $validated['filter'] ?? 'pekan_ini';
+        $academicYear = $this->academicYearContext->get()
+            ?? AcademicYear::where('school_id', $user->school_id)->where('is_active', true)->first();
+
+        $rangeStart = match ($filter) {
+            'hari_ini' => $today->copy(),
+            'bulan_ini' => $today->copy()->startOfMonth(),
+            'semester_ini', 'tahun_ajaran_ini' => $academicYear
+                ? Carbon::parse($academicYear->start_date)
+                : $today->copy()->startOfYear(),
+            default => $today->copy()->startOfWeek(Carbon::MONDAY),
+        };
+        $rangeEnd = $today->copy();
+
+        if ($filter === 'tahun_ajaran_ini' && $academicYear) {
+            $rangeEnd = min($today, Carbon::parse($academicYear->end_date));
+        } elseif ($filter === 'semester_ini') {
+            $calendarQuery = AcademicCalendar::where('school_id', $user->school_id)
+                ->where('status', AcademicCalendar::STATUS_FINAL)
+                ->when($academicYear, fn ($query) => $query->where('academic_year_id', $academicYear->id));
+            $annualCalendar = (clone $calendarQuery)
+                ->where('semester', AcademicCalendar::SEMESTER_ANNUAL)
+                ->orderByDesc('version')
+                ->first();
+
+            if ($annualCalendar) {
+                if ($annualCalendar->semester_2_start_date && $today->gte($annualCalendar->semester_2_start_date)) {
+                    $rangeStart = $annualCalendar->semester_2_start_date->copy();
+                    $rangeEnd = $annualCalendar->end_date->copy();
+                } elseif ($annualCalendar->semester_2_start_date) {
+                    $rangeStart = $annualCalendar->start_date->copy();
+                    $rangeEnd = $annualCalendar->semester1EndDate();
+                } else {
+                    $midpoint = $annualCalendar->start_date->copy()
+                        ->addDays((int) floor($annualCalendar->start_date->diffInDays($annualCalendar->end_date) / 2));
+                    if ($today->gte($midpoint)) {
+                        $rangeStart = $midpoint;
+                        $rangeEnd = $annualCalendar->end_date->copy();
+                    } else {
+                        $rangeStart = $annualCalendar->start_date->copy();
+                        $rangeEnd = $midpoint->copy()->subDay();
+                    }
+                }
+            } else {
+                $semesterCalendars = (clone $calendarQuery)
+                    ->whereIn('semester', [1, 2])
+                    ->orderBy('semester')
+                    ->get();
+                $currentSemester = $semesterCalendars->first(
+                    fn ($calendar) => $today->betweenIncluded($calendar->start_date, $calendar->end_date)
+                );
+                if ($currentSemester) {
+                    $rangeStart = $currentSemester->start_date->copy();
+                    $rangeEnd = $currentSemester->end_date->copy();
+                } elseif ($academicYear) {
+                    $midpoint = Carbon::parse($academicYear->start_date)
+                        ->addDays((int) floor(Carbon::parse($academicYear->start_date)->diffInDays(Carbon::parse($academicYear->end_date)) / 2));
+                    $rangeStart = $today->lt($midpoint)
+                        ? Carbon::parse($academicYear->start_date)
+                        : $midpoint;
+                    $rangeEnd = $today->lt($midpoint)
+                        ? $midpoint->copy()->subDay()
+                        : Carbon::parse($academicYear->end_date);
+                } else {
+                    $rangeStart = $today->month < 7
+                        ? $today->copy()->startOfYear()
+                        : $today->copy()->startOfYear()->addMonths(6);
+                    $rangeEnd = $rangeStart->copy()->addMonths(6)->subDay();
+                }
+            }
+            $rangeEnd = min($rangeEnd, $today);
+        }
+
+        $students = Student::where('class_id', $classRoom->id)
+            ->orderBy('name')
+            ->get();
+        $baseRecordsQuery = TahfidzRecord::where('teacher_id', $user->id)
+            ->whereIn('student_id', $students->pluck('id'))
+            ->whereBetween('recorded_date', [$rangeStart->toDateString(), $rangeEnd->toDateString()])
+            ->when(
+                $academicYear,
+                fn ($query) => $query->where('academic_year_id', $academicYear->id)
+            );
+        $recordsByDate = (clone $baseRecordsQuery)
+            ->with('student', 'quranMaster')
+            ->orderBy('created_at')
+            ->get()
+            ->groupBy(fn ($record) => Carbon::parse($record->recorded_date)->toDateString());
+
+        $dateCards = $recordsByDate->map(function ($dayRecords, $date) use ($students) {
+            $recordsByStudent = $dayRecords->groupBy('student_id');
+            $present = $recordsByStudent->filter(
+                fn ($studentRecords) => $studentRecords->contains(fn ($record) => $record->status === null)
+            )->count();
+
+            return [
+                'date' => $date,
+                'total' => $students->count(),
+                'hadir' => $present,
+                'tidak_hadir' => max(0, $students->count() - $present),
+            ];
+        })->sortByDesc('date')->values();
+
+        return view('guru.tahfidz.rekap-harian', compact(
+            'classRoom', 'filter', 'rangeStart', 'rangeEnd', 'dateCards'
+        ));
+    }
+
+    public function detailRekapHarian(Request $request, string $date): View
+    {
+        $request->merge(['detail_date' => $date]);
+        $validated = $request->validate([
+            'class_id' => 'required|uuid',
+            'filter' => 'nullable|in:hari_ini,pekan_ini,bulan_ini,semester_ini,tahun_ajaran_ini',
+            'detail_date' => 'required|date',
+        ]);
+
+        $user = auth()->user();
+        $classRoom = ClassRoom::where('school_id', $user->school_id)
+            ->findOrFail($validated['class_id']);
+
+        $hasPlot = ClassSubjectTeacher::where('teacher_id', $user->id)
+            ->where('class_id', $classRoom->id)
+            ->whereHas('subject', fn ($query) => $query->where('type', Subject::TYPE_QURAN))
+            ->exists();
+        $hasAssignment = \App\Models\QuranTeachingAssignment::where('teacher_id', $user->id)
+            ->whereHas('student', fn ($query) => $query->where('class_id', $classRoom->id))
+            ->exists();
+
+        if (!$hasPlot && !$hasAssignment) {
+            abort(403);
+        }
+
+        $detailDate = Carbon::parse($validated['detail_date'])->toDateString();
+        $academicYear = $this->academicYearContext->get()
+            ?? AcademicYear::where('school_id', $user->school_id)->where('is_active', true)->first();
+        $students = Student::where('class_id', $classRoom->id)
+            ->orderBy('name')
+            ->get();
+        $detailRecords = TahfidzRecord::where('teacher_id', $user->id)
+            ->where('recorded_date', $detailDate)
+            ->whereIn('student_id', $students->pluck('id'))
+            ->when(
+                $academicYear,
+                fn ($query) => $query->where('academic_year_id', $academicYear->id)
+            )
+            ->with('quranMaster')
+            ->orderBy('created_at')
+            ->get()
+            ->groupBy('student_id');
+
+        abort_if($detailRecords->isEmpty(), 404);
+
+        $detailStudents = $students->map(function ($student) use ($detailRecords) {
+            $studentRecords = $detailRecords->get($student->id, collect());
+            $attendanceRecord = $studentRecords->first(fn ($record) => $record->status === null)
+                ?? $studentRecords->first(fn ($record) => in_array($record->status, [
+                    TahfidzRecord::STATUS_SAKIT,
+                    TahfidzRecord::STATUS_IZIN,
+                    TahfidzRecord::STATUS_ALPA,
+                ], true));
+
+            return [
+                'student' => $student,
+                'status' => $attendanceRecord
+                    ? TahfidzRecord::attendanceStatus($attendanceRecord->status)
+                    : 'ALPA',
+                'records' => $studentRecords->filter(
+                    fn ($record) => $record->quran_master_id !== null
+                ),
+                'notes' => $attendanceRecord?->notes,
+            ];
+        });
+
+        return view('guru.tahfidz.rekap-harian-detail', [
+            'classRoom' => $classRoom,
+            'filter' => $validated['filter'] ?? 'pekan_ini',
+            'detailDate' => $detailDate,
+            'detailStudents' => $detailStudents,
+        ]);
     }
 
     public function fetchByDate(Request $request): JsonResponse
@@ -397,9 +665,92 @@ class TahfidzController extends Controller
             ];
         }
 
+        $targets = $this->buildTargetsForStudent($student->id);
+
         $student->load('classRoom');
 
-        return view('guru.tahfidz.student', compact('student', 'records', 'stats'));
+        return view('guru.tahfidz.student', compact('student', 'records', 'stats', 'targets'));
+    }
+
+    private function buildTargetsForStudent(string $studentId): array
+    {
+        $targets = StudentQuranTarget::where('student_id', $studentId)
+            ->with(['items.quranMaster'])
+            ->orderByDesc('is_active')
+            ->orderByDesc('created_at')
+            ->get();
+
+        $result = [];
+
+        foreach ($targets as $target) {
+            $totalAyat = 0;
+            $completedAyat = 0;
+            $items = [];
+
+            foreach ($target->items as $item) {
+                $quran = $item->quranMaster;
+                $itemTotal = $item->totalAyat();
+                $totalAyat += $itemTotal;
+
+                $maxAyat = TahfidzRecord::where('student_id', $studentId)
+                    ->where('quran_master_id', $item->quran_master_id)
+                    ->where('activity_type', TahfidzRecord::TYPE_ZIADAH)
+                    ->max('ayat_end');
+
+                $done = 0;
+                if ($maxAyat !== null) {
+                    $start = $item->ayat_start;
+                    $done = max(0, min($itemTotal, (int) $maxAyat - $start + 1));
+                    if ($done < 0) {
+                        $done = 0;
+                    }
+                    if ((int) $maxAyat >= $item->ayat_end) {
+                        $done = $itemTotal;
+                    }
+                }
+
+                $completedAyat += $done;
+
+                $items[] = [
+                    'surah_name' => $quran->surah_name ?? '-',
+                    'surah_number' => $quran->surah_number ?? null,
+                    'ayat_start' => $item->ayat_start,
+                    'ayat_end' => $item->ayat_end,
+                    'total' => $itemTotal,
+                    'done' => $done,
+                ];
+            }
+
+            $percent = $totalAyat > 0 ? (int) round(($completedAyat / $totalAyat) * 100) : 0;
+            if ($percent > 100) {
+                $percent = 100;
+            }
+
+            $daysRemaining = (int) now()->diffInDays($target->target_date, false);
+            $status = $target->is_active ? 'active' : 'inactive';
+            if ($percent >= 100 && $target->is_active) {
+                $status = 'completed';
+            } elseif ($daysRemaining < 0 && $percent < 100 && $target->is_active) {
+                $status = 'overdue';
+            }
+
+            $result[] = [
+                'id' => $target->id,
+                'title' => $target->title,
+                'target_date' => $target->target_date->format('Y-m-d'),
+                'target_date_label' => $target->target_date->format('d M Y'),
+                'days_remaining' => $daysRemaining,
+                'status' => $status,
+                'percent' => $percent,
+                'total_ayat' => $totalAyat,
+                'completed_ayat' => $completedAyat,
+                'items' => $items,
+                'notes' => $target->notes,
+                'is_active' => $target->is_active,
+            ];
+        }
+
+        return $result;
     }
 
     public function destroy(TahfidzRecord $tahfidzRecord): \Illuminate\Http\RedirectResponse

@@ -15,6 +15,19 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.credentials.CreatePublicKeyCredentialRequest
+import androidx.credentials.CreatePublicKeyCredentialResponse
+import androidx.credentials.CredentialManager
+import androidx.credentials.GetCredentialRequest
+import androidx.credentials.GetPublicKeyCredentialOption
+import androidx.credentials.PublicKeyCredential
+import androidx.credentials.exceptions.CreateCredentialException
+import androidx.credentials.exceptions.GetCredentialException
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
+import org.json.JSONObject
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
 class MainActivity : AppCompatActivity() {
@@ -39,6 +52,12 @@ class MainActivity : AppCompatActivity() {
         progressBar = findViewById(R.id.progressBar)
         swipeRefresh = findViewById(R.id.swipeRefresh)
 
+        ViewCompat.setOnApplyWindowInsetsListener(swipeRefresh) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(0, systemBars.top, 0, systemBars.bottom)
+            insets
+        }
+
         setupWebView()
         setupSwipeRefresh()
         registerNetworkCallback()
@@ -58,10 +77,24 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
+        val data = intent?.data
         if (isOnline()) {
-            webView.loadUrl(baseUrl)
+            if (data != null) {
+                webView.loadUrl(data.toString())
+            } else {
+                webView.loadUrl(baseUrl)
+            }
         } else {
             showOffline()
+        }
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        val data = intent?.data
+        if (data != null && !isOffline) {
+            webView.loadUrl(data.toString())
         }
     }
 
@@ -123,9 +156,14 @@ class MainActivity : AppCompatActivity() {
                     false
                 } else {
                     try {
-                        startActivity(Intent(Intent.ACTION_VIEW, uri))
-                    } catch (e: ActivityNotFoundException) {
-                        Toast.makeText(this@MainActivity, "Tidak dapat membuka tautan", Toast.LENGTH_SHORT).show()
+                        val customTabsIntent = androidx.browser.customtabs.CustomTabsIntent.Builder().build()
+                        customTabsIntent.launchUrl(this@MainActivity, uri)
+                    } catch (e: Exception) {
+                        try {
+                            startActivity(Intent(Intent.ACTION_VIEW, uri))
+                        } catch (_: ActivityNotFoundException) {
+                            Toast.makeText(this@MainActivity, "Tidak dapat membuka tautan", Toast.LENGTH_SHORT).show()
+                        }
                     }
                     true
                 }
@@ -208,6 +246,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     inner class NativeBridge {
+        private val credentialManager: CredentialManager by lazy {
+            CredentialManager.create(this@MainActivity)
+        }
+
         @JavascriptInterface
         fun reload() {
             runOnUiThread {
@@ -222,6 +264,92 @@ class MainActivity : AppCompatActivity() {
         @JavascriptInterface
         fun isOnline(): Boolean {
             return this@MainActivity.isOnline()
+        }
+
+        /**
+         * Sign in with an existing passkey.
+         * JS: NativeBridge.passkeyGet(id, requestJson)
+         * requestJson = PublicKeyCredentialRequestOptions JSON (WebAuthn web JSON).
+         * Result is delivered asynchronously to window.__nativePasskeyCallback.
+         */
+        @JavascriptInterface
+        fun passkeyGet(id: String, requestJson: String) {
+            lifecycleScope.launch {
+                try {
+                    val option = GetPublicKeyCredentialOption(requestJson)
+                    val request = GetCredentialRequest.Builder()
+                        .addCredentialOption(option)
+                        .build()
+                    val response = credentialManager.getCredential(this@MainActivity, request)
+                    val credential = response.credential
+                    if (credential is PublicKeyCredential) {
+                        sendPasskeyResult(id, true, credential.authenticationResponseJson)
+                    } else {
+                        sendPasskeyResult(id, false, "Tipe kredensial tidak didukung: ${credential.type}")
+                    }
+                } catch (e: GetCredentialException) {
+                    sendPasskeyResult(id, false, friendlyPasskeyError(e.type, e.message))
+                } catch (e: Exception) {
+                    sendPasskeyResult(id, false, e.message ?: "Terjadi kesalahan")
+                }
+            }
+        }
+
+        /**
+         * Register a new passkey.
+         * JS: NativeBridge.passkeyCreate(id, requestJson)
+         * requestJson = PublicKeyCredentialCreationOptions JSON (WebAuthn web JSON).
+         * Result is delivered asynchronously to window.__nativePasskeyCallback.
+         */
+        @JavascriptInterface
+        fun passkeyCreate(id: String, requestJson: String) {
+            lifecycleScope.launch {
+                try {
+                    val request = CreatePublicKeyCredentialRequest(requestJson)
+                    val response = credentialManager.createCredential(this@MainActivity, request)
+                    if (response is CreatePublicKeyCredentialResponse) {
+                        sendPasskeyResult(id, true, response.registrationResponseJson)
+                    } else {
+                        sendPasskeyResult(id, false, "Tipe kredensial tidak didukung: ${response.type}")
+                    }
+                } catch (e: CreateCredentialException) {
+                    sendPasskeyResult(id, false, friendlyPasskeyError(e.type, e.message))
+                } catch (e: Exception) {
+                    sendPasskeyResult(id, false, e.message ?: "Terjadi kesalahan")
+                }
+            }
+        }
+
+        /**
+         * Deliver a passkey result back to the page.
+         * Envelope: { id, ok: Boolean, data: Object } on success, { id, ok: false, error: String } on failure.
+         */
+        private fun sendPasskeyResult(id: String, ok: Boolean, payload: String) {
+            runOnUiThread {
+                val envelope = JSONObject()
+                envelope.put("id", id)
+                envelope.put("ok", ok)
+                if (ok) {
+                    envelope.put("data", JSONObject(payload))
+                } else {
+                    envelope.put("error", payload)
+                }
+                val script = "window.__nativePasskeyCallback && window.__nativePasskeyCallback($envelope)"
+                webView.evaluateJavascript(script, null)
+            }
+        }
+
+        private fun friendlyPasskeyError(type: String?, message: String?): String {
+            val m = (message ?: "").lowercase()
+            val t = (type ?: "").lowercase()
+            return when {
+                t.contains("cancel") || m.contains("cancel") -> "Dibatalkan oleh pengguna"
+                t.contains("nocredential") -> "Tidak ada passkey tersimpan untuk akun ini"
+                t.contains("interrupt") -> "Proses passkey terputus, coba lagi"
+                !message.isNullOrBlank() -> message
+                type != null -> type
+                else -> "Terjadi kesalahan"
+            }
         }
     }
 }

@@ -57,11 +57,11 @@
                     <th class="px-2 py-1 text-center text-xs text-slate-400 dark:text-white/30">A</th>
                     @foreach ($subjects as $sub)
                     <th class="px-2 py-1 text-center text-xs text-slate-400 dark:text-white/30">Nilai</th>
-                    <th class="px-2 py-1 text-center text-xs text-slate-400 dark:text-white/30">Grade</th>
+                    <th class="px-2 py-1 text-center text-xs text-slate-400 dark:text-white/30">Nilai Akhir</th>
                     @endforeach
                     <th class="px-2 py-1 text-center text-xs text-slate-400 dark:text-white/30">Ayat</th>
                     <th class="px-2 py-1 text-center text-xs text-slate-400 dark:text-white/30">Surah</th>
-                    <th class="px-2 py-1 text-center text-xs text-slate-400 dark:text-white/30">Grade</th>
+                    <th class="px-2 py-1 text-center text-xs text-slate-400 dark:text-white/30">Nilai</th>
                 </tr>
             </thead>
             <tbody>
