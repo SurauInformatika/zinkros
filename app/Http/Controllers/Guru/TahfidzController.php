@@ -229,57 +229,130 @@ class TahfidzController extends Controller
     public function rekap(Request $request): View
     {
         $user = auth()->user();
+        $isPj = (bool) $user->is_pj_tahfidz;
 
-        $plottedClasses = ClassSubjectTeacher::where('teacher_id', $user->id)
-            ->whereHas('subject', fn ($q) => $q->where('type', Subject::TYPE_QURAN))
-            ->with(['classRoom', 'subject'])
-            ->get()
-            ->groupBy('class_id')
-            ->map(function ($items) {
-                $class = $items->first()->classRoom;
-                return [
-                    'class' => $class,
-                    'subjects' => $items->pluck('subject'),
-                ];
-            });
+        if ($isPj) {
+            $plottedClasses = ClassSubjectTeacher::whereHas('subject', fn ($q) => $q->where('type', Subject::TYPE_QURAN))
+                ->with(['classRoom', 'subject'])
+                ->get()
+                ->groupBy('class_id')
+                ->map(function ($items) {
+                    $class = $items->first()->classRoom;
+                    return [
+                        'class' => $class,
+                        'subjects' => $items->pluck('subject')->unique('id'),
+                    ];
+                });
 
-        $assignedClassIds = \App\Models\QuranTeachingAssignment::where('teacher_id', $user->id)
-            ->join('students', 'students.id', '=', 'quran_teaching_assignments.student_id')
-            ->pluck('students.class_id')
-            ->unique()
-            ->filter();
+            $assigned = \App\Models\QuranTeachingAssignment::with(['student.classRoom', 'teacher'])
+                ->get()
+                ->groupBy(function ($item) {
+                    return $item->student?->class_id;
+                })
+                ->filter(function ($items, $classId) {
+                    return !empty($classId);
+                });
 
-        if ($assignedClassIds->isNotEmpty()) {
-            $existingClassIds = $plottedClasses->keys();
-            $missingClassIds = $assignedClassIds->diff($existingClassIds);
-
-            if ($missingClassIds->isNotEmpty()) {
-                $missingClasses = \App\Models\ClassRoom::whereIn('id', $missingClassIds)->get()->keyBy('id');
-                $subjectQuran = \App\Models\Subject::where('type', Subject::TYPE_QURAN)->first();
-
-                foreach ($missingClassIds as $cid) {
-                    if (isset($missingClasses[$cid])) {
-                        $plottedClasses->put($cid, [
-                            'class' => $missingClasses[$cid],
+            $subjectQuran = Subject::where('type', Subject::TYPE_QURAN)->first();
+            foreach ($assigned as $classId => $items) {
+                if ($plottedClasses->has($classId)) {
+                    $existing = $plottedClasses->get($classId);
+                    if ($subjectQuran && !$existing['subjects']->contains('id', $subjectQuran->id)) {
+                        $existing['subjects']->push($subjectQuran);
+                    }
+                    $plottedClasses->put($classId, $existing);
+                } else {
+                    $class = $items->first()->student?->classRoom;
+                    if ($class) {
+                        $plottedClasses->put($classId, [
+                            'class' => $class,
                             'subjects' => $subjectQuran ? collect([$subjectQuran]) : collect(),
                         ]);
                     }
                 }
             }
+
+            $plottedClasses = $plottedClasses->values()->sortBy(fn ($item) => $item['class']->name ?? $item['class']->class_name ?? '')->values();
+        } else {
+            $plottedClasses = ClassSubjectTeacher::where('teacher_id', $user->id)
+                ->whereHas('subject', fn ($q) => $q->where('type', Subject::TYPE_QURAN))
+                ->with(['classRoom', 'subject'])
+                ->get()
+                ->groupBy('class_id')
+                ->map(function ($items) {
+                    $class = $items->first()->classRoom;
+                    return [
+                        'class' => $class,
+                        'subjects' => $items->pluck('subject'),
+                    ];
+                });
+
+            $assignedClassIds = \App\Models\QuranTeachingAssignment::where('teacher_id', $user->id)
+                ->join('students', 'students.id', '=', 'quran_teaching_assignments.student_id')
+                ->pluck('students.class_id')
+                ->unique()
+                ->filter();
+
+            if ($assignedClassIds->isNotEmpty()) {
+                $existingClassIds = $plottedClasses->keys();
+                $missingClassIds = $assignedClassIds->diff($existingClassIds);
+
+                if ($missingClassIds->isNotEmpty()) {
+                    $missingClasses = \App\Models\ClassRoom::whereIn('id', $missingClassIds)->get()->keyBy('id');
+                    $subjectQuran = \App\Models\Subject::where('type', Subject::TYPE_QURAN)->first();
+
+                    foreach ($missingClassIds as $cid) {
+                        if (isset($missingClasses[$cid])) {
+                            $plottedClasses->put($cid, [
+                                'class' => $missingClasses[$cid],
+                                'subjects' => $subjectQuran ? collect([$subjectQuran]) : collect(),
+                            ]);
+                        }
+                    }
+                }
+            }
+
+            $plottedClasses = $plottedClasses->values()->sortBy(fn ($item) => $item['class']->name ?? '')->values();
         }
 
-        $plottedClasses = $plottedClasses->values()->sortBy(fn ($item) => $item['class']->name ?? '')->values();
-
         $classId = $request->query('class_id');
+        $filterTeacher = $request->query('guru_id');
+        $teachers = collect();
         $students = collect();
         $studentStats = collect();
         $stats = null;
 
+        if ($isPj) {
+            $teachers = \App\Models\User::where('school_id', $user->school_id)
+                ->where(function ($q) {
+                    $q->where('is_pj_tahfidz', true)
+                      ->orWhereHas('classSubjectTeachers.subject', function ($sq) {
+                          $sq->where('type', \App\Models\Subject::TYPE_QURAN);
+                      })
+                      ->orWhereHas('quranTeachingAssignments');
+                })
+                ->orderBy('name')
+                ->get()
+                ->unique('id');
+
+            if (!$classId && $plottedClasses->isNotEmpty()) {
+                $first = $plottedClasses->first();
+                if (isset($first['class']) && $first['class']) {
+                    $classId = $first['class']->id;
+                }
+            }
+        }
+
         if ($classId) {
             $students = Student::where('class_id', $classId)->orderBy('name')->get();
 
-            $query = TahfidzRecord::where('teacher_id', $user->id)
-                ->whereHas('student', fn ($q) => $q->where('class_id', $classId));
+            $query = TahfidzRecord::whereHas('student', fn ($q) => $q->where('class_id', $classId));
+
+            if ($isPj && $filterTeacher) {
+                $query->where('teacher_id', $filterTeacher);
+            } elseif (!$isPj) {
+                $query->where('teacher_id', $user->id);
+            }
 
             if ($this->academicYearContext->exists()) {
                 $query->where('academic_year_id', $this->academicYearContext->id());
@@ -314,7 +387,7 @@ class TahfidzController extends Controller
         }
 
         return view('guru.tahfidz.rekap', compact(
-            'plottedClasses', 'classId', 'students', 'studentStats', 'stats'
+            'plottedClasses', 'classId', 'students', 'studentStats', 'stats', 'teachers', 'filterTeacher'
         ));
     }
 

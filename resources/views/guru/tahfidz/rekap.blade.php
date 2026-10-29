@@ -6,7 +6,7 @@
 <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
     <div>
         <h1 class="text-2xl font-bold tracking-tight">Rekap Hafalan</h1>
-        <p class="mt-1 text-sm text-slate-500 dark:text-white/40">Ringkasan hafalan Al-Quran siswa per kelas.</p>
+        <p class="mt-1 text-sm text-slate-500 dark:text-white/40">{{ auth()->user()->is_pj_tahfidz ? 'Rekap hafalan seluruh kelas Al-Quran.' : 'Ringkasan hafalan Al-Quran siswa per kelas.' }}</p>
     </div>
     @if ($classId)
     <a href="{{ route('guru.tahfidz.rekap-harian', ['class_id' => $classId]) }}"
@@ -17,23 +17,35 @@
     @endif
 </div>
 
+@if (auth()->user()->is_pj_tahfidz && isset($teachers) && $teachers->isNotEmpty())
+<div class="mb-6 flex flex-wrap items-center gap-2">
+    <span class="text-sm text-slate-500 dark:text-white/40">Filter:</span>
+    <a href="{{ route('guru.tahfidz.rekap', ['class_id' => $classId]) }}" class="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm border {{ empty($filterTeacher ?? null) ? 'bg-primary text-white border-primary' : 'bg-white dark:bg-[#141414] text-slate-700 dark:text-white/80 border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5' }}">
+        Semua Guru Al-Quran
+    </a>
+    @foreach ($teachers as $t)
+    <a href="{{ route('guru.tahfidz.rekap', ['class_id' => $classId, 'guru_id' => $t->id]) }}" class="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm border {{ ($filterTeacher ?? null) == $t->id ? 'bg-primary text-white border-primary' : 'bg-white dark:bg-[#141414] text-slate-700 dark:text-white/80 border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5' }}">
+        {{ $t->name }}
+    </a>
+    @endforeach
+</div>
+@endif
+
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
     @forelse ($plottedClasses as $pc)
-        @foreach ($pc['subjects'] as $subject)
-        <a href="{{ route('guru.tahfidz.rekap', ['class_id' => $pc['class']->id]) }}"
+        <a href="{{ route('guru.tahfidz.rekap', array_merge(['class_id' => $pc['class']->id], auth()->user()->is_pj_tahfidz && !empty($filterTeacher ?? null) ? ['guru_id' => $filterTeacher] : [])) }}"
             class="rounded-xl bg-white dark:bg-[#141414] border {{ ($classId ?? null) === $pc['class']->id ? 'border-primary/30 dark:border-primary/30 ring-1 ring-primary/20 dark:ring-primary/20' : 'border-slate-200 dark:border-white/10' }} p-4 hover:border-primary/30 dark:hover:border-primary/30 transition-all">
             <div class="flex items-center justify-between mb-2">
-                <span class="inline-flex items-center rounded-md bg-purple-50 dark:bg-purple-500/10 px-2 py-0.5 text-xs font-medium text-purple-700 dark:text-purple-400">{{ $pc['class']->class_name }}</span>
+                <span class="inline-flex items-center rounded-md bg-purple-50 dark:bg-purple-500/10 px-2 py-0.5 text-xs font-medium text-purple-700 dark:text-purple-400">{{ $pc['class']->class_name ?? $pc['class']->name }}</span>
                 @if (($classId ?? null) === $pc['class']->id)
                 <span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary dark:text-primary">Aktif</span>
                 @endif
             </div>
-            <p class="text-sm font-medium">{{ $subject->name }}</p>
+            <p class="text-sm font-medium">{{ isset($pc['subjects']) && $pc['subjects'] instanceof \Illuminate\Support\Collection ? $pc['subjects']->pluck('name')->implode(', ') : '' }}</p>
         </a>
-        @endforeach
     @empty
     <div class="col-span-full rounded-xl bg-white dark:bg-[#141414] border border-slate-200 dark:border-white/10 p-8 text-center">
-        <p class="text-sm text-slate-500 dark:text-white/40">Belum terploting mengajar Al-Quran.</p>
+        <p class="text-sm text-slate-500 dark:text-white/40">{{ auth()->user()->is_pj_tahfidz ? 'Belum ada kelas Al-Quran.' : 'Belum terploting mengajar Al-Quran.' }}</p>
     </div>
     @endforelse
 </div>
