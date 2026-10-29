@@ -57,6 +57,21 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
+    if (Auth::check()) {
+        $user = Auth::user();
+        $role = strtolower($user->role ?? '');
+
+        return match ($role) {
+            'superadmin', 'platform', 'admin' => redirect()->route('admin.dashboard'),
+            'guru', 'pj tahfidz', 'walikelas' => redirect()->route('guru.dashboard'),
+            'kepsek' => redirect()->route('kepsek.dashboard'),
+            'wakakur', 'wakasek', 'wakil kepala sekolah' => redirect()->route('wakakur.dashboard'),
+            'murid', 'siswa' => redirect()->route('murid.dashboard'),
+            'ortu', 'orangtua', 'orang tua' => redirect()->route('ortu.dashboard'),
+            default => redirect()->route('dashboard'),
+        };
+    }
+
     $stats = [
         'schools' => School::count(),
         'students' => Student::count(),
