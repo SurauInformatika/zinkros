@@ -363,8 +363,11 @@ class TahfidzController extends Controller
             $teacherClassIds = $teacherClassIds->filter()->unique();
 
             if ($teacherClassIds->isNotEmpty()) {
+                $classes = ClassRoom::whereIn('id', $teacherClassIds)->orderBy('class_name')->get()->keyBy('id');
+
                 $students = Student::with('classRoom')
                     ->whereIn('class_id', $teacherClassIds)
+                    ->orderBy('class_id')
                     ->orderBy('name')
                     ->get();
 
@@ -406,6 +409,7 @@ class TahfidzController extends Controller
                     return [
                         $student->id => [
                             'name' => $student->name,
+                            'class_id' => $student->class_id,
                             'class_name' => $className,
                             'total' => $records->count(),
                             'ziadah' => $records->where('activity_type', TahfidzRecord::TYPE_ZIADAH)->count(),
@@ -416,9 +420,13 @@ class TahfidzController extends Controller
                         ],
                     ];
                 });
+
+                $studentStatsGrouped = $studentStats->groupBy('class_id')->sortKeys();
             } else {
                 $students = collect();
                 $studentStats = collect();
+                $studentStatsGrouped = collect();
+                $classes = collect();
                 $stats = [
                     'total' => 0,
                     'ziadah' => 0,
@@ -486,7 +494,7 @@ class TahfidzController extends Controller
         }
 
         return view('guru.tahfidz.rekap', compact(
-            'plottedClasses', 'classId', 'students', 'studentStats', 'stats', 'teachers', 'filterTeacher', 'mode'
+            'plottedClasses', 'classId', 'students', 'studentStats', 'stats', 'teachers', 'filterTeacher', 'mode', 'studentStatsGrouped', 'classes'
         ));
     }
 
