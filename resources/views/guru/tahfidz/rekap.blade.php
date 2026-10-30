@@ -143,9 +143,11 @@
                     </tr>
                 </thead>
                 <tbody>
+                    @php $rowNo = 0; @endphp
                     @forelse ($studentStats as $sid => $ss)
+                    @php $rowNo++; @endphp
                     <tr class="border-b border-slate-50 dark:border-white/5 last:border-0 hover:bg-slate-50 dark:hover:bg-white/[0.02]">
-                        <td class="px-4 py-2.5 text-center text-slate-500 dark:text-white/40">{{ $loop->iteration }}</td>
+                        <td class="px-4 py-2.5 text-center text-slate-500 dark:text-white/40">{{ $rowNo }}</td>
                         <td class="px-4 py-2.5 font-medium">
                             <a href="{{ route('guru.tahfidz.student', $sid) }}" class="text-primary dark:text-primary hover:underline">{{ $ss['name'] }}</a>
                         </td>
