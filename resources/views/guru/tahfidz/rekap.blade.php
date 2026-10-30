@@ -50,7 +50,7 @@
             </select>
         </div>
     </form>
-    @else
+    @elseif (($mode ?? 'kelas') === 'kelas')
     <form action="{{ route('guru.tahfidz.rekap') }}" method="GET" class="flex flex-col sm:flex-row flex-wrap items-end gap-3">
         <input type="hidden" name="mode" value="kelas">
         <div class="flex-1 min-w-[220px]">
@@ -63,17 +63,6 @@
                 @endforelse
             </select>
         </div>
-        @if (auth()->user()->is_pj_tahfidz && isset($teachers) && $teachers->isNotEmpty())
-        <div class="flex-1 min-w-[220px]">
-            <label class="block text-xs font-medium text-slate-500 dark:text-white/40 mb-1">Filter Guru (opsional)</label>
-            <select name="guru_id" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0f0f0f] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30">
-                <option value="">Semua Guru</option>
-                @foreach ($teachers as $t)
-                    <option value="{{ $t->id }}" {{ ($filterTeacher ?? null) == $t->id ? 'selected' : '' }}>{{ $t->name }}</option>
-                @endforeach
-            </select>
-        </div>
-        @endif
     </form>
     @endif
 </div>
