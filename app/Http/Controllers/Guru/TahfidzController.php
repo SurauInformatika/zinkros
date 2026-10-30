@@ -358,7 +358,7 @@ class TahfidzController extends Controller
                 $query->where('academic_year_id', $this->academicYearContext->id());
             }
 
-            $allRecords = $query->with('quranMaster')->get();
+            $allRecords = $query->with('quranMaster', 'student.classRoom')->get();
 
             if ($allRecords->isNotEmpty()) {
                 $stats = [
@@ -385,9 +385,11 @@ class TahfidzController extends Controller
                 $totalAyat = $records->sum(fn ($r) => (($r->ayat_end ?? $r->ayat_start) - $r->ayat_start + 1) > 0 ? (($r->ayat_end ?? $r->ayat_start) - $r->ayat_start + 1) : 0);
                 $surahs = $records->pluck('quran_master_id')->filter()->unique()->count();
                 $avgScore = $records->whereNotNull('score')->avg('score');
+                $className = $student->classRoom->class_name ?? $student->classRoom->name ?? '-';
                 return [
                     $student->id => [
                         'name' => $student->name,
+                        'class_name' => $className,
                         'total' => $records->count(),
                         'ziadah' => $records->where('activity_type', TahfidzRecord::TYPE_ZIADAH)->count(),
                         'murajaah' => $records->where('activity_type', TahfidzRecord::TYPE_MURAJAAH)->count(),
