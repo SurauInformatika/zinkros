@@ -517,24 +517,69 @@ class TahfidzController extends Controller
     public function rekapHarian(Request $request): View
     {
         $validated = $request->validate([
-            'class_id' => 'required|uuid',
+            'class_id' => 'nullable|uuid',
             'filter' => 'nullable|in:hari_ini,pekan_ini,bulan_ini,semester_ini,tahun_ajaran_ini',
         ]);
 
         $user = auth()->user();
-        $classRoom = ClassRoom::where('school_id', $user->school_id)
-            ->findOrFail($validated['class_id']);
-
-        $hasPlot = ClassSubjectTeacher::where('teacher_id', $user->id)
-            ->where('class_id', $classRoom->id)
-            ->whereHas('subject', fn ($query) => $query->where('type', Subject::TYPE_QURAN))
-            ->exists();
-        $hasAssignment = \App\Models\QuranTeachingAssignment::where('teacher_id', $user->id)
-            ->whereHas('student', fn ($query) => $query->where('class_id', $classRoom->id))
-            ->exists();
-
-        if (!$hasPlot && !$hasAssignment) {
+        if (! $user) {
             abort(403);
+        }
+
+        $classId = $validated['class_id'] ?? $request->input('class_id');
+
+        if (! $classId) {
+            return view('guru.tahfidz.rekap-harian', [
+                'class' => null,
+                'records' => collect(),
+                'dates' => collect(),
+                'summary' => ['siswa_menghafal' => 0, 'ziadah' => 0, 'murajaah' => 0, 'total_ayat' => 0],
+                'canInput' => false,
+            ]);
+        }
+
+        $classRoom = ClassRoom::where('school_id', $user->school_id)
+            ->find($classId);
+
+        if (! $classRoom) {
+            return view('guru.tahfidz.rekap-harian', [
+                'class' => null,
+                'records' => collect(),
+                'dates' => collect(),
+                'summary' => ['siswa_menghafal' => 0, 'ziadah' => 0, 'murajaah' => 0, 'total_ayat' => 0],
+                'canInput' => false,
+            ]);
+        }
+
+        $hasPlot = false;
+        $hasAssignment = false;
+
+        if ($user->role === 'guru') {
+            if ($user->is_pj_tahfidz) {
+                $hasPlot = true;
+                $hasAssignment = true;
+            } else {
+                $hasPlot = ClassSubjectTeacher::where('teacher_id', $user->id)
+                    ->where('class_id', $classRoom->id)
+                    ->whereHas('subject', fn ($query) => $query->where('type', Subject::TYPE_QURAN))
+                    ->exists();
+                $hasAssignment = \App\Models\QuranTeachingAssignment::where('teacher_id', $user->id)
+                    ->whereHas('student', fn ($query) => $query->where('class_id', $classRoom->id))
+                    ->exists();
+            }
+        } elseif (in_array($user->role, ['admin', 'kepsek', 'wakakur'])) {
+            $hasPlot = true;
+            $hasAssignment = true;
+        }
+
+        if (! $hasPlot && ! $hasAssignment) {
+            return view('guru.tahfidz.rekap-harian', [
+                'class' => $classRoom,
+                'records' => collect(),
+                'dates' => collect(),
+                'summary' => ['siswa_menghafal' => 0, 'ziadah' => 0, 'murajaah' => 0, 'total_ayat' => 0],
+                'canInput' => false,
+            ]);
         }
 
         $today = Carbon::today();
