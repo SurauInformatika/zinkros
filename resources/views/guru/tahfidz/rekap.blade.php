@@ -128,6 +128,7 @@
             <table class="w-full text-sm whitespace-nowrap">
                 <thead>
                     <tr class="border-b border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-white/[0.02]">
+                        <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40 w-10">Peringkat</th>
                         <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40 w-10">No</th>
                         <th class="px-4 py-3 text-left font-medium text-slate-500 dark:text-white/40">Siswa</th>
                         @if (auth()->user()->is_pj_tahfidz)
@@ -143,10 +144,19 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @php $rowNo = 0; @endphp
-                    @forelse ($studentStats as $sid => $ss)
-                    @php $rowNo++; @endphp
+                    @php
+                        $ranked = $studentStats->map(function($ss, $sid){
+                            $ss['sid'] = $sid;
+                            return $ss;
+                        })->sortByDesc(function($ss){
+                            return isset($ss['avg_score']) && $ss['avg_score'] !== null ? (float)$ss['avg_score'] : -1;
+                        })->values();
+                        $rowNo = 0;
+                    @endphp
+                    @forelse ($ranked as $i => $ss)
+                    @php $rowNo++; $sid = $ss['sid'] ?? null; @endphp
                     <tr class="border-b border-slate-50 dark:border-white/5 last:border-0 hover:bg-slate-50 dark:hover:bg-white/[0.02]">
+                        <td class="px-4 py-2.5 text-center font-bold">{{ $i + 1 }}</td>
                         <td class="px-4 py-2.5 text-center text-slate-500 dark:text-white/40">{{ $rowNo }}</td>
                         <td class="px-4 py-2.5 font-medium">
                             <a href="{{ route('guru.tahfidz.student', $sid) }}" class="text-primary dark:text-primary hover:underline">{{ $ss['name'] }}</a>
@@ -246,7 +256,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="{{ auth()->user()->is_pj_tahfidz ? 10 : 9 }}" class="px-4 py-8 text-center text-slate-400 dark:text-white/30 text-sm">Belum ada data hafalan.</td>
+                        <td colspan="{{ auth()->user()->is_pj_tahfidz ? 11 : 10 }}" class="px-4 py-8 text-center text-slate-400 dark:text-white/30 text-sm">Belum ada data hafalan.</td>
                     </tr>
                     @endforelse
                 </tbody>
