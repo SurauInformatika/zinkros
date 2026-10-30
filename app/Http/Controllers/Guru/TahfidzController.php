@@ -835,20 +835,35 @@ class TahfidzController extends Controller
     {
         $user = auth()->user();
 
+        if (! $user) {
+            abort(403);
+        }
+
         if ($student->school_id !== $user->school_id) {
             abort(403);
         }
 
-        $hasPlot = ClassSubjectTeacher::where('teacher_id', $user->id)
-            ->where('class_id', $student->class_id)
-            ->whereHas('subject', fn ($q) => $q->where('type', Subject::TYPE_QURAN))
-            ->exists();
+        $canAccess = false;
+        if ($user->role === 'guru') {
+            if ($user->is_pj_tahfidz) {
+                $canAccess = true;
+            } else {
+                $hasPlot = ClassSubjectTeacher::where('teacher_id', $user->id)
+                    ->where('class_id', $student->class_id)
+                    ->whereHas('subject', fn ($q) => $q->where('type', Subject::TYPE_QURAN))
+                    ->exists();
 
-        $hasAssignment = \App\Models\QuranTeachingAssignment::where('teacher_id', $user->id)
-            ->where('student_id', $student->id)
-            ->exists();
+                $hasAssignment = \App\Models\QuranTeachingAssignment::where('teacher_id', $user->id)
+                    ->where('student_id', $student->id)
+                    ->exists();
 
-        if (!$hasPlot && !$hasAssignment) {
+                $canAccess = $hasPlot || $hasAssignment;
+            }
+        } elseif (in_array($user->role, ['admin', 'kepsek', 'wakakur'])) {
+            $canAccess = true;
+        }
+
+        if (! $canAccess) {
             abort(403);
         }
 
