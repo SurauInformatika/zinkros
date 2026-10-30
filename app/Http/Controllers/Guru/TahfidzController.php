@@ -362,17 +362,30 @@ class TahfidzController extends Controller
 
             $teacherClassIds = $teacherClassIds->filter()->unique();
 
-            if ($teacherClassIds->isNotEmpty()) {
+            $assignedStudentIds = \App\Models\QuranTeachingAssignment::where('teacher_id', $filterTeacher)
+                ->pluck('student_id')
+                ->filter()
+                ->unique();
+
+            if ($teacherClassIds->isNotEmpty() || $assignedStudentIds->isNotEmpty()) {
                 $classes = ClassRoom::whereIn('id', $teacherClassIds)->orderBy('class_name')->get()->keyBy('id');
 
                 $students = Student::with('classRoom')
-                    ->whereIn('class_id', $teacherClassIds)
+                    ->when($assignedStudentIds->isNotEmpty(), function ($q) use ($assignedStudentIds) {
+                        $q->whereIn('id', $assignedStudentIds);
+                    }, function ($q) use ($teacherClassIds) {
+                        $q->whereIn('class_id', $teacherClassIds);
+                    })
                     ->orderBy('class_id')
                     ->orderBy('name')
                     ->get();
 
                 $query = TahfidzRecord::where('teacher_id', $filterTeacher)
-                    ->whereHas('student', fn ($q) => $q->whereIn('class_id', $teacherClassIds));
+                    ->when($assignedStudentIds->isNotEmpty(), function ($q) use ($assignedStudentIds) {
+                        $q->whereIn('student_id', $assignedStudentIds);
+                    }, function ($q) use ($teacherClassIds) {
+                        $q->whereHas('student', fn ($sq) => $sq->whereIn('class_id', $teacherClassIds));
+                    });
 
                 if ($this->academicYearContext->exists()) {
                     $query->where('academic_year_id', $this->academicYearContext->id());
