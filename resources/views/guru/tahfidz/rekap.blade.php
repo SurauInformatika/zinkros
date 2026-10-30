@@ -125,25 +125,30 @@
                 </div>
             </div>
             <div class="overflow-x-auto">
-                <table class="w-full text-sm whitespace-nowrap">
-                    <thead>
-                        <tr class="border-b border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-white/[0.02]">
-                            <th class="px-4 py-3 text-left font-medium text-slate-500 dark:text-white/40">Siswa</th>
-                            <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40">Total</th>
-                            <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40">Ziadah</th>
-                            <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40">Murajaah</th>
-                            <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40">Ayat</th>
-                            <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40">Surah</th>
-                            <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40">Rata Skor</th>
-                            <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40">Predikat</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($list as $sid => $ss)
-                        <tr class="border-b border-slate-50 dark:border-white/5 last:border-0 hover:bg-slate-50 dark:hover:bg-white/[0.02]">
-                            <td class="px-4 py-2.5 font-medium">
-                                <a href="{{ route('guru.tahfidz.student', $sid) }}" class="text-primary dark:text-primary hover:underline">{{ $ss['name'] }}</a>
-                            </td>
+            <table class="w-full text-sm whitespace-nowrap">
+                <thead>
+                    <tr class="border-b border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-white/[0.02]">
+                        <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40 w-10">No</th>
+                        <th class="px-4 py-3 text-left font-medium text-slate-500 dark:text-white/40">Siswa</th>
+                        @if (auth()->user()->is_pj_tahfidz)
+                        <th class="px-4 py-3 text-left font-medium text-slate-500 dark:text-white/40">Kelas</th>
+                        @endif
+                        <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40">Total</th>
+                        <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40">Ziadah</th>
+                        <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40">Murajaah</th>
+                        <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40">Ayat</th>
+                        <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40">Surah</th>
+                        <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40">Rata Skor</th>
+                        <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40">Predikat</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($studentStats as $sid => $ss)
+                    <tr class="border-b border-slate-50 dark:border-white/5 last:border-0 hover:bg-slate-50 dark:hover:bg-white/[0.02]">
+                        <td class="px-4 py-2.5 text-center text-slate-500 dark:text-white/40">{{ $loop->iteration }}</td>
+                        <td class="px-4 py-2.5 font-medium">
+                            <a href="{{ route('guru.tahfidz.student', $sid) }}" class="text-primary dark:text-primary hover:underline">{{ $ss['name'] }}</a>
+                        </td>
                             <td class="px-4 py-2.5 text-center font-bold">{{ $ss['total'] }}</td>
                             <td class="px-4 py-2.5 text-center"><span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary dark:text-primary">{{ $ss['ziadah'] }}</span></td>
                             <td class="px-4 py-2.5 text-center"><span class="inline-flex items-center rounded-md bg-blue-50 dark:bg-blue-500/10 px-2 py-0.5 text-xs font-medium text-blue-700 dark:text-blue-400">{{ $ss['murajaah'] }}</span></td>
@@ -239,7 +244,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="8" class="px-4 py-8 text-center text-slate-400 dark:text-white/30 text-sm">Belum ada data hafalan.</td>
+                        <td colspan="{{ auth()->user()->is_pj_tahfidz ? 10 : 9 }}" class="px-4 py-8 text-center text-slate-400 dark:text-white/30 text-sm">Belum ada data hafalan.</td>
                     </tr>
                     @endforelse
                 </tbody>
