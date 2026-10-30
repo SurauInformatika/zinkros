@@ -366,22 +366,35 @@ class TahfidzController extends Controller
                     'ziadah' => $allRecords->where('activity_type', TahfidzRecord::TYPE_ZIADAH)->count(),
                     'murajaah' => $allRecords->where('activity_type', TahfidzRecord::TYPE_MURAJAAH)->count(),
                     'avg_score' => round($allRecords->avg('score'), 1),
-                    'unique_surahs' => $allRecords->pluck('quran_master_id')->unique()->count(),
+                    'unique_surahs' => $allRecords->pluck('quran_master_id')->filter()->unique()->count(),
+                ];
+            } else {
+                $stats = [
+                    'total' => 0,
+                    'ziadah' => 0,
+                    'murajaah' => 0,
+                    'avg_score' => 0,
+                    'unique_surahs' => 0,
                 ];
             }
 
-            $studentStats = $allRecords->groupBy('student_id')->map(function ($records, $studentId) use ($students) {
-                $student = $students->firstWhere('id', $studentId);
-                $totalAyat = $records->sum(fn ($r) => $r->ayat_end - $r->ayat_start + 1);
-                $surahs = $records->pluck('quran_master_id')->unique()->count();
+            $recordsByStudent = $allRecords->groupBy('student_id');
+
+            $studentStats = $students->mapWithKeys(function ($student) use ($recordsByStudent) {
+                $records = $recordsByStudent->get($student->id, collect());
+                $totalAyat = $records->sum(fn ($r) => (($r->ayat_end ?? $r->ayat_start) - $r->ayat_start + 1) > 0 ? (($r->ayat_end ?? $r->ayat_start) - $r->ayat_start + 1) : 0);
+                $surahs = $records->pluck('quran_master_id')->filter()->unique()->count();
+                $avgScore = $records->whereNotNull('score')->avg('score');
                 return [
-                    'name' => $student?->name ?? '-',
-                    'total' => $records->count(),
-                    'ziadah' => $records->where('activity_type', TahfidzRecord::TYPE_ZIADAH)->count(),
-                    'murajaah' => $records->where('activity_type', TahfidzRecord::TYPE_MURAJAAH)->count(),
-                    'total_ayat' => $totalAyat,
-                    'surahs' => $surahs,
-                    'avg_score' => round($records->avg('score'), 1),
+                    $student->id => [
+                        'name' => $student->name,
+                        'total' => $records->count(),
+                        'ziadah' => $records->where('activity_type', TahfidzRecord::TYPE_ZIADAH)->count(),
+                        'murajaah' => $records->where('activity_type', TahfidzRecord::TYPE_MURAJAAH)->count(),
+                        'total_ayat' => $totalAyat,
+                        'surahs' => $surahs,
+                        'avg_score' => $avgScore ? round($avgScore, 1) : null,
+                    ],
                 ];
             });
         }
