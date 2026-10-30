@@ -493,6 +493,9 @@ class TahfidzController extends Controller
             });
         }
 
+        $studentStatsGrouped = $studentStatsGrouped ?? collect();
+        $classes = $classes ?? collect();
+
         return view('guru.tahfidz.rekap', compact(
             'plottedClasses', 'classId', 'students', 'studentStats', 'stats', 'teachers', 'filterTeacher', 'mode', 'studentStatsGrouped', 'classes'
         ));
