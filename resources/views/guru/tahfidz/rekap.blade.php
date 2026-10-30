@@ -6,10 +6,16 @@
 <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
     <div>
         <h1 class="text-2xl font-bold tracking-tight">Rekap Hafalan</h1>
-        <p class="mt-1 text-sm text-slate-500 dark:text-white/40">{{ auth()->user()->is_pj_tahfidz ? 'Rekap hafalan seluruh kelas Al-Quran.' : 'Ringkasan hafalan Al-Quran siswa per kelas.' }}</p>
+        <p class="mt-1 text-sm text-slate-500 dark:text-white/40">{{ auth()->user()->is_pj_tahfidz ? 'Rekap hafalan Al-Quran.' : 'Ringkasan hafalan Al-Quran siswa per kelas.' }}</p>
     </div>
-    @if ($classId)
+    @if (($mode ?? 'kelas') === 'kelas' && $classId)
     <a href="{{ route('guru.tahfidz.rekap-harian', ['class_id' => $classId]) }}"
+        class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-primary to-secondary px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-primary/20 hover:shadow-md transition">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+        Rekap Setoran Harian
+    </a>
+    @elseif (($mode ?? 'kelas') === 'guru' && !empty($filterTeacher ?? null))
+    <a href="{{ route('guru.tahfidz.rekap-harian', ['class_id' => $students->first()?->class_id ?? ($plottedClasses->first()['class']->id ?? '')]) }}"
         class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-primary to-secondary px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-primary/20 hover:shadow-md transition">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
         Rekap Setoran Harian
@@ -17,8 +23,36 @@
     @endif
 </div>
 
+@if (auth()->user()->is_pj_tahfidz)
+<div class="mb-4 flex flex-wrap items-center gap-2">
+    <a href="{{ route('guru.tahfidz.rekap', ['mode' => 'kelas']) }}" class="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm border {{ ($mode ?? 'kelas') === 'kelas' ? 'bg-primary text-white border-primary' : 'bg-white dark:bg-[#141414] text-slate-700 dark:text-white/80 border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5' }}">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5"/></svg>
+        Berdasarkan Kelas
+    </a>
+    <a href="{{ route('guru.tahfidz.rekap', ['mode' => 'guru']) }}" class="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm border {{ ($mode ?? 'kelas') === 'guru' ? 'bg-primary text-white border-primary' : 'bg-white dark:bg-[#141414] text-slate-700 dark:text-white/80 border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5' }}">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
+        Berdasarkan Guru
+    </a>
+</div>
+@endif
+
 <div class="mb-6 rounded-xl bg-white dark:bg-[#141414] border border-slate-200 dark:border-white/10 p-4">
+    @if (($mode ?? 'kelas') === 'guru' && auth()->user()->is_pj_tahfidz)
     <form action="{{ route('guru.tahfidz.rekap') }}" method="GET" class="flex flex-col sm:flex-row flex-wrap items-end gap-3">
+        <input type="hidden" name="mode" value="guru">
+        <div class="flex-1 min-w-[260px]">
+            <label class="block text-xs font-medium text-slate-500 dark:text-white/40 mb-1">Guru Al-Quran</label>
+            <select name="guru_id" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0f0f0f] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30">
+                <option value="">Pilih Guru Al-Quran</option>
+                @foreach ($teachers as $t)
+                    <option value="{{ $t->id }}" {{ ($filterTeacher ?? null) == $t->id ? 'selected' : '' }}>{{ $t->name }}</option>
+                @endforeach
+            </select>
+        </div>
+    </form>
+    @else
+    <form action="{{ route('guru.tahfidz.rekap') }}" method="GET" class="flex flex-col sm:flex-row flex-wrap items-end gap-3">
+        <input type="hidden" name="mode" value="kelas">
         <div class="flex-1 min-w-[220px]">
             <label class="block text-xs font-medium text-slate-500 dark:text-white/40 mb-1">Kelas</label>
             <select name="class_id" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0f0f0f] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30">
@@ -31,9 +65,9 @@
         </div>
         @if (auth()->user()->is_pj_tahfidz && isset($teachers) && $teachers->isNotEmpty())
         <div class="flex-1 min-w-[220px]">
-            <label class="block text-xs font-medium text-slate-500 dark:text-white/40 mb-1">Guru Al-Quran</label>
+            <label class="block text-xs font-medium text-slate-500 dark:text-white/40 mb-1">Filter Guru (opsional)</label>
             <select name="guru_id" onchange="this.form.submit()" class="w-full rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0f0f0f] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30">
-                <option value="">Semua Guru Al-Quran</option>
+                <option value="">Semua Guru</option>
                 @foreach ($teachers as $t)
                     <option value="{{ $t->id }}" {{ ($filterTeacher ?? null) == $t->id ? 'selected' : '' }}>{{ $t->name }}</option>
                 @endforeach
@@ -41,9 +75,31 @@
         </div>
         @endif
     </form>
+    @endif
 </div>
 
-@if ($classId && ($tab ?? 'per-siswa') === 'per-siswa')
+@if (($mode ?? 'kelas') === 'kelas')
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+    @forelse ($plottedClasses as $pc)
+        <a href="{{ route('guru.tahfidz.rekap', array_merge(['mode' => 'kelas', 'class_id' => $pc['class']->id], auth()->user()->is_pj_tahfidz && !empty($filterTeacher ?? null) ? ['guru_id' => $filterTeacher] : [])) }}"
+            class="rounded-xl bg-white dark:bg-[#141414] border {{ ($classId ?? null) === $pc['class']->id ? 'border-primary/30 dark:border-primary/30 ring-1 ring-primary/20 dark:ring-primary/20' : 'border-slate-200 dark:border-white/10' }} p-4 hover:border-primary/30 dark:hover:border-primary/30 transition-all">
+            <div class="flex items-center justify-between mb-2">
+                <span class="inline-flex items-center rounded-md bg-purple-50 dark:bg-purple-500/10 px-2 py-0.5 text-xs font-medium text-purple-700 dark:text-purple-400">{{ $pc['class']->class_name ?? $pc['class']->name }}</span>
+                @if (($classId ?? null) === $pc['class']->id)
+                <span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary dark:text-primary">Aktif</span>
+                @endif
+            </div>
+            <p class="text-sm font-medium">{{ isset($pc['subjects']) && $pc['subjects'] instanceof \Illuminate\Support\Collection ? $pc['subjects']->pluck('name')->implode(', ') : '' }}</p>
+        </a>
+    @empty
+    <div class="col-span-full rounded-xl bg-white dark:bg-[#141414] border border-slate-200 dark:border-white/10 p-8 text-center">
+        <p class="text-sm text-slate-500 dark:text-white/40">{{ auth()->user()->is_pj_tahfidz ? 'Belum ada kelas Al-Quran.' : 'Belum terploting mengajar Al-Quran.' }}</p>
+    </div>
+    @endforelse
+</div>
+@endif
+
+@if (($mode ?? 'kelas') === 'guru' && auth()->user()->is_pj_tahfidz && !empty($filterTeacher ?? null))
     @if ($stats)
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
         <div class="rounded-xl bg-white dark:bg-[#141414] border border-slate-200 dark:border-white/10 p-4">
@@ -64,61 +120,133 @@
         </div>
     </div>
 
-<div class="rounded-xl bg-white dark:bg-[#141414] border border-slate-200 dark:border-white/10 overflow-hidden mb-6">
-    <div class="p-4 border-b border-slate-100 dark:border-white/5">
-        @php $avgScore = $studentStats->pluck('avg_score')->filter()->avg(); @endphp
-        <h2 class="font-semibold">Rata-rata Skor: {{ $avgScore ? round($avgScore, 1) : '-' }} ({{ $avgScore ? \App\Models\TahfidzRecord::scoreToPredikat((int)$avgScore) : '-' }})</h2>
+    <div class="rounded-xl bg-white dark:bg-[#141414] border border-slate-200 dark:border-white/10 overflow-hidden mb-6">
+        <div class="p-4 border-b border-slate-100 dark:border-white/5">
+            @php $avgScore = $studentStats->pluck('avg_score')->filter()->avg(); @endphp
+            <h2 class="font-semibold">Rata-rata Skor: {{ $avgScore ? round($avgScore, 1) : '-' }} ({{ $avgScore ? \App\Models\TahfidzRecord::scoreToPredikat((int)$avgScore) : '-' }})</h2>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm whitespace-nowrap">
+                <thead>
+                    <tr class="border-b border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-white/[0.02]">
+                        <th class="px-4 py-3 text-left font-medium text-slate-500 dark:text-white/40">Siswa</th>
+                        <th class="px-4 py-3 text-left font-medium text-slate-500 dark:text-white/40">Kelas</th>
+                        <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40">Total</th>
+                        <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40">Ziadah</th>
+                        <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40">Murajaah</th>
+                        <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40">Ayat</th>
+                        <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40">Surah</th>
+                        <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40">Rata Skor</th>
+                        <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40">Predikat</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($studentStats as $sid => $ss)
+                    <tr class="border-b border-slate-50 dark:border-white/5 last:border-0 hover:bg-slate-50 dark:hover:bg-white/[0.02]">
+                        <td class="px-4 py-2.5 font-medium">
+                            <a href="{{ route('guru.tahfidz.student', $sid) }}" class="text-primary dark:text-primary hover:underline">{{ $ss['name'] }}</a>
+                        </td>
+                        <td class="px-4 py-2.5">{{ $ss['class_name'] ?? '-' }}</td>
+                        <td class="px-4 py-2.5 text-center font-bold">{{ $ss['total'] }}</td>
+                        <td class="px-4 py-2.5 text-center"><span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary dark:text-primary">{{ $ss['ziadah'] }}</span></td>
+                        <td class="px-4 py-2.5 text-center"><span class="inline-flex items-center rounded-md bg-blue-50 dark:bg-blue-500/10 px-2 py-0.5 text-xs font-medium text-blue-700 dark:text-blue-400">{{ $ss['murajaah'] }}</span></td>
+                        <td class="px-4 py-2.5 text-center">{{ $ss['total_ayat'] }}</td>
+                        <td class="px-4 py-2.5 text-center">{{ $ss['surahs'] }}</td>
+                        <td class="px-4 py-2.5 text-center font-medium">{{ $ss['avg_score'] ?? '-' }}</td>
+                        <td class="px-4 py-2.5 text-center">
+                            @php $p = isset($ss['avg_score']) ? \App\Models\TahfidzRecord::scoreToPredikat((int)$ss['avg_score']) : '-'; @endphp
+                            @if ($p !== '-')
+                                <span class="inline-flex items-center rounded-md {{ \App\Models\TahfidzRecord::predikatColor($p) }} px-2 py-0.5 text-xs font-bold">{{ $p }}</span>
+                            @else
+                                <span class="text-slate-400">-</span>
+                            @endif
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="9" class="px-4 py-8 text-center text-slate-400 dark:text-white/30 text-sm">Belum ada data hafalan.</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     </div>
-    <div class="overflow-x-auto">
-        <table class="w-full text-sm whitespace-nowrap">
-            <thead>
-                <tr class="border-b border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-white/[0.02]">
-                    <th class="px-4 py-3 text-left font-medium text-slate-500 dark:text-white/40">Siswa</th>
-                    @if (auth()->user()->is_pj_tahfidz && !empty($filterTeacher ?? null))
-                    <th class="px-4 py-3 text-left font-medium text-slate-500 dark:text-white/40">Kelas</th>
-                    @endif
-                    <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40">Total</th>
-                    <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40">Ziadah</th>
-                    <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40">Murajaah</th>
-                    <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40">Ayat</th>
-                    <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40">Surah</th>
-                    <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40">Rata Skor</th>
-                    <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40">Predikat</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse ($studentStats as $sid => $ss)
-                <tr class="border-b border-slate-50 dark:border-white/5 last:border-0 hover:bg-slate-50 dark:hover:bg-white/[0.02]">
-                    <td class="px-4 py-2.5 font-medium">
-                        <a href="{{ route('guru.tahfidz.student', $sid) }}" class="text-primary dark:text-primary hover:underline">{{ $ss['name'] }}</a>
-                    </td>
-                    @if (auth()->user()->is_pj_tahfidz && !empty($filterTeacher ?? null))
-                    <td class="px-4 py-2.5">{{ $ss['class_name'] ?? '-' }}</td>
-                    @endif
-                    <td class="px-4 py-2.5 text-center font-bold">{{ $ss['total'] }}</td>
-                    <td class="px-4 py-2.5 text-center"><span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary dark:text-primary">{{ $ss['ziadah'] }}</span></td>
-                    <td class="px-4 py-2.5 text-center"><span class="inline-flex items-center rounded-md bg-blue-50 dark:bg-blue-500/10 px-2 py-0.5 text-xs font-medium text-blue-700 dark:text-blue-400">{{ $ss['murajaah'] }}</span></td>
-                    <td class="px-4 py-2.5 text-center">{{ $ss['total_ayat'] }}</td>
-                    <td class="px-4 py-2.5 text-center">{{ $ss['surahs'] }}</td>
-                    <td class="px-4 py-2.5 text-center font-medium">{{ $ss['avg_score'] ?? '-' }}</td>
-                    <td class="px-4 py-2.5 text-center">
-                        @php $p = isset($ss['avg_score']) ? \App\Models\TahfidzRecord::scoreToPredikat((int)$ss['avg_score']) : '-'; @endphp
-                        @if ($p !== '-')
-                            <span class="inline-flex items-center rounded-md {{ \App\Models\TahfidzRecord::predikatColor($p) }} px-2 py-0.5 text-xs font-bold">{{ $p }}</span>
-                        @else
-                            <span class="text-slate-400">-</span>
-                        @endif
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="{{ (auth()->user()->is_pj_tahfidz && !empty($filterTeacher ?? null)) ? 9 : 8 }}" class="px-4 py-8 text-center text-slate-400 dark:text-white/30 text-sm">Belum ada data hafalan.</td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
+    @else
+    <div class="rounded-xl bg-white dark:bg-[#141414] border border-slate-200 dark:border-white/10 p-8 text-center">
+        <svg class="w-10 h-10 mx-auto text-slate-300 dark:text-white/20 mb-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+        <p class="text-sm text-slate-500 dark:text-white/40">Belum ada data hafalan untuk guru ini.</p>
     </div>
-</div>
+    @endif
+@elseif ($classId && ($mode ?? 'kelas') === 'kelas')
+    @if ($stats)
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+        <div class="rounded-xl bg-white dark:bg-[#141414] border border-slate-200 dark:border-white/10 p-4">
+            <p class="text-xs text-slate-500 dark:text-white/40 mb-1">Total Hafalan</p>
+            <p class="text-2xl font-bold">{{ $stats['total'] }}</p>
+        </div>
+        <div class="rounded-xl bg-white dark:bg-[#141414] border border-slate-200 dark:border-white/10 p-4">
+            <p class="text-xs text-slate-500 dark:text-white/40 mb-1">Surah Dihafal</p>
+            <p class="text-2xl font-bold">{{ $stats['unique_surahs'] }}</p>
+        </div>
+        <div class="rounded-xl bg-white dark:bg-[#141414] border border-slate-200 dark:border-white/10 p-4">
+            <p class="text-xs text-slate-500 dark:text-white/40 mb-1">Ziadah</p>
+            <p class="text-2xl font-bold text-primary dark:text-primary">{{ $stats['ziadah'] }}</p>
+        </div>
+        <div class="rounded-xl bg-white dark:bg-[#141414] border border-slate-200 dark:border-white/10 p-4">
+            <p class="text-xs text-slate-500 dark:text-white/40 mb-1">Murajaah</p>
+            <p class="text-2xl font-bold text-blue-600 dark:text-blue-400">{{ $stats['murajaah'] }}</p>
+        </div>
+    </div>
+
+    <div class="rounded-xl bg-white dark:bg-[#141414] border border-slate-200 dark:border-white/10 overflow-hidden mb-6">
+        <div class="p-4 border-b border-slate-100 dark:border-white/5">
+            @php $avgScore = $studentStats->pluck('avg_score')->filter()->avg(); @endphp
+            <h2 class="font-semibold">Rata-rata Skor: {{ $avgScore ? round($avgScore, 1) : '-' }} ({{ $avgScore ? \App\Models\TahfidzRecord::scoreToPredikat((int)$avgScore) : '-' }})</h2>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm whitespace-nowrap">
+                <thead>
+                    <tr class="border-b border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-white/[0.02]">
+                        <th class="px-4 py-3 text-left font-medium text-slate-500 dark:text-white/40">Siswa</th>
+                        <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40">Total</th>
+                        <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40">Ziadah</th>
+                        <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40">Murajaah</th>
+                        <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40">Ayat</th>
+                        <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40">Surah</th>
+                        <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40">Rata Skor</th>
+                        <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40">Predikat</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($studentStats as $sid => $ss)
+                    <tr class="border-b border-slate-50 dark:border-white/5 last:border-0 hover:bg-slate-50 dark:hover:bg-white/[0.02]">
+                        <td class="px-4 py-2.5 font-medium">
+                            <a href="{{ route('guru.tahfidz.student', $sid) }}" class="text-primary dark:text-primary hover:underline">{{ $ss['name'] }}</a>
+                        </td>
+                        <td class="px-4 py-2.5 text-center font-bold">{{ $ss['total'] }}</td>
+                        <td class="px-4 py-2.5 text-center"><span class="inline-flex items-center rounded-md bg-primary/10 dark:bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary dark:text-primary">{{ $ss['ziadah'] }}</span></td>
+                        <td class="px-4 py-2.5 text-center"><span class="inline-flex items-center rounded-md bg-blue-50 dark:bg-blue-500/10 px-2 py-0.5 text-xs font-medium text-blue-700 dark:text-blue-400">{{ $ss['murajaah'] }}</span></td>
+                        <td class="px-4 py-2.5 text-center">{{ $ss['total_ayat'] }}</td>
+                        <td class="px-4 py-2.5 text-center">{{ $ss['surahs'] }}</td>
+                        <td class="px-4 py-2.5 text-center font-medium">{{ $ss['avg_score'] ?? '-' }}</td>
+                        <td class="px-4 py-2.5 text-center">
+                            @php $p = isset($ss['avg_score']) ? \App\Models\TahfidzRecord::scoreToPredikat((int)$ss['avg_score']) : '-'; @endphp
+                            @if ($p !== '-')
+                                <span class="inline-flex items-center rounded-md {{ \App\Models\TahfidzRecord::predikatColor($p) }} px-2 py-0.5 text-xs font-bold">{{ $p }}</span>
+                            @else
+                                <span class="text-slate-400">-</span>
+                            @endif
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="8" class="px-4 py-8 text-center text-slate-400 dark:text-white/30 text-sm">Belum ada data hafalan.</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
     @else
     <div class="rounded-xl bg-white dark:bg-[#141414] border border-slate-200 dark:border-white/10 p-8 text-center">
         <svg class="w-10 h-10 mx-auto text-slate-300 dark:text-white/20 mb-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>

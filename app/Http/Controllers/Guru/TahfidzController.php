@@ -230,6 +230,7 @@ class TahfidzController extends Controller
     {
         $user = auth()->user();
         $isPj = (bool) $user->is_pj_tahfidz;
+        $mode = $request->query('mode', 'kelas');
 
         if ($isPj) {
             $plottedClasses = ClassSubjectTeacher::whereHas('subject', fn ($q) => $q->where('type', Subject::TYPE_QURAN))
@@ -272,7 +273,7 @@ class TahfidzController extends Controller
                 }
             }
 
-            $plottedClasses = $plottedClasses->values()->sortBy(fn ($item) => $item['class']->name ?? $item['class']->class_name ?? '')->values();
+            $plottedClasses = $plottedClasses->values()->sortBy(fn ($item) => $item['class']->class_name ?? $item['class']->name ?? '')->values();
         } else {
             $plottedClasses = ClassSubjectTeacher::where('teacher_id', $user->id)
                 ->whereHas('subject', fn ($q) => $q->where('type', Subject::TYPE_QURAN))
@@ -312,7 +313,7 @@ class TahfidzController extends Controller
                 }
             }
 
-            $plottedClasses = $plottedClasses->values()->sortBy(fn ($item) => $item['class']->name ?? '')->values();
+            $plottedClasses = $plottedClasses->values()->sortBy(fn ($item) => $item['class']->class_name ?? $item['class']->name ?? '')->values();
         }
 
         $classId = $request->query('class_id');
@@ -335,16 +336,99 @@ class TahfidzController extends Controller
                 ->get()
                 ->unique('id');
 
-            if (!$classId && $plottedClasses->isNotEmpty()) {
-                $first = $plottedClasses->first();
-                if (isset($first['class']) && $first['class']) {
-                    $classId = $first['class']->id;
+            if ($mode !== 'guru') {
+                if (!$classId && $plottedClasses->isNotEmpty()) {
+                    $first = $plottedClasses->first();
+                    if (isset($first['class']) && $first['class']) {
+                        $classId = $first['class']->id;
+                    }
                 }
             }
         }
 
-        if ($classId) {
-            $students = Student::where('class_id', $classId)->orderBy('name')->get();
+        if ($mode === 'guru' && $isPj && $filterTeacher) {
+            $guru = $teachers->firstWhere('id', $filterTeacher) ?? \App\Models\User::find($filterTeacher);
+
+            $teacherClassIds = collect();
+            ClassSubjectTeacher::where('teacher_id', $filterTeacher)
+                ->whereHas('subject', fn ($q) => $q->where('type', Subject::TYPE_QURAN))
+                ->pluck('class_id')
+                ->each(fn ($id) => $teacherClassIds->push($id));
+
+            \App\Models\QuranTeachingAssignment::where('teacher_id', $filterTeacher)
+                ->join('students', 'students.id', '=', 'quran_teaching_assignments.student_id')
+                ->pluck('students.class_id')
+                ->each(fn ($id) => $teacherClassIds->push($id));
+
+            $teacherClassIds = $teacherClassIds->filter()->unique();
+
+            if ($teacherClassIds->isNotEmpty()) {
+                $students = Student::with('classRoom')
+                    ->whereIn('class_id', $teacherClassIds)
+                    ->orderBy('name')
+                    ->get();
+
+                $query = TahfidzRecord::where('teacher_id', $filterTeacher)
+                    ->whereHas('student', fn ($q) => $q->whereIn('class_id', $teacherClassIds));
+
+                if ($this->academicYearContext->exists()) {
+                    $query->where('academic_year_id', $this->academicYearContext->id());
+                }
+
+                $allRecords = $query->with('quranMaster', 'student.classRoom')->get();
+
+                if ($allRecords->isNotEmpty()) {
+                    $stats = [
+                        'total' => $allRecords->count(),
+                        'ziadah' => $allRecords->where('activity_type', TahfidzRecord::TYPE_ZIADAH)->count(),
+                        'murajaah' => $allRecords->where('activity_type', TahfidzRecord::TYPE_MURAJAAH)->count(),
+                        'avg_score' => round($allRecords->avg('score'), 1),
+                        'unique_surahs' => $allRecords->pluck('quran_master_id')->filter()->unique()->count(),
+                    ];
+                } else {
+                    $stats = [
+                        'total' => 0,
+                        'ziadah' => 0,
+                        'murajaah' => 0,
+                        'avg_score' => 0,
+                        'unique_surahs' => 0,
+                    ];
+                }
+
+                $recordsByStudent = $allRecords->groupBy('student_id');
+
+                $studentStats = $students->mapWithKeys(function ($student) use ($recordsByStudent) {
+                    $records = $recordsByStudent->get($student->id, collect());
+                    $totalAyat = $records->sum(fn ($r) => (($r->ayat_end ?? $r->ayat_start) - $r->ayat_start + 1) > 0 ? (($r->ayat_end ?? $r->ayat_start) - $r->ayat_start + 1) : 0);
+                    $surahs = $records->pluck('quran_master_id')->filter()->unique()->count();
+                    $avgScore = $records->whereNotNull('score')->avg('score');
+                    $className = $student->classRoom->class_name ?? $student->classRoom->name ?? '-';
+                    return [
+                        $student->id => [
+                            'name' => $student->name,
+                            'class_name' => $className,
+                            'total' => $records->count(),
+                            'ziadah' => $records->where('activity_type', TahfidzRecord::TYPE_ZIADAH)->count(),
+                            'murajaah' => $records->where('activity_type', TahfidzRecord::TYPE_MURAJAAH)->count(),
+                            'total_ayat' => $totalAyat,
+                            'surahs' => $surahs,
+                            'avg_score' => $avgScore ? round($avgScore, 1) : null,
+                        ],
+                    ];
+                });
+            } else {
+                $students = collect();
+                $studentStats = collect();
+                $stats = [
+                    'total' => 0,
+                    'ziadah' => 0,
+                    'murajaah' => 0,
+                    'avg_score' => 0,
+                    'unique_surahs' => 0,
+                ];
+            }
+        } elseif ($classId) {
+            $students = Student::with('classRoom')->where('class_id', $classId)->orderBy('name')->get();
 
             $query = TahfidzRecord::whereHas('student', fn ($q) => $q->where('class_id', $classId));
 
@@ -402,7 +486,7 @@ class TahfidzController extends Controller
         }
 
         return view('guru.tahfidz.rekap', compact(
-            'plottedClasses', 'classId', 'students', 'studentStats', 'stats', 'teachers', 'filterTeacher'
+            'plottedClasses', 'classId', 'students', 'studentStats', 'stats', 'teachers', 'filterTeacher', 'mode'
         ));
     }
 
