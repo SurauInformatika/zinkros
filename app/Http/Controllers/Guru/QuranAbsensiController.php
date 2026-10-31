@@ -87,7 +87,18 @@ class QuranAbsensiController extends Controller
         $chartIzin = $chartSessions->pluck('izin')->values();
         $chartAlpa = $chartSessions->pluck('alpa')->values();
         $chartIsEmpty = $chartSessions->pluck('is_empty')->values();
-        $chartTitle = 'Grafik Kehadiran Al-Quran — ' . $totalStudents . ' Siswa';
+        $chartTitle = 'Grafik Kehadiran Al-Quran �?" ' . $totalStudents . ' Siswa';
+
+        $perPage = 31;
+        $page = (int) $request->query('page', 1);
+        $totalSessions = $sessions->count();
+        $sessions = new \Illuminate\Pagination\LengthAwarePaginator(
+            $sessions->forPage($page, $perPage),
+            $totalSessions,
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
 
         return view('guru.quran-absensi.rekap', compact(
             'sessions', 'dateFrom', 'dateTo', 'totalStudents',
