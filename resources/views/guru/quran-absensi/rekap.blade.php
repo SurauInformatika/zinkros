@@ -67,9 +67,14 @@
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
                                     Tidak ada setoran (Libur / Kegiatan Sekolah)
                                 </span>
-                            </div>
-                        </div>
-                    </div>
+            </div>
+        </div>
+        @if (isset($sessions) && method_exists($sessions, 'links'))
+        <div class="mt-4 flex justify-center">
+            {!! $sessions->withQueryString()->links() !!}
+        </div>
+        @endif
+    </div>
                 @else
                     <a href="{{ route('guru.quran-absensi.detail', $s['date']) }}" class="block rounded-xl border border-slate-200 bg-white p-4 dark:border-white/10 dark:bg-[#141414] hover:border-primary/30 dark:hover:border-primary/30 transition-all">
                         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
