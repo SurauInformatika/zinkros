@@ -122,6 +122,74 @@
     @endif
     @endif
 
+    @if (!empty($targets))
+    <div class="rounded-xl bg-white dark:bg-[#141414] border border-slate-200 dark:border-white/10 p-4 sm:p-5 space-y-4">
+        <div class="flex items-center justify-between">
+            <h2 class="text-sm font-semibold text-slate-700 dark:text-white/80">Target Hafalan</h2>
+        </div>
+        @foreach ($targets as $target)
+        <div class="rounded-lg border border-slate-100 dark:border-white/5 p-4 space-y-3">
+            <div class="flex items-start justify-between gap-3">
+                <div class="min-w-0">
+                    <span class="text-sm font-medium text-slate-700 dark:text-white/80 truncate">{{ $target['title'] }}</span>
+                    @php
+                        $stBadge = match($target['status']) {
+                            'completed' => 'bg-primary/10 text-primary dark:text-primary',
+                            'overdue' => 'bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400',
+                            default => 'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400',
+                        };
+                        $stLabel = match($target['status']) {
+                            'completed' => 'Selesai',
+                            'overdue' => 'Terlambat',
+                            default => 'Berlangsung',
+                        };
+                    @endphp
+                    <span class="ml-2 inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-medium {{ $stBadge }}">{{ $stLabel }}</span>
+                </div>
+                <span class="text-sm font-bold {{ $target['status'] === 'completed' ? 'text-primary dark:text-primary' : ($target['status'] === 'overdue' ? 'text-red-600 dark:text-red-400' : 'text-blue-600 dark:text-blue-400') }}">{{ $target['percent'] }}%</span>
+            </div>
+            <div class="w-full h-2 rounded-full bg-slate-100 dark:bg-white/5 overflow-hidden">
+                <div class="h-full rounded-full {{ $target['status'] === 'completed' ? 'bg-primary/100' : ($target['status'] === 'overdue' ? 'bg-red-500' : 'bg-primary/80') }}" style="width: {{ min(100, $target['percent']) }}%"></div>
+            </div>
+            <div class="flex items-center justify-between text-xs text-slate-500 dark:text-white/40">
+                <span>{{ $target['completed_ayat'] }}/{{ $target['total_ayat'] }} ayat • {{ $target['target_date_label'] }}</span>
+                <span class="mr-1">{{ $target['days_remaining'] >= 0 ? 'Sisa ' . $target['days_remaining'] . ' hari' : 'Lewat ' . abs($target['days_remaining']) . ' hari' }}</span>
+            </div>
+            @if (!empty($target['items']))
+            <details class="group">
+                <summary class="cursor-pointer list-none flex items-center gap-1 text-xs text-slate-500 dark:text-white/40 hover:text-slate-700 dark:hover:text-white/70">
+                    <svg class="w-3.5 h-3.5 transition-transform group-open:rotate-90" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>
+                    Rincian Target
+                </summary>
+                <div class="mt-2 overflow-x-auto">
+                    <table class="w-full text-xs">
+                        <thead>
+                            <tr class="border-b border-slate-100 dark:border-white/5">
+                                <th class="text-left font-medium text-slate-500 dark:text-white/40 py-1.5">Surah</th>
+                                <th class="text-center font-medium text-slate-500 dark:text-white/40 py-1.5">Ayat</th>
+                                <th class="text-center font-medium text-slate-500 dark:text-white/40 py-1.5">Target</th>
+                                <th class="text-center font-medium text-slate-500 dark:text-white/40 py-1.5">Tercapai</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($target['items'] as $item)
+                            <tr class="border-b border-slate-50 dark:border-white/5 last:border-0">
+                                <td class="py-1.5">{{ $item['surah_name'] }}</td>
+                                <td class="py-1.5 text-center">{{ $item['ayat_start'] }}-{{ $item['ayat_end'] }}</td>
+                                <td class="py-1.5 text-center">{{ $item['total'] }}</td>
+                                <td class="py-1.5 text-center">{{ $item['done'] }}</td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </details>
+            @endif
+        </div>
+        @endforeach
+    </div>
+    @endif
+
     <div class="rounded-xl bg-white dark:bg-[#141414] border border-slate-200 dark:border-white/10 p-5">
         <div class="flex items-center justify-between mb-4">
             <h2 class="font-semibold">Grafik Hafalan</h2>

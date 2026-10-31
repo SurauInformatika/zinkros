@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Guru;
 use App\Http\Controllers\Controller;
 use App\Models\QuranMaster;
 use App\Models\QuranTeachingAssignment;
+use App\Models\StudentQuranTarget;
 use App\Models\TahfidzRecord;
 use App\Services\AcademicYearContext;
 use Carbon\Carbon;
@@ -252,11 +253,106 @@ class QuranAbsensiController extends Controller
             ];
         }
 
+        $targets = $this->buildTargetsForStudent($student->id);
+
         return view('guru.quran-absensi.student-detail', compact(
             'date', 'student', 'status', 'hafalan', 'ayatRange', 'score',
             'predikat', 'activityType', 'notes', 'record',
-            'allRecords', 'statsArr'
+            'allRecords', 'statsArr', 'targets'
         ));
+    }
+
+    private function buildTargetsForStudent(string $studentId): array
+    {
+        $targets = StudentQuranTarget::where('student_id', $studentId)
+            ->with(['items.quranMaster'])
+            ->orderByDesc('is_active')
+            ->orderByDesc('created_at')
+            ->get();
+
+        $result = [];
+
+        foreach ($targets as $target) {
+            $totalAyat = 0;
+            $completedAyat = 0;
+            $items = [];
+
+            foreach ($target->items as $item) {
+                $quran = $item->quranMaster;
+                $itemTotal = $item->totalAyat();
+                $totalAyat += $itemTotal;
+
+                $maxAyat = TahfidzRecord::where('student_id', $studentId)
+                    ->where('quran_master_id', $item->quran_master_id)
+                    ->where('activity_type', TahfidzRecord::TYPE_ZIADAH)
+                    ->max('ayat_end');
+
+                $done = 0;
+                if ($maxAyat !== null) {
+                    $start = $item->ayat_start;
+                    $done = max(0, min($itemTotal, (int) $maxAyat - $start + 1));
+                    if ($done < 0) {
+                        $done = 0;
+                    }
+                    if ((int) $maxAyat >= $item->ayat_end) {
+                        $done = $itemTotal;
+                    }
+                }
+
+                $completedAyat += $done;
+
+                $items[] = [
+                    'surah_name' => $quran->surah_name ?? '-',
+                    'surah_number' => $quran->surah_number ?? null,
+                    'ayat_start' => $item->ayat_start,
+                    'ayat_end' => $item->ayat_end,
+                    'total' => $itemTotal,
+                    'done' => $done,
+                ];
+            }
+
+            $percent = $totalAyat > 0 ? (int) round(($completedAyat / $totalAyat) * 100) : 0;
+            if ($percent > 100) {
+                $percent = 100;
+            }
+
+            $startDate = $target->start_date ? Carbon::parse($target->start_date) : null;
+            $endDate = $target->target_date ? Carbon::parse($target->target_date) : null;
+            $daysRemaining = null;
+            $targetDateLabel = $endDate ? $endDate->translatedFormat('d M Y') : '-';
+
+            if ($endDate) {
+                $daysRemaining = (int) $endDate->diffInDays(Carbon::now(), false) * -1;
+                if ($daysRemaining < 0 && $percent < 100) {
+                    $daysRemaining = $daysRemaining;
+                }
+            }
+
+            if ($percent >= 100) {
+                $status = 'completed';
+            } elseif ($daysRemaining !== null && $daysRemaining < 0) {
+                $status = 'overdue';
+            } else {
+                $status = 'in_progress';
+            }
+
+            $result[] = [
+                'id' => $target->id,
+                'title' => $target->title ?? 'Target Hafalan',
+                'start_date' => $startDate?->toDateString(),
+                'target_date' => $endDate?->toDateString(),
+                'target_date_label' => $targetDateLabel,
+                'days_remaining' => $daysRemaining ?? 0,
+                'total_ayat' => $totalAyat,
+                'completed_ayat' => $completedAyat,
+                'percent' => $percent,
+                'status' => $status,
+                'items' => $items,
+                'notes' => $target->notes,
+            ];
+        }
+
+        return $result;
     }
 
     public function studentChartData(Request $request, string $studentId): JsonResponse
