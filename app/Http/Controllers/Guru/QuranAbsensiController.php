@@ -34,8 +34,15 @@ class QuranAbsensiController extends Controller
         $studentIds = $assignments->pluck('student_id');
         $totalStudents = $studentIds->count();
 
-        $dateFrom = $request->query('date_from', Carbon::now()->startOfMonth()->toDateString());
+        $dateFrom = $request->query('date_from', Carbon::now()->subDays(30)->toDateString());
         $dateTo = $request->query('date_to', Carbon::today()->toDateString());
+
+        $from = Carbon::parse($dateFrom);
+        $to = Carbon::parse($dateTo);
+        if ($to->diffInDays($from) > 30) {
+            $dateFrom = $to->copy()->subDays(30)->toDateString();
+            $from = Carbon::parse($dateFrom);
+        }
 
         $records = TahfidzRecord::where('teacher_id', $user->id)
             ->whereIn('student_id', $studentIds)
@@ -88,17 +95,6 @@ class QuranAbsensiController extends Controller
         $chartAlpa = $chartSessions->pluck('alpa')->values();
         $chartIsEmpty = $chartSessions->pluck('is_empty')->values();
         $chartTitle = 'Grafik Kehadiran Al-Quran �?" ' . $totalStudents . ' Siswa';
-
-        $perPage = 31;
-        $page = (int) $request->query('page', 1);
-        $totalSessions = $sessions->count();
-        $sessions = new \Illuminate\Pagination\LengthAwarePaginator(
-            $sessions->forPage($page, $perPage),
-            $totalSessions,
-            $perPage,
-            $page,
-            ['path' => $request->url(), 'query' => $request->query()]
-        );
 
         return view('guru.quran-absensi.rekap', compact(
             'sessions', 'dateFrom', 'dateTo', 'totalStudents',

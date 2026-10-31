@@ -69,10 +69,7 @@
                                 </span>
             </div>
         </div>
-        @if (isset($sessions) && method_exists($sessions, 'links'))
-        <div class="mt-4 flex justify-center">
-            {!! $sessions->withQueryString()->links() !!}
-        </div>
+    </div>
         @endif
     </div>
                 @else
