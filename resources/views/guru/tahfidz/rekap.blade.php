@@ -223,6 +223,7 @@
             <table class="w-full text-sm whitespace-nowrap">
                 <thead>
                     <tr class="border-b border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-white/[0.02]">
+                        <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40 w-10">No</th>
                         <th class="px-4 py-3 text-left font-medium text-slate-500 dark:text-white/40">Siswa</th>
                         <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40">Total</th>
                         <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40">Ziadah</th>
@@ -236,6 +237,7 @@
                 <tbody>
                     @forelse ($studentStats as $sid => $ss)
                     <tr class="border-b border-slate-50 dark:border-white/5 last:border-0 hover:bg-slate-50 dark:hover:bg-white/[0.02]">
+                        <td class="px-4 py-2.5 text-center text-slate-500 dark:text-white/40">{{ $loop->iteration }}</td>
                         <td class="px-4 py-2.5 font-medium">
                             <a href="{{ route('guru.tahfidz.student', $sid) }}" class="text-primary dark:text-primary hover:underline">{{ $ss['name'] }}</a>
                         </td>
@@ -256,7 +258,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="{{ auth()->user()->is_pj_tahfidz ? 11 : 10 }}" class="px-4 py-8 text-center text-slate-400 dark:text-white/30 text-sm">Belum ada data hafalan.</td>
+                        <td colspan="9" class="px-4 py-8 text-center text-slate-400 dark:text-white/30 text-sm">Belum ada data hafalan.</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -330,6 +332,7 @@
                 <table class="w-full text-sm whitespace-nowrap">
                     <thead>
                         <tr class="border-b border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-white/[0.02]">
+                            <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40 w-10">No</th>
                             <th class="px-4 py-3 text-left font-medium text-slate-500 dark:text-white/40">Siswa</th>
                             <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40">Status</th>
                             <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40">Ziadah</th>
@@ -356,9 +359,9 @@
             body.innerHTML = '';
             const list = dailyStudentsMap[date] || [];
             if (list.length === 0) {
-                body.innerHTML = '<tr><td colspan="8" class="px-4 py-6 text-center text-slate-400">Tidak ada data</td></tr>';
+                body.innerHTML = '<tr><td colspan="9" class="px-4 py-6 text-center text-slate-400">Tidak ada data</td></tr>';
             } else {
-                list.forEach(s => {
+                list.forEach((s, index) => {
                     let statusBadge = '';
                     if (s.status === 'sudah') statusBadge = '<span class="inline-flex items-center rounded-md bg-emerald-50 dark:bg-emerald-500/10 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:text-emerald-400">Sudah Setor</span>';
                     else if (s.status === 'SAKIT') statusBadge = '<span class="inline-flex items-center rounded-md bg-amber-50 dark:bg-amber-500/10 px-2 py-0.5 text-xs font-medium text-amber-700 dark:text-amber-400">Sakit</span>';
@@ -368,7 +371,7 @@
                     let action = s.status === 'sudah' ? `<a href="{{ route('guru.tahfidz.student', ':id') }}".replace(':id', s.id) class="inline-flex items-center rounded-lg border border-slate-200 dark:border-white/10 px-2.5 py-1 text-xs hover:bg-slate-50 dark:hover:bg-white/5">Lihat Setoran</a>` : `<a href="{{ route('guru.quran-hafalan.students') }}?class_id={{ $classId }}&date=${date}" class="inline-flex items-center rounded-lg bg-primary text-white px-2.5 py-1 text-xs hover:opacity-90">Input Hafalan</a>`;
                     const tr = document.createElement('tr');
                     tr.className = 'border-b border-slate-50 dark:border-white/5 last:border-0 hover:bg-slate-50 dark:hover:bg-white/[0.02]';
-                    tr.innerHTML = `<td class="px-4 py-2.5 font-medium">${s.name}</td><td class="px-4 py-2.5 text-center">${statusBadge}</td><td class="px-4 py-2.5 text-center">${s.ziadah}</td><td class="px-4 py-2.5 text-center">${s.murajaah}</td><td class="px-4 py-2.5 text-center">${s.ayat}</td><td class="px-4 py-2.5">${s.surah}</td><td class="px-4 py-2.5 text-center">${s.time}</td><td class="px-4 py-2.5 text-center">${action}</td>`;
+                    tr.innerHTML = `<td class="px-4 py-2.5 text-center text-slate-500 dark:text-white/40">${index + 1}</td><td class="px-4 py-2.5 font-medium">${s.name}</td><td class="px-4 py-2.5 text-center">${statusBadge}</td><td class="px-4 py-2.5 text-center">${s.ziadah}</td><td class="px-4 py-2.5 text-center">${s.murajaah}</td><td class="px-4 py-2.5 text-center">${s.ayat}</td><td class="px-4 py-2.5">${s.surah}</td><td class="px-4 py-2.5 text-center">${s.time}</td><td class="px-4 py-2.5 text-center">${action}</td>`;
                     body.appendChild(tr);
                 });
             }

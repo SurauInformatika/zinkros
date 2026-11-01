@@ -21,6 +21,7 @@
         <table class="w-full whitespace-nowrap text-sm">
             <thead>
                 <tr class="border-b border-slate-100 bg-slate-50 dark:border-white/5 dark:bg-white/[0.02]">
+                    <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40 w-10">No</th>
                     <th class="px-4 py-3 text-left font-medium text-slate-500 dark:text-white/40">Siswa</th>
                     <th class="px-4 py-3 text-left font-medium text-slate-500 dark:text-white/40">Kehadiran</th>
                     <th class="px-4 py-3 text-left font-medium text-slate-500 dark:text-white/40">Setoran</th>
@@ -30,6 +31,7 @@
             <tbody>
                 @forelse ($detailStudents as $item)
                 <tr class="border-b border-slate-50 last:border-0 dark:border-white/5">
+                    <td class="px-4 py-3 text-center text-slate-500 dark:text-white/40">{{ $loop->iteration }}</td>
                     <td class="px-4 py-3 font-medium">{{ $item['student']->name }}</td>
                     <td class="px-4 py-3">
                         <span @class([
@@ -60,7 +62,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="4" class="px-4 py-8 text-center text-slate-400 dark:text-white/30">Tidak ada data siswa.</td>
+                    <td colspan="5" class="px-4 py-8 text-center text-slate-400 dark:text-white/30">Tidak ada data siswa.</td>
                 </tr>
                 @endforelse
             </tbody>

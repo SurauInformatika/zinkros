@@ -60,6 +60,7 @@
                 <table class="w-full text-sm whitespace-nowrap">
                     <thead>
                         <tr class="border-b border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-white/[0.02]">
+                            <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40 w-10">No</th>
                             <th class="px-4 py-3 text-left font-medium text-slate-500 dark:text-white/40">Nama</th>
                             <th class="px-4 py-3 text-left font-medium text-slate-500 dark:text-white/40">Kelas</th>
                             <th class="px-4 py-3 text-center font-medium text-slate-500 dark:text-white/40">Setoran</th>
@@ -69,6 +70,7 @@
                     <tbody>
                         @foreach ($tahfidzData['students'] as $s)
                         <tr class="border-b border-slate-50 dark:border-white/5 last:border-0 hover:bg-slate-50 dark:hover:bg-white/[0.02] break-inside-avoid print:break-inside-avoid">
+                            <td class="px-4 py-3 text-center text-slate-500 dark:text-white/40">{{ $loop->iteration }}</td>
                             <td class="px-4 py-3 font-medium">
                                 <a href="{{ route('guru.tahfidz.student', $s['student']->id) }}" class="text-primary dark:text-primary hover:underline">{{ $s['student']->name }}</a>
                             </td>

@@ -14,11 +14,11 @@
             <div class="flex flex-1 flex-col gap-3 sm:flex-row">
                 <div class="flex-1">
                     <label class="mb-1 block text-xs font-medium text-slate-500 dark:text-white/40">Dari</label>
-                    <input type="date" name="date_from" value="{{ $dateFrom }}" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm sm:w-auto dark:border-white/10 dark:bg-[#0a0a0a] dark:text-white">
+                    <input id="dateFrom" type="date" name="date_from" value="{{ $dateFrom }}" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm sm:w-auto dark:border-white/10 dark:bg-[#0a0a0a] dark:text-white">
                 </div>
                 <div class="flex-1">
                     <label class="mb-1 block text-xs font-medium text-slate-500 dark:text-white/40">Sampai</label>
-                    <input type="date" name="date_to" value="{{ $dateTo }}" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm sm:w-auto dark:border-white/10 dark:bg-[#0a0a0a] dark:text-white">
+                    <input id="dateTo" type="date" name="date_to" value="{{ $dateTo }}" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm sm:w-auto dark:border-white/10 dark:bg-[#0a0a0a] dark:text-white">
                 </div>
             </div>
             <div class="flex items-center gap-3">
@@ -26,6 +26,31 @@
                 <a href="{{ route('guru.quran-absensi.rekap') }}" class="flex-1 rounded-lg border border-slate-300 px-4 py-2 text-center text-sm text-slate-600 hover:bg-slate-50 sm:flex-none dark:border-white/10 dark:text-white/60 dark:hover:bg-white/5">Reset</a>
             </div>
         </div>
+        <p class="mt-2 text-xs text-slate-500 dark:text-white/40">Rentang filter maksimal 31 hari.</p>
+        <script>
+            (function () {
+                var dateFrom = document.getElementById('dateFrom');
+                var dateTo = document.getElementById('dateTo');
+
+                function shiftDate(value, days) {
+                    if (!value) return '';
+                    var parts = value.split('-').map(Number);
+                    var date = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2] + days));
+                    return date.toISOString().slice(0, 10);
+                }
+
+                function updateDateLimits() {
+                    dateTo.min = dateFrom.value;
+                    dateTo.max = shiftDate(dateFrom.value, 30);
+                    dateFrom.min = shiftDate(dateTo.value, -30);
+                    dateFrom.max = dateTo.value;
+                }
+
+                dateFrom.addEventListener('change', updateDateLimits);
+                dateTo.addEventListener('change', updateDateLimits);
+                updateDateLimits();
+            })();
+        </script>
     </form>
 
     <div class="rounded-xl border border-slate-200 bg-white p-6 dark:border-white/10 dark:bg-[#141414]">
@@ -67,11 +92,9 @@
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
                                     Tidak ada setoran (Libur / Kegiatan Sekolah)
                                 </span>
-            </div>
-        </div>
-    </div>
-        @endif
-    </div>
+                            </div>
+                        </div>
+                    </div>
                 @else
                     <a href="{{ route('guru.quran-absensi.detail', $s['date']) }}" class="block rounded-xl border border-slate-200 bg-white p-4 dark:border-white/10 dark:bg-[#141414] hover:border-primary/30 dark:hover:border-primary/30 transition-all">
                         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
