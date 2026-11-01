@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 use App\Http\Controllers\Admin\AcademicYearController;
 use App\Http\Controllers\Admin\ExcelController;
@@ -297,6 +297,10 @@ Route::middleware(['auth', 'role:guru'])->prefix('guru')->name('guru.')->group(f
     Route::post('quran-hafalan', [QuranHafalanController::class, 'store'])->name('quran-hafalan.store');
     Route::get('quran-hafalan/history/{studentId}', [QuranHafalanController::class, 'history'])->name('quran-hafalan.history');
     Route::get('quran-hafalan/history/{studentId}/chart', [QuranHafalanController::class, 'chart'])->name('quran-hafalan.chart');
+    Route::get('tasmi', [\App\Http\Controllers\Guru\TasmiController::class, 'students'])->name('tasmi.students');
+    Route::get('tasmi/input/{studentId}', [\App\Http\Controllers\Guru\TasmiController::class, 'input'])->name('tasmi.input');
+    Route::post('tasmi', [\App\Http\Controllers\Guru\TasmiController::class, 'store'])->name('tasmi.store');
+
     Route::get('quran-hafalan/record/{tahfidzRecord}/edit', [QuranHafalanController::class, 'edit'])->name('quran-hafalan.edit');
     Route::put('quran-hafalan/record/{tahfidzRecord}', [QuranHafalanController::class, 'update'])->name('quran-hafalan.update');
     Route::delete('quran-hafalan/record/{tahfidzRecord}', [QuranHafalanController::class, 'destroy'])->name('quran-hafalan.destroy');
