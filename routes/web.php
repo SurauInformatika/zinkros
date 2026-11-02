@@ -35,6 +35,7 @@ use App\Http\Controllers\Guru\RaporController;
 use App\Http\Controllers\Guru\SubjectAbsensiController;
 use App\Http\Controllers\Guru\TahfidzController;
 use App\Http\Controllers\Guru\TahfidzKelasController;
+use App\Http\Controllers\Guru\TasmiController;
 use App\Http\Controllers\Guru\TilawahController;
 use App\Http\Controllers\Guru\WaliKelasAbsensiController;
 use App\Http\Controllers\Kepsek\KepsekController;
@@ -297,9 +298,10 @@ Route::middleware(['auth', 'role:guru'])->prefix('guru')->name('guru.')->group(f
     Route::post('quran-hafalan', [QuranHafalanController::class, 'store'])->name('quran-hafalan.store');
     Route::get('quran-hafalan/history/{studentId}', [QuranHafalanController::class, 'history'])->name('quran-hafalan.history');
     Route::get('quran-hafalan/history/{studentId}/chart', [QuranHafalanController::class, 'chart'])->name('quran-hafalan.chart');
-    Route::get('tasmi', [\App\Http\Controllers\Guru\TasmiController::class, 'students'])->name('tasmi.students');
-    Route::get('tasmi/input/{studentId}', [\App\Http\Controllers\Guru\TasmiController::class, 'input'])->name('tasmi.input');
-    Route::post('tasmi', [\App\Http\Controllers\Guru\TasmiController::class, 'store'])->name('tasmi.store');
+    Route::get('tasmi', [TasmiController::class, 'students'])->name('tasmi.students');
+    Route::get('tasmi/search', [TasmiController::class, 'search'])->name('tasmi.search');
+    Route::get('tasmi/rekap', [TasmiController::class, 'rekap'])->name('tasmi.rekap');
+    Route::post('tasmi', [TasmiController::class, 'store'])->name('tasmi.store');
 
     Route::get('quran-hafalan/record/{tahfidzRecord}/edit', [QuranHafalanController::class, 'edit'])->name('quran-hafalan.edit');
     Route::put('quran-hafalan/record/{tahfidzRecord}', [QuranHafalanController::class, 'update'])->name('quran-hafalan.update');
